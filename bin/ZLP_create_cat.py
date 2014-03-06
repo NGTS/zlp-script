@@ -25,8 +25,8 @@ This is the catalog generation tool, requires a filelist input. need to work on 
 
 from docopt import docopt
 import os
-from NGTS_workpackage.wcs_fitting import m_solve_images
-from NGTS_workpackage import casutools
+from ngts_catalogue.wcs_fitting import m_solve_images
+from ngts_catalogue import casutools
 from tempfile import NamedTemporaryFile
 
 def main(argv):
