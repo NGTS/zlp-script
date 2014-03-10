@@ -13,6 +13,7 @@ setup(name='ngts_catalogue',
         scripts=glob('bin/*.py'),
         long_description=open('README.markdown').read(),
         install_requires=['astropy>=0.3',
+            'fitsio',
             'docopt',
             'numpy>=1.8',
             ]
