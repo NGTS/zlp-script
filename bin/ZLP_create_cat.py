@@ -18,6 +18,7 @@ Options:
   -n <NPROC>, --nproc <NPROC>               Enable multithreading if you're analysing a lot of files at once
   -N <NFILES>, --nfiles <NFILES>            Maximum number of files to use in the stack
   --no-wcs                                  Do not solve each image for WCS.  However images must have a solution somehow
+  --create-ell                              Produce ds9 region files for the final catalogue
 
 This is the catalog generation tool, requires a filelist input. need to work on being selective on the files used in input.
 
@@ -70,7 +71,8 @@ def main(argv):
     casutools.imstack(argv['--stacklist'], argv['--confmap'], verbose=argv['--verbose'],
             outstack=outstack_name, outconf=outstackconf_name)
     casutools.imcore(outstack_name, argv['--outname'], threshold=argv['--c_thresh'],
-            confidence_map=outstackconf_name, verbose=argv['--verbose'])
+            confidence_map=outstackconf_name, verbose=argv['--verbose'],
+            ellfile=argv['--create-ell'])
 
     if argv['--verbose'] == True:
         print 'Catalogue complete'
