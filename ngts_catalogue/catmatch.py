@@ -83,7 +83,9 @@ def calc_seps(mycatname,casuin):
   with fitsio.FITS(mycatname) as mycat:
     hdu = mycat[1]
 
-    my_flux, my_X, my_Y = hdu['x_coordinate', 'y_coordinate', 'Aper_flux_3'][:]
+    keys = ['x_coordinate', 'y_coordinate', 'Aper_flux_3']
+    data = hdu[keys]
+    my_flux, my_X, my_Y = [data[key][:] for key in keys]
     my_mag = zero - 2.512*log10(my_flux)
 
   pix_coords = [[my_X[i],my_Y[i]] for i in range(0,len(my_X))]
