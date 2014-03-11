@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from astropy.io import fits as pf
 import os
+import fitsio
 from util import load_wcs_from_file
 from numpy import *
 import os
@@ -20,11 +20,12 @@ def shift_wcs_axis(casuin,mycatname,thresh=100):
   PV2_3   =  8.11292725428
   PV2_5   =  901.974288037
 
-  with pf.open(casuin) as hdulist:
-    XVAL = hdulist[0].header['NAXIS1']/2
-    YVAL = hdulist[0].header['NAXIS2']/2
-    TEL_RA = hdulist[0].header['TEL_RA']
-    TEL_DEC = hdulist[0].header['TEL_DEC']
+  with fitsio.FITS(casuin) as hdulist:
+    header = hdulist[0].read_header()
+    XVAL = header['NAXIS1']/2
+    YVAL = header['NAXIS2']/2
+    TEL_RA = header['TEL_RA']
+    TEL_DEC = header['TEL_DEC']
 
   prior = [CRPIX1,CRPIX2,CRVAL1,CRVAL2,CD1_1,CD2_2,CD1_2,CD2_1,PV2_1,PV2_3,PV2_5]
 
@@ -38,18 +39,20 @@ def shift_wcs_axis(casuin,mycatname,thresh=100):
 
 def apply_correct(x,casuin,XVAL,YVAL,TEL_RA,TEL_DEC):
 
-  pf.setval(casuin,'CRPIX1',value=XVAL + x[0])
-  pf.setval(casuin,'CRPIX2',value=YVAL + x[1])
-  pf.setval(casuin,'CRVAL1',value=TEL_RA + x[2])
-  pf.setval(casuin,'CRVAL2',value=TEL_DEC + x[3])
-  pf.setval(casuin,'CD1_1',value=x[4])
-  pf.setval(casuin,'CD2_2',value=x[5])
-  pf.setval(casuin,'CD1_2',value=x[6])
-  pf.setval(casuin,'CD2_1',value=x[7])
-  if len(x) > 8:
-    pf.setval(casuin,'PV2_1',value=x[8])
-    pf.setval(casuin,'PV2_3',value=x[9])
-    pf.setval(casuin,'PV2_5',value=x[10])
+  with fitsio.FITS(casuin, 'rw') as fits:
+    hdu = fits[0]
+    hdu.write_key('CRPIX1', XVAL + x[0])
+    hdu.write_key('CRPIX2', YVAL + x[1])
+    hdu.write_key('CRVAL1', TEL_RA + x[2])
+    hdu.write_key('CRVAL2', TEL_DEC + x[3])
+    hdu.write_key('CD1_1', x[4])
+    hdu.write_key('CD2_2', x[5])
+    hdu.write_key('CD1_2', x[6])
+    hdu.write_key('CD2_1', x[7])
+    if len(x) > 8:
+        hdu.write_key('PV2_1', x[8])
+        hdu.write_key('PV2_3', x[9])
+        hdu.write_key('PV2_5', x[10])
 
   
 def calc_seps(mycatname,casuin):
@@ -57,32 +60,28 @@ def calc_seps(mycatname,casuin):
 
   plate_scale = -3600.0/5.0
 
-  mycat = pf.open(mycatname)
-
   cat_names = []
   RA_lims = []
   DEC_lims = []
   for line in open('catcache/index'):
-    vals = line.strip('\n').split(' ')
-    cat_names += [vals[0]]
-    RA_lims += [[float(vals[2]),float(vals[3])]]
-    DEC_lims += [[float(vals[4]),float(vals[5])]]
+      vals = line.strip('\n').split(' ')
+      cat_names += [vals[0]]
+      RA_lims += [[float(vals[2]),float(vals[3])]]
+      DEC_lims += [[float(vals[4]),float(vals[5])]]
 
   n = 0
 
   cat_name = cat_names[n]
-  cat = pf.open('catcache/'+cat_name)
+  with fitsio.FITS('catcache/' + cat_name) as cat:
+      hdu = cat[1]
+      cat_RA_raw, cat_DEC_raw, cat_Jmag = hdu['ra', 'dec', 'Jmag'][:]
+      zero = 21.5
 
-  cat_RA_raw = cat[1].data['ra']
-  cat_DEC_raw = cat[1].data['dec']
+  with fitsio.FITS(mycatname) as mycat:
+    hdu = mycat[1]
 
-  zero = 21.5
-
-  cat_Jmag = cat[1].data['Jmag']
-  my_mag = zero - 2.512*log10(mycat[1].data['Aper_flux_3'])
-    
-  my_X = mycat[1].data['x_coordinate']
-  my_Y = mycat[1].data['y_coordinate']
+    my_flux, my_X, my_Y = hdu['x_coordinate', 'y_coordinate', 'Aper_flux_3'][:]
+    my_mag = zero - 2.512*log10(my_flux)
 
   pix_coords = [[my_X[i],my_Y[i]] for i in range(0,len(my_X))]
 
