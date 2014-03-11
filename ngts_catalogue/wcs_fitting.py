@@ -4,7 +4,18 @@ import tempfile
 from catmatch import shift_wcs_axis
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
+import fitsio
 import casutools
+
+def ensure_valid_wcs(fname):
+  with fitsio.FITS(fname, 'rw') as infile:
+    hdu = infile[0]
+    header = hdu.read_header()
+
+    target = {'CTYPE1': 'RA---ZPN', 'CTYPE2': 'DEC--ZPN'}
+    for (key, value) in target.iteritems():
+      if header[key] != value:
+        hdu.write_key(key, value)
 
 def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
   infiles = []
@@ -25,6 +36,8 @@ def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
 def casu_solve(casuin, thresh=20, verbose=False):
   with tempfile.NamedTemporaryFile(dir='.', suffix='.fits', prefix='catalogue.') as catfile:
     catfile_name = catfile.name
+
+    ensure_valid_wcs(casuin)
 
     casutools.imcore(casuin, catfile_name, threshold=thresh, verbose=verbose)
     catfile.seek(0)
