@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from astropy.io import fits as pf
 import fitsio
 from util import load_wcs_from_file
 from numpy import *
@@ -72,10 +73,12 @@ def calc_seps(mycatname,casuin):
   n = 0
 
   cat_name = cat_names[n]
-  with fitsio.FITS('catcache/' + cat_name) as cat:
-      hdu = cat[1]
-      cat_RA_raw, cat_DEC_raw, cat_Jmag = hdu['ra', 'dec', 'Jmag'][:]
-      zero = 21.5
+  with pf.open('catcache/' + cat_name) as cat:
+    cat_RA_raw = cat[1].data['ra']
+    cat_DEC_raw = cat[1].data['dec']
+    cat_Jmag = cat[1].data['Jmag']
+
+  zero = 21.5
 
   with fitsio.FITS(mycatname) as mycat:
     hdu = mycat[1]
