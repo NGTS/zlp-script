@@ -12,7 +12,14 @@ def ensure_valid_wcs(fname):
     hdu = infile[0]
     header = hdu.read_header()
 
-    target = {'CTYPE1': 'RA---ZPN', 'CTYPE2': 'DEC--ZPN'}
+    target = {
+        'CTYPE1': 'RA---ZPN',
+        'CTYPE2': 'DEC--ZPN',
+        'PV2_1': 0.999993897433,
+        'PV2_3': 8.11292725428,
+        'PV2_5': 901.974288037,
+        }
+
     for (key, value) in target.iteritems():
       if header[key] != value:
         hdu.write_key(key, value)
