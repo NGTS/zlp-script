@@ -22,7 +22,7 @@ def ensure_valid_wcs(fname):
         }
 
     for (key, value) in target.iteritems():
-      if header[key] != value:
+      if key not in header or header[key] != value:
         hdu.write_key(key, value)
 
 def extract_image_data(filename):
