@@ -60,7 +60,7 @@ def apply_correct(x,casuin,XVAL,YVAL,TEL_RA,TEL_DEC):
                 hdu.write_key('PV2_3', x[9])
                 hdu.write_key('PV2_5', x[10])
 
-    
+
 def calc_seps(mycatname,casuin):
 
 
@@ -137,12 +137,12 @@ def calc_seps(mycatname,casuin):
         y_sep += [DEC_sep[-1]*plate_scale]
 
     clever = array([x for x in sort(sep_list)])
-    
+
     course_fit = median(clever)
 
     if course_fit > 3:
         return xs,ys,RA_sep,DEC_sep, array(course_fit)
-    
+
     for i in range(0,len(my_RA)):
         RA = my_RA[i]
         DEC = my_DEC[i]
