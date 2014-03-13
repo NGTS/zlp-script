@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-#$ -S /bin/bash
+#$ -S /bin/bash -cwd -pe parallel 8 -N input-catalogue
+
 
 set -e
 
