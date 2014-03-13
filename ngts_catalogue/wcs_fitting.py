@@ -84,7 +84,7 @@ def casu_solve(casuin, thresh=20, verbose=False):
 
         # quick correction factor because the central wcs axis is not always pointed in the right place at the central distortion axis
         try:
-            shift_wcs_axis(casuin, catfile_name, thresh=thresh)
+            offsets = shift_wcs_axis(casuin, catfile_name, thresh=thresh)
         except IOError:
             print "Performing initial fit"
             casutools.wcsfit(casuin, catfile_name, verbose=verbose)
