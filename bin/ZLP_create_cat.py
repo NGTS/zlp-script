@@ -28,7 +28,7 @@ from docopt import docopt
 import os
 from ngts_catalogue.wcs_fitting import m_solve_images
 from ngts_catalogue import casutools
-from ngts_catalogue.metadata import render_metadata
+from ngts_catalogue.metadata import Metadata
 from tempfile import NamedTemporaryFile
 import sqlite3
 
@@ -57,7 +57,7 @@ def main(argv):
             extracted_metadata = m_solve_images(name, name, thresh=argv['--s_thresh'],
                     nproc=int(argv['--nproc']) if argv['--nproc'] else None,
                     verbose=argv['--verbose'])
-            render_metadata(extracted_metadata)
+            Metadata(extracted_metadata).render()
 
         with open(argv['--stacklist'],'w') as stacklist:
             for line in tmp:
