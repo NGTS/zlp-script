@@ -42,14 +42,20 @@ def extract_catalogue_data(filename):
     with fitsio.FITS(filename) as infile:
         return { 'nobj': infile[1].read_header()['naxis2'] }
 
-def extract_computed_data(image_name, catalogue):
+def extract_computed_data(image_name, catalogue, offsets):
     '''
     Extract important header keywords and statistics of the solution
+
+    Inputs:
+
+    - the solved image name
+    - the catalogue used to solve the image
+    - the offsets applied to match the distortion centre
     '''
     image_data = extract_image_data(image_name)
     catalogue_data = extract_catalogue_data(catalogue)
 
-    return dict(image_data.items() + catalogue_data.items())
+    return dict(image_data.items() + catalogue_data.items() + offsets.items())
 
 def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
     infiles = []
@@ -82,9 +88,9 @@ def casu_solve(casuin, thresh=20, verbose=False):
         except IOError:
             print "Performing initial fit"
             casutools.wcsfit(casuin, catfile_name, verbose=verbose)
-            shift_wcs_axis(casuin, catfile_name, thresh=thresh)
+            offsets = shift_wcs_axis(casuin, catfile_name, thresh=thresh)
 
         casutools.wcsfit(casuin, catfile_name, verbose=verbose)
 
         catfile.seek(0)
-        return extract_computed_data(casuin, catfile_name)
+        return extract_computed_data(casuin, catfile_name, offsets)

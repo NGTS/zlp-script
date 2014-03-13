@@ -77,6 +77,8 @@ def main(argv):
                 cts_med float,
                 airmass float,
                 skylevel float,
+                ra_offset float,
+                dec_offset float,
                 filename string
                 )''')
 
@@ -97,6 +99,8 @@ def main(argv):
                 cts_med,
                 airmass,
                 skylevel,
+                ra_offset,
+                dec_offset,
                 filename
                 ) values (
                 :pv2_1,
@@ -115,6 +119,8 @@ def main(argv):
                 :cts_med,
                 :airmass,
                 :skylevel,
+                :ra_offset,
+                :dec_offset,
                 :filename)''', extracted_metadata)
 
         with open(argv['--stacklist'],'w') as stacklist:

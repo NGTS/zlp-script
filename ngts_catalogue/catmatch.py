@@ -34,9 +34,14 @@ def shift_wcs_axis(casuin,mycatname,thresh=100):
 
     # this corrects efficiently for the 'offset' between the optical axis and the RA/DEC optical axis
     xs,ys,RA_sep,DEC_sep, sep_list = calc_seps(mycatname,casuin)
-    prior[2] += median(RA_sep)
-    prior[3] += median(DEC_sep)
+
+    median_ra_offset = median(RA_sep)
+    median_dec_offset = median(DEC_sep)
+    prior[2] += median_ra_offset
+    prior[3] += median_dec_offset
+
     apply_correct(prior,casuin,XVAL,YVAL,TEL_RA,TEL_DEC)
+    return {'ra_offset': median_ra_offset, 'dec_offset': median_dec_offset}
 
 def apply_correct(x,casuin,XVAL,YVAL,TEL_RA,TEL_DEC):
 
