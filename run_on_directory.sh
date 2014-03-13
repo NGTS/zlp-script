@@ -4,6 +4,10 @@
 
 set -e
 
+abspath() {
+    readlink -f $1
+}
+
 validate_input() {
     if [[ "$#" != 3 ]]; then
         echo "Usage: `basename $0` <filelist> <confidence> <outputdir>" >&2
@@ -51,9 +55,9 @@ main() {
     validate_input $*
     setup_environment
 
-    FILELIST=`pwd`/$1
-    CONFIDENCE=`pwd`/$2
-    OUTPUTDIR=`pwd`/$3
+    FILELIST=`abspath $1`
+    CONFIDENCE=`abspath $2`
+    OUTPUTDIR=`abspath $3`
 
     echo "Reading files from ${FILELIST}"
     echo "Using confidence map ${CONFIDENCE}"
