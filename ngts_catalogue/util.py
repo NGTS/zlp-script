@@ -10,67 +10,67 @@ from tempfile import mkstemp
 
 def thread_alloc(nfiles, nproc):
 
-  chunks = int(nfiles/nproc)
-  leftovers = nfiles - chunks*nproc
+    chunks = int(nfiles/nproc)
+    leftovers = nfiles - chunks*nproc
 
-  starts = []
-  ends = []
+    starts = []
+    ends = []
 
-  for i in range(1,nproc+1):
-    starts += [(i-1)*chunks]
-    ends += [i*chunks]
+    for i in range(1,nproc+1):
+        starts += [(i-1)*chunks]
+        ends += [i*chunks]
 
-  ends = array(ends)+1
-  starts = array(starts)+1
+    ends = array(ends)+1
+    starts = array(starts)+1
 
 #  adds the leftovers to the processors evenly
-  procn = 0
-  while ends[-1] < (nfiles+1) and (procn<nproc):
-    starts[procn+1:] += 1
-    ends[procn:] += 1
-    procn += 1
+    procn = 0
+    while ends[-1] < (nfiles+1) and (procn<nproc):
+        starts[procn+1:] += 1
+        ends[procn:] += 1
+        procn += 1
 
-  return starts, ends
+    return starts, ends
 
 def load_wcs_from_file(filename,pixcrd):
 # Load the WCS information from a fits header, and use it
 # to convert pixel coordinates to world coordinates.
-    # Parse the WCS keywords in the primary HDU
-    w = wcs.WCS(fitsio.read_header(filename))
+        # Parse the WCS keywords in the primary HDU
+        w = wcs.WCS(fitsio.read_header(filename))
 
-    # Convert pixel coordinates to world coordinates
-    # The second argument is "origin" -- in this case we're declaring we
-    # have 1-based (Fortran-like) coordinates.
-    world = w.wcs_pix2world(pixcrd, 1)
+        # Convert pixel coordinates to world coordinates
+        # The second argument is "origin" -- in this case we're declaring we
+        # have 1-based (Fortran-like) coordinates.
+        world = w.wcs_pix2world(pixcrd, 1)
 
-    return world
+        return world
 
 def status_update(file_path, pattern, subst):
-  i = 0
-  while i < 100:
-    try:
-     s_update(file_path, pattern, subst)
-     return
-    except:
-      print('attempt ',str(i),'!')
-      time.sleep(0.01)
-      i += 1
-      
+    i = 0
+    while i < 100:
+        try:
+          s_update(file_path, pattern, subst)
+          return
+        except:
+            print('attempt ',str(i),'!')
+            time.sleep(0.01)
+            i += 1
+            
 
 
 def s_update(file_path, pattern, subst):
 
-  #Create temp file
-  fh, abs_path = mkstemp()
-  new_file = open(abs_path,'w')
-  old_file = open(file_path)
-  for line in old_file:
-      new_file.write(line.replace(pattern, subst))
-  #close temp file
-  new_file.close()
-  close(fh)
-  old_file.close()
-  #Remove original file
-  os.remove(file_path)
-  #Move new file
-  shutil.move(abs_path, file_path)
+    #Create temp file
+    fh, abs_path = mkstemp()
+    new_file = open(abs_path,'w')
+    old_file = open(file_path)
+    for line in old_file:
+            new_file.write(line.replace(pattern, subst))
+    #close temp file
+    new_file.close()
+    close(fh)
+    old_file.close()
+    #Remove original file
+    os.remove(file_path)
+    #Move new file
+    shutil.move(abs_path, file_path)
