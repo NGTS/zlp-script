@@ -1,7 +1,7 @@
 import sqlite3
 import copy
 
-__all__ = ['render_metadata']
+__all__ = ['Metadata']
 
 class Metadata(object):
     SCHEMA_MAP = {
