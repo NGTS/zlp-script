@@ -37,15 +37,15 @@ class Metadata(object):
     def create_database(self):
         with sqlite3.connect(self.database_name) as connection:
             cursor = connection.cursor()
-            schema = self.build_schema()
+            table_construction_query = self.build_table_construction_query()
             try:
                 cursor.execute('drop table metadata')
             except sqlite3.OperationalError:
                 pass
             finally:
-                cursor.execute(schema)
+                cursor.execute(table_construction_query)
 
-    def build_schema(self):
+    def build_table_construction_query(self):
         column_descriptions = ','.join(['{} {}'.format(key, value)
             for (key, value) in self.SCHEMA_MAP.iteritems()])
         return 'create table metadata ({})'.format(column_descriptions)
