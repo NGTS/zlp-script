@@ -2,7 +2,7 @@
 
 import os
 import tempfile
-from .catmatch import shift_wcs_axis
+from .catmatch import shift_wcs_axis, FailedToSolve
 from .metadata import Metadata
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
