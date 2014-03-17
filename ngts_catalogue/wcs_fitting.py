@@ -2,7 +2,8 @@
 
 import os
 import tempfile
-from catmatch import shift_wcs_axis
+from .catmatch import shift_wcs_axis
+from .metadata import Metadata
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 import fitsio
@@ -25,37 +26,6 @@ def ensure_valid_wcs(fname):
             if key not in header or header[key] != value:
                 hdu.write_key(key, value)
 
-def extract_image_data(filename):
-    keys = ['PV2_1', 'PV2_3', 'PV2_5', 'CMD_RA', 'CMD_DEC',
-            'TEL_RA', 'TEL_DEC', 'ACTIONID', 'EXPOSURE', 'CTS_MED', 'AIRMASS',
-            'CD1_1', 'CD1_2', 'CD2_1', 'CD2_2', 'SKYLEVEL']
-
-    with fitsio.FITS(filename) as infile:
-        header = infile[0].read_header()
-        header_items = {key.lower(): header[key] for key in keys}
-
-    meta_items = {'filename': os.path.basename(filename)}
-
-    return dict(header_items.items() + meta_items.items())
-
-def extract_catalogue_data(filename):
-    with fitsio.FITS(filename) as infile:
-        return { 'nobj': infile[1].read_header()['naxis2'] }
-
-def extract_computed_data(image_name, catalogue, offsets):
-    '''
-    Extract important header keywords and statistics of the solution
-
-    Inputs:
-
-    - the solved image name
-    - the catalogue used to solve the image
-    - the offsets applied to match the distortion centre
-    '''
-    image_data = extract_image_data(image_name)
-    catalogue_data = extract_catalogue_data(catalogue)
-
-    return dict(image_data.items() + catalogue_data.items() + offsets.items())
 
 def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
     infiles = []
@@ -93,4 +63,4 @@ def casu_solve(casuin, thresh=20, verbose=False):
         casutools.wcsfit(casuin, catfile_name, verbose=verbose)
 
         catfile.seek(0)
-        return extract_computed_data(casuin, catfile_name, offsets)
+        return Metadata.extract_computed_data(casuin, catfile_name, offsets)

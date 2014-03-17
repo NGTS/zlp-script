@@ -64,3 +64,39 @@ class Metadata(object):
                 self.data)
 
         return self
+
+    @staticmethod
+    def extract_image_data(filename):
+        keys = ['PV2_1', 'PV2_3', 'PV2_5', 'CMD_RA', 'CMD_DEC',
+                'TEL_RA', 'TEL_DEC', 'ACTIONID', 'EXPOSURE', 'CTS_MED', 'AIRMASS',
+                'CD1_1', 'CD1_2', 'CD2_1', 'CD2_2', 'SKYLEVEL']
+
+        with fitsio.FITS(filename) as infile:
+            header = infile[0].read_header()
+            header_items = {key.lower(): header[key] for key in keys}
+
+        meta_items = {'filename': os.path.basename(filename)}
+
+        return dict(header_items.items() + meta_items.items())
+
+    @staticmethod
+    def extract_catalogue_data(filename):
+        with fitsio.FITS(filename) as infile:
+            return { 'nobj': infile[1].read_header()['naxis2'] }
+
+    @staticmethod
+    def extract_computed_data(image_name, catalogue, extra_metadata):
+        '''
+        Extract important header keywords and statistics of the solution
+
+        Inputs:
+
+        - the solved image name
+        - the catalogue used to solve the image
+        - extra metadata to store
+        '''
+        image_data = Metadata.extract_image_data(image_name)
+        catalogue_data = Metadata.extract_catalogue_data(catalogue)
+
+        payload = dict(image_data.items() + catalogue_data.items() + extra_metadata.items())
+        return { 'status': 'ok', 'data': payload }
