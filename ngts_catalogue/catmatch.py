@@ -6,7 +6,7 @@ from util import load_wcs_from_file
 from numpy import *
 import os
 
-def shift_wcs_axis(casuin,mycatname,thresh=100):
+def shift_wcs_axis(casuin,mycatname):
 
     #this is the best solution for the catalog
     CRPIX1  =  -30.3589661445
