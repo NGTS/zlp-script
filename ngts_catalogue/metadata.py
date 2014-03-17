@@ -1,4 +1,4 @@
-import sqlite3
+import json
 import copy
 
 __all__ = ['Metadata']
@@ -25,45 +25,17 @@ class Metadata(object):
             'ra_offset': 'float',
             'dec_offset': 'float',
             'filename': 'string',
+            'extra': 'string',
             }
 
-    database_name = 'metadata.sqlite'
+    filename = 'metadata.json'
 
     def __init__(self, extracted_metadata):
         self.data = extracted_metadata
-        self.database_name = 'metadata.sqlite'
-        self.create_database()
-
-    def create_database(self):
-        with sqlite3.connect(self.database_name) as connection:
-            cursor = connection.cursor()
-            table_construction_query = self.build_table_construction_query()
-            try:
-                cursor.execute('drop table metadata')
-            except sqlite3.OperationalError:
-                pass
-            finally:
-                cursor.execute(table_construction_query)
-
-    def build_table_construction_query(self):
-        column_descriptions = ','.join(['{} {}'.format(key, value)
-            for (key, value) in self.SCHEMA_MAP.iteritems()])
-        return 'create table metadata ({})'.format(column_descriptions)
 
     def render(self):
-        columns = copy.copy(self.SCHEMA_MAP)
-        del columns['id']
-        keys = columns.keys()
-        placeholders = [':{}'.format(key) for key in keys]
-
-        with sqlite3.connect(self.database_name) as connection:
-            query = '''insert into metadata ({}) values ({})'''.format(','.join(keys),
-                    ','.join(placeholders))
-            cursor = connection.cursor()
-            cursor.executemany(query,
-                self.data)
-
-        return self
+        with open(self.filename, 'w') as outfile:
+            json.dump(self.data, outfile)
 
     @staticmethod
     def extract_image_data(filename):
@@ -98,5 +70,10 @@ class Metadata(object):
         image_data = cls.extract_image_data(image_name)
         catalogue_data = cls.extract_catalogue_data(catalogue)
 
-        payload = dict(image_data.items() + catalogue_data.items() + extra_metadata.items())
-        return { 'status': 'ok', 'data': payload }
+        return dict(image_data.items() + catalogue_data.items() + extra_metadata.items())
+
+    @classmethod
+    def extract_failure_data(exc, image_name, catalogue):
+        image_data = cls.extract_image_data(image_name)
+        catalogue_data = cls.extract_catalogue_data(catalogue)
+        return dict(image_data.items() + catalogue_data.items() + {'error_message': str(exc)})

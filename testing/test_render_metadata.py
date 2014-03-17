@@ -1,33 +1,40 @@
-import sqlite3
 from ngts_catalogue.metadata import Metadata
+import pytest
+import json
 
-Metadata.database_name = '/tmp/metadata.sqlite'
+Metadata.filename = '/tmp/metadata.json'
 
-def test_database_construction():
-    m = Metadata(None)
-    keys = m.SCHEMA_MAP.keys()
+@pytest.fixture
+def success():
+    return {
+            'success': True,
+            'pv2_1': 13.2,
+            'pv2_3': 14.2,
+            'pv2_5': 15.2,
+            }
 
-    with sqlite3.connect(m.database_name) as connection:
-        cursor = connection.cursor()
+@pytest.fixture
+def failure():
+    return {'success': False, 
+            'reason': 'Failed to solve wcs',
+            }
 
-        cursor.execute('select name from sqlite_master where type = "table"')
-        assert cursor.fetchone()[0] == 'metadata'
+def verify(passed):
+    with open(Metadata.filename) as infile:
+        assert json.load(infile) == passed
 
-        cursor.execute('pragma table_info(metadata)')
-        for row in cursor:
-            assert row[1] in keys
-
-def test_render_data():
-    test_data = {'pv2_1': 12.2, 'pv2_3': 12.2, 'pv2_5': 12.1, 'cd1_1': 12.2, 'cd1_2': 12.2, 'cd2_1': 12.2, 'cd2_2': 12.2, 'cmd_ra': 12.2, 'cmd_dec': 12.2, 'tel_ra': 12.2, 'tel_dec': 12.2, 'actionid': 12, 'exposure': 12.2, 'cts_med': 12.2, 'airmass': 12.2, 'skylevel': 12.2, 'ra_offset': 12.2, 'dec_offset': 12.2, 'filename': 'test', }
-
-    m = Metadata([test_data])
-    m.render()
-
-    with sqlite3.connect(m.database_name) as connection:
-        cursor = connection.cursor()
-        cursor.execute('select * from metadata limit 1')
-
-        assert sorted(cursor.fetchone()) == sorted(test_data.values() + [1])
+def test_success_case(success):
+    passed = [success]
+    m = Metadata(passed).render()
+    verify(passed)
 
 
+def test_failure_case(failure):
+    passed = [failure]
+    m = Metadata(passed).render()
+    verify(passed)
 
+def test_both_cases(success, failure):
+    passed = [success, failure]
+    m = Metadata(passed).render()
+    verify(passed)
