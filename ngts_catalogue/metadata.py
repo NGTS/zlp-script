@@ -84,8 +84,8 @@ class Metadata(object):
         with fitsio.FITS(filename) as infile:
             return { 'nobj': infile[1].read_header()['naxis2'] }
 
-    @staticmethod
-    def extract_computed_data(image_name, catalogue, extra_metadata):
+    @classmethod
+    def extract_computed_data(cls, image_name, catalogue, extra_metadata):
         '''
         Extract important header keywords and statistics of the solution
 
@@ -95,8 +95,8 @@ class Metadata(object):
         - the catalogue used to solve the image
         - extra metadata to store
         '''
-        image_data = Metadata.extract_image_data(image_name)
-        catalogue_data = Metadata.extract_catalogue_data(catalogue)
+        image_data = cls.extract_image_data(image_name)
+        catalogue_data = cls.extract_catalogue_data(catalogue)
 
         payload = dict(image_data.items() + catalogue_data.items() + extra_metadata.items())
         return { 'status': 'ok', 'data': payload }
