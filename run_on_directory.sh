@@ -47,7 +47,7 @@ perform_analysis() {
 
             copy_files "${OUTPUTDIR}"
         )
-        # rm -rf "${TMPDIR}"
+        rm -rf "${TMPDIR}"
     )
 }
 
