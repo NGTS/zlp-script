@@ -2,7 +2,7 @@ from setuptools import setup
 from glob import glob
 
 setup(name='ngts_catalogue',
-        version='0.0.2',
+        version='0.1.0',
         description='NGTS initial catalogue generation',
         author='Tom Louden',
         author_email='t.m.louden@warwick.ac.uk',
