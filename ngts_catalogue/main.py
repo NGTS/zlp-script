@@ -14,7 +14,7 @@ Options:
   -o <OUTNAME>, --outname <OUTNAME>         Specify the name of the output catalog [default: catfile.fits]
   -s <STACKLIST>, --stacklist <STACKLIST>   The name of the file that stores the names of the images used in the stack [default: stackfilelist]
   --c_thresh <C_THRESH>                     The detection threshold to use when defining the input [default: 2]
-  --s_thresh <S_THRESH>                     The detection threshold to use when WCS solving images - typically higher than when doing actual photometry [default: 20]
+  --s_thresh <S_THRESH>                     The detection threshold to use when WCS solving images typically higher than when doing actual photometry [default: 7]
   -n <NPROC>, --nproc <NPROC>               Enable multithreading if you're analysing a lot of files at once
   -N <NFILES>, --nfiles <NFILES>            Maximum number of files to use in the stack
   --no-wcs                                  Do not solve each image for WCS.  However images must have a solution somehow
