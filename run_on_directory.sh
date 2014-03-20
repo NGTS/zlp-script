@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-#$ -S /bin/bash -cwd -pe parallel 8 -N input-catalogue
-
+#$ -S /bin/bash -cwd -pe parallel 24 -N input-catalogue
 
 set -e
+
+# Ensure this matches half of the invokation line above
+NPROC=12
+
 
 abspath() {
     readlink -f $1
@@ -24,7 +27,7 @@ setup_environment() {
 
 copy_files() {
     OUTPUTDIR=$1
-    cp metadata.sqlite catfile.fits catfile.ell outstack.fits outstackconf.fits stackfilelist ${OUTPUTDIR}
+    cp metadata.json catfile.fits catfile.ell outstack.fits outstackconf.fits stackfilelist ${OUTPUTDIR}
 }
 
 perform_analysis() {
@@ -43,7 +46,7 @@ perform_analysis() {
             cp `cat ${FILELIST} | cut -d ' ' -f 1` .
             find . -name '*.fits' | while read fname; do echo "$fname ok"; done > ${NEWFILELIST}
 
-            time ZLP_create_cat.py --confmap ${CONFIDENCE} --filelist ${NEWFILELIST} --verbose --create-ell
+            time ZLP_create_cat.py --confmap ${CONFIDENCE} --filelist ${NEWFILELIST} --verbose --create-ell --nproc ${NPROC}
 
             copy_files "${OUTPUTDIR}"
         )
