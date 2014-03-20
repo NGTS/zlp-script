@@ -32,7 +32,8 @@ from ngts_catalogue.metadata import Metadata
 from tempfile import NamedTemporaryFile
 import sqlite3
 
-def main(argv):
+def main():
+    argv = docopt(__doc__)
     if argv['--verbose'] == True:
         print 'Creating source catalogue from first {} images...'.format(argv['--nfiles'])
 
@@ -81,4 +82,4 @@ def main(argv):
         print 'Catalogue complete'
 
 if __name__ == '__main__':
-    main(docopt(__doc__))
+    main()
