@@ -79,7 +79,6 @@ def calc_seps(mycatname,casuin):
             DEC_lims += [[float(vals[4]),float(vals[5])]]
 
     n = 0
-
     cat_name = cat_names[n]
     with pf.open('catcache/' + cat_name) as cat:
         cat_RA_raw = cat[1].data['ra']
@@ -111,13 +110,14 @@ def calc_seps(mycatname,casuin):
     x_sep = []
     y_sep = []
 
-    try:
-        my_RA = my_RA_raw[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]
-        my_DEC = my_DEC_raw[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]
-        cat_RA = cat_RA_raw[(cat_RA_raw > min(my_RA)) & (cat_RA_raw < max(my_RA)) & (cat_DEC_raw > min(my_DEC)) & (cat_DEC_raw < max(my_DEC))]
-        cat_DEC = cat_DEC_raw[(cat_RA_raw > min(my_RA)) & (cat_RA_raw < max(my_RA)) & (cat_DEC_raw > min(my_DEC)) & (cat_DEC_raw < max(my_DEC))]
-    except:
-        return xs,ys,RA_sep,DEC_sep, array([10.0])
+    my_RA = my_RA_raw[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]
+    my_DEC = my_DEC_raw[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]
+
+    if not len(my_RA) and not len(my_DEC):
+        raise FailedToSolve("Extracted catalogue does not match frame")
+
+    cat_RA = cat_RA_raw[(cat_RA_raw > min(my_RA)) & (cat_RA_raw < max(my_RA)) & (cat_DEC_raw > min(my_DEC)) & (cat_DEC_raw < max(my_DEC))]
+    cat_DEC = cat_DEC_raw[(cat_RA_raw > min(my_RA)) & (cat_RA_raw < max(my_RA)) & (cat_DEC_raw > min(my_DEC)) & (cat_DEC_raw < max(my_DEC))]
 
     my_X = my_X[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]
     my_Y = my_Y[(my_RA_raw > RA_lims[n][0]) & (my_RA_raw < RA_lims[n][1]) & (my_DEC_raw > DEC_lims[n][0]) & (my_DEC_raw < DEC_lims[n][1])]

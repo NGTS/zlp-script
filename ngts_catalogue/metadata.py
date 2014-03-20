@@ -1,5 +1,7 @@
 import json
 import copy
+import fitsio
+import os
 
 __all__ = ['Metadata']
 
@@ -57,7 +59,7 @@ class Metadata(object):
             return { 'nobj': infile[1].read_header()['naxis2'] }
 
     @classmethod
-    def extract_computed_data(cls, image_name, catalogue, extra_metadata):
+    def extract_computed_data(cls, image_name, catalogue, extra_metadata={}):
         '''
         Extract important header keywords and statistics of the solution
 
@@ -69,11 +71,17 @@ class Metadata(object):
         '''
         image_data = cls.extract_image_data(image_name)
         catalogue_data = cls.extract_catalogue_data(catalogue)
+        success = {'success': True}
 
-        return dict(image_data.items() + catalogue_data.items() + extra_metadata.items())
+        items = dict(image_data.items() +
+                catalogue_data.items() +
+                extra_metadata.items() +
+                success.items())
+        return items
 
     @classmethod
-    def extract_failure_data(exc, image_name, catalogue):
-        image_data = cls.extract_image_data(image_name)
-        catalogue_data = cls.extract_catalogue_data(catalogue)
-        return dict(image_data.items() + catalogue_data.items() + {'error_message': str(exc)})
+    def extract_failure_data(cls, exc, image_name, catalogue):
+        usual_items = cls.extract_computed_data(image_name, catalogue)
+        error_data = {'error_message': str(exc), 'success': False}
+        items = dict(usual_items.items() + error_data.items())
+        return items

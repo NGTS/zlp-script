@@ -61,8 +61,7 @@ def casu_solve(casuin, thresh=20, verbose=False):
                 casutools.wcsfit(casuin, catfile_name, verbose=verbose)
                 offsets = shift_wcs_axis(casuin, catfile_name)
         except FailedToSolve as err:
-            return Metadata.extract_failure_data(err, casiun, catfile_name)
-
+            return Metadata.extract_failure_data(err, casuin, catfile_name)
 
         casutools.wcsfit(casuin, catfile_name, verbose=verbose)
 
