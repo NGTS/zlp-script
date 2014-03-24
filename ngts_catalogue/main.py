@@ -30,6 +30,7 @@ from ngts_catalogue.wcs_fitting import m_solve_images
 from ngts_catalogue import casutools
 from ngts_catalogue.metadata import Metadata
 from ngts_catalogue.version import __version__
+from ngts_catalogue.ngts_logging import logger
 from tempfile import NamedTemporaryFile
 import sqlite3
 
