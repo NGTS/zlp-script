@@ -26,11 +26,11 @@ This is the catalog generation tool, requires a filelist input. need to work on 
 
 from docopt import docopt
 import os
-from ngts_catalogue.wcs_fitting import m_solve_images
-from ngts_catalogue import casutools
-from ngts_catalogue.metadata import Metadata
-from ngts_catalogue.version import __version__
-from ngts_catalogue.ngts_logging import logger
+from .wcs_fitting import m_solve_images
+from . import casutools
+from .metadata import Metadata
+from .ngts_logging import logger
+from .version import __version__
 from tempfile import NamedTemporaryFile
 import sqlite3
 
