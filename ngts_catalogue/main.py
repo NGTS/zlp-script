@@ -33,11 +33,14 @@ from .ngts_logging import logger
 from .version import __version__
 from tempfile import NamedTemporaryFile
 import sqlite3
+from datetime import datetime
 
 def main():
     argv = docopt(__doc__, version=__version__)
     if argv['--verbose'] == True:
         logger.enable_debug()
+
+    start = datetime.now()
 
     # Pick the first N files if argument given
     nfiles = int(argv['--nfiles']) if argv['--nfiles'] else None
@@ -84,6 +87,7 @@ def main():
             ellfile=argv['--create-ell'])
 
     logger.info('Catalogue complete')
+    logger.info('Time taken: %s', datetime.now() - start)
 
 if __name__ == '__main__':
     main()
