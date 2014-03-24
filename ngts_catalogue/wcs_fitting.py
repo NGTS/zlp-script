@@ -4,6 +4,7 @@ import os
 import tempfile
 from .catmatch import shift_wcs_axis, FailedToSolve
 from .metadata import Metadata
+from .ngts_logging import logger
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 import fitsio
@@ -57,7 +58,7 @@ def casu_solve(casuin, thresh=20, verbose=False):
             try:
                 offsets = shift_wcs_axis(casuin, catfile_name)
             except IOError:
-                print "Performing initial fit"
+                logger.debug("Performing initial fit")
                 casutools.wcsfit(casuin, catfile_name, verbose=verbose)
                 offsets = shift_wcs_axis(casuin, catfile_name)
         except FailedToSolve as err:
