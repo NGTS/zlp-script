@@ -45,7 +45,7 @@ def m_solve_images(filelist, outfile, nproc=None, thresh=20.0):
     return pool.map(fn, infiles)
 
 def casu_solve(casuin, thresh=20):
-    logging.info('Solving image {0}'.format(casuin))
+    logger.info('Solving image {0}'.format(casuin))
     with tempfile.NamedTemporaryFile(dir='.', suffix='.fits', prefix='catalogue.') as catfile:
         catfile_name = catfile.name
 
