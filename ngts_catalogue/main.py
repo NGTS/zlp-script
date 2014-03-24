@@ -60,8 +60,7 @@ def main():
 
         if not argv['--no-wcs']:
             extracted_metadata = m_solve_images(name, name, thresh=argv['--s_thresh'],
-                    nproc=int(argv['--nproc']) if argv['--nproc'] else None,
-                    verbose=argv['--verbose'])
+                    nproc=int(argv['--nproc']) if argv['--nproc'] else None)
             Metadata(extracted_metadata).render()
 
         with open(argv['--stacklist'],'w') as stacklist:
@@ -76,10 +75,10 @@ def main():
     outstack_name = 'outstack.fits'
     outstackconf_name = 'outstackconf.fits'
 
-    casutools.imstack(argv['--stacklist'], argv['--confmap'], verbose=argv['--verbose'],
+    casutools.imstack(argv['--stacklist'], argv['--confmap'],
             outstack=outstack_name, outconf=outstackconf_name)
     casutools.imcore(outstack_name, argv['--outname'], threshold=argv['--c_thresh'],
-            confidence_map=outstackconf_name, verbose=argv['--verbose'],
+            confidence_map=outstackconf_name,
             ellfile=argv['--create-ell'])
 
     logger.debug('Catalogue complete')

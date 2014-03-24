@@ -40,7 +40,7 @@ def run_command(cmd):
     sp.check_call(str_cmd)
 
 def imstack(filelist, confidence_map, outstack='outstack.fits', outconf='outconf.fits',
-        verbose=False, catalogues=''):
+        catalogues=''):
     '''
     Runs the casu task `imstack`
     '''
@@ -51,11 +51,11 @@ def imstack(filelist, confidence_map, outstack='outstack.fits', outconf='outconf
             outstack,
             outconf]
 
-    run_command(cmd, verbose=verbose)
+    run_command(cmd)
 
 
 def imcore(input_file, output_table, ipix=2, threshold=2.0, confidence_map='noconf', rcore=2,
-        filtfwhm=1, ellfile=False, casu_verbose=False, verbose=False):
+        filtfwhm=1, ellfile=False, casu_verbose=False):
     '''
     Runs the casu task `imcore`
     '''
@@ -69,10 +69,10 @@ def imcore(input_file, output_table, ipix=2, threshold=2.0, confidence_map='noco
     if not ellfile:
         cmd.append('--noell')
 
-    run_command(cmd, verbose=verbose)
+    run_command(cmd)
 
 def imcore_list(input_file, listfile, output_file, threshold=2.0, confidence_map='noconf',
-        rcore=5, casu_verbose=False, noell=True, verbose=False):
+        rcore=5, casu_verbose=False, noell=True):
     '''
     Runs the casu task `imcore_list`
     '''
@@ -85,12 +85,12 @@ def imcore_list(input_file, listfile, output_file, threshold=2.0, confidence_map
     if casu_verbose:
         cmd.append('--verbose')
 
-    run_command(cmd, verbose=verbose)
+    run_command(cmd)
 
-def wcsfit(infile, incat, catsrc='viz2mass', site='cds', verbose=False):
+def wcsfit(infile, incat, catsrc='viz2mass', site='cds'):
     '''
     Runs the casu task `wcsfit`
     '''
     cmd = ['wcsfit', infile, incat, '--catsrc', catsrc, '--site', site]
 
-    run_command(cmd, verbose=verbose)
+    run_command(cmd)

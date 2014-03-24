@@ -28,7 +28,7 @@ def ensure_valid_wcs(fname):
                 hdu.write_key(key, value)
 
 
-def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
+def m_solve_images(filelist, outfile, nproc=None, thresh=20.0):
     infiles = []
     with open(filelist) as infile:
         for line in infile:
@@ -39,18 +39,18 @@ def m_solve_images(filelist, outfile, nproc=None, thresh=20.0, verbose=False):
             if all(status == 'ok' for status in status_checks):
                 infiles.append(image)
 
-    fn = partial(casu_solve, thresh=thresh, verbose=verbose)
+    fn = partial(casu_solve, thresh=thresh)
 
     pool = ThreadPool(nproc)
     return pool.map(fn, infiles)
 
-def casu_solve(casuin, thresh=20, verbose=False):
+def casu_solve(casuin, thresh=20):
     with tempfile.NamedTemporaryFile(dir='.', suffix='.fits', prefix='catalogue.') as catfile:
         catfile_name = catfile.name
 
         ensure_valid_wcs(casuin)
 
-        casutools.imcore(casuin, catfile_name, threshold=thresh, verbose=verbose)
+        casutools.imcore(casuin, catfile_name, threshold=thresh)
         catfile.seek(0)
 
         # quick correction factor because the central wcs axis is not always pointed in the right place at the central distortion axis
@@ -59,12 +59,12 @@ def casu_solve(casuin, thresh=20, verbose=False):
                 offsets = shift_wcs_axis(casuin, catfile_name)
             except IOError:
                 logger.debug("Performing initial fit")
-                casutools.wcsfit(casuin, catfile_name, verbose=verbose)
+                casutools.wcsfit(casuin, catfile_name)
                 offsets = shift_wcs_axis(casuin, catfile_name)
         except FailedToSolve as err:
             return Metadata.extract_failure_data(err, casuin, catfile_name)
 
-        casutools.wcsfit(casuin, catfile_name, verbose=verbose)
+        casutools.wcsfit(casuin, catfile_name)
 
         catfile.seek(0)
         return Metadata.extract_computed_data(casuin, catfile_name, offsets)
