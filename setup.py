@@ -1,8 +1,14 @@
 from setuptools import setup
 from glob import glob
+import re
 
-setup(name='ngts_catalogue',
-        version='0.1.0',
+package_name = 'ngts_catalogue'
+version_str = re.search(r'^__version__\s+=\s+[\'"]([\d.]+)[\'"]',
+        open('%s/version.py' % (package_name, )).read(),
+        re.M).group(1)
+
+setup(name=package_name,
+        version=version_str,
         description='NGTS initial catalogue generation',
         author='Tom Louden',
         author_email='t.m.louden@warwick.ac.uk',

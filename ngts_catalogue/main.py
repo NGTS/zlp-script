@@ -29,11 +29,12 @@ import os
 from ngts_catalogue.wcs_fitting import m_solve_images
 from ngts_catalogue import casutools
 from ngts_catalogue.metadata import Metadata
+from ngts_catalogue.version import __version__
 from tempfile import NamedTemporaryFile
 import sqlite3
 
 def main():
-    argv = docopt(__doc__)
+    argv = docopt(__doc__, version=__version__)
     if argv['--verbose'] == True:
         print 'Creating source catalogue from first {} images...'.format(argv['--nfiles'])
 
