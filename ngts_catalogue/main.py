@@ -37,7 +37,9 @@ import sqlite3
 def main():
     argv = docopt(__doc__, version=__version__)
     if argv['--verbose'] == True:
-        print 'Creating source catalogue from first {} images...'.format(argv['--nfiles'])
+        logger.enable_debug()
+
+    logger.debug('Creating source catalogue from first %s images...', argv['--nfiles'])
 
     # Pick the first N files if argument given
     nfiles = int(argv['--nfiles']) if argv['--nfiles'] else None
@@ -80,8 +82,7 @@ def main():
             confidence_map=outstackconf_name, verbose=argv['--verbose'],
             ellfile=argv['--create-ell'])
 
-    if argv['--verbose'] == True:
-        print 'Catalogue complete'
+    logger.debug('Catalogue complete')
 
 if __name__ == '__main__':
     main()
