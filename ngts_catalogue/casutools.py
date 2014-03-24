@@ -7,7 +7,6 @@ system.
 
 
 import subprocess as sp
-from threading import Lock
 from .ngts_logging import logger
 
 def find_imstack():
@@ -32,8 +31,6 @@ def construct_filelist_argument(filelist):
     '''
     return '@{}'.format(filelist)
 
-
-lock = Lock()
 def run_command(cmd):
     '''
     Wraps subprocess to run the command
