@@ -22,6 +22,9 @@ def find_imstack():
         else:
             return name
 
+    raise RuntimeError("Cannot locate imstack as any of {} in path".format(names))
+
+
 def construct_filelist_argument(filelist):
     '''
     Wrapper around constructing a filelist
