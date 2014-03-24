@@ -45,7 +45,7 @@ def m_solve_images(filelist, outfile, nproc=None, thresh=20.0):
     return pool.map(fn, infiles)
 
 def casu_solve(casuin, thresh=20):
-    logging.info('Solving image {}'.format(casuin))
+    logging.info('Solving image {0}'.format(casuin))
     with tempfile.NamedTemporaryFile(dir='.', suffix='.fits', prefix='catalogue.') as catfile:
         catfile_name = catfile.name
 
@@ -63,7 +63,7 @@ def casu_solve(casuin, thresh=20):
                 casutools.wcsfit(casuin, catfile_name)
                 offsets = shift_wcs_axis(casuin, catfile_name)
         except FailedToSolve as err:
-            logger.exception('Error solving image {}'.format(casuin))
+            logger.exception('Error solving image {0}'.format(casuin))
             return Metadata.extract_failure_data(err, casuin, catfile_name)
 
         casutools.wcsfit(casuin, catfile_name)
