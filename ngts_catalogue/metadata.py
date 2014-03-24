@@ -1,4 +1,5 @@
 import json
+from .ngts_logging import logger
 import copy
 import fitsio
 import os
@@ -36,6 +37,7 @@ class Metadata(object):
         self.data = extracted_metadata
 
     def render(self):
+        logger.info('Rendering metadata to file {}'.format(self.filename))
         with open(self.filename, 'w') as outfile:
             json.dump(self.data, outfile)
 

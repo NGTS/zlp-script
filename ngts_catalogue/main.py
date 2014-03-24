@@ -39,10 +39,9 @@ def main():
     if argv['--verbose'] == True:
         logger.enable_debug()
 
-    logger.debug('Creating source catalogue from first %s images...', argv['--nfiles'])
-
     # Pick the first N files if argument given
     nfiles = int(argv['--nfiles']) if argv['--nfiles'] else None
+    logger.info('Creating source catalogue from first %s images...', nfiles)
 
     with NamedTemporaryFile() as tmp:
         name = tmp.name
@@ -59,6 +58,7 @@ def main():
         tmp.seek(0)
 
         if not argv['--no-wcs']:
+            logger.info("Astrometrically solving images")
             extracted_metadata = m_solve_images(name, name, thresh=argv['--s_thresh'],
                     nproc=int(argv['--nproc']) if argv['--nproc'] else None)
             Metadata(extracted_metadata).render()
@@ -75,13 +75,15 @@ def main():
     outstack_name = 'outstack.fits'
     outstackconf_name = 'outstackconf.fits'
 
+    logger.info('Performing image stack')
     casutools.imstack(argv['--stacklist'], argv['--confmap'],
             outstack=outstack_name, outconf=outstackconf_name)
+    logger.info('Extracting sources')
     casutools.imcore(outstack_name, argv['--outname'], threshold=argv['--c_thresh'],
             confidence_map=outstackconf_name,
             ellfile=argv['--create-ell'])
 
-    logger.debug('Catalogue complete')
+    logger.info('Catalogue complete')
 
 if __name__ == '__main__':
     main()
