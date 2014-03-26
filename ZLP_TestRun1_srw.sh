@@ -104,7 +104,6 @@ reduce_science_images() {
 }
 
 wait_for_jobs() {
-    # Wait until reduction is finished
     echo "Wait until reduction is finished"
     echo "qsub -hold_jid ${DITHJOBS}${IMGJOBS} -cwd ${WORKINGDIR}/wait.sh"
     qsub -hold_jid ${DITHJOBS}${IMGJOBS} -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh 
