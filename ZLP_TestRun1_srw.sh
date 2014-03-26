@@ -23,6 +23,7 @@ T6="0" # reduce dithered images
 T7="0" # reduce science images
 T8="0" # wait for jobs to finish
 T9="0" # create input catalogues
+T10="0" # perform photometry
 
 T12="0" # run image subtraction
 
@@ -130,7 +131,9 @@ create_input_catalogue() {
     cd /ngts/pipedev
 }
 
-# Do Aperture Photometry for Image list
+perform_photometry() {
+    echo "Running aperture photometry"
+}
 
 
 # if [ "$T11" = "1" ] ; then
@@ -200,6 +203,8 @@ main() {
     [ "$T8" = "1" ] && wait_for_jobs
 
     [ "$T9" = "1" ] && create_input_catalogue 
+
+    [ "$T10" = "1" ] && perform_photometry 
 }
 
 main
