@@ -56,7 +56,7 @@ copy_temporary_shuttermap() {
     # # !!!! be carefull, shuttermap not yet automatically created. will be copied manualy
     # #
     DEST=`dirname ${SHUTTERMAP}`
-    test -d ${DEST} || mkdir -p ${DEST}
+    ensure_directory "${DEST}"
     cp /home/ag367/test/shuttermap.fits ${SHUTTERMAP}
     # #
     # # needs to be updated
@@ -164,7 +164,11 @@ create_input_catalogue() {
 #   cd /ngts/pipedev
 # fi
 
-
+# Some helper functions
+ensure_directory() {
+    DIR=${1}
+    test -d ${DIR} || mkdir -p ${DIR}
+}
 
 
 # Do photometry on subtracted Images
