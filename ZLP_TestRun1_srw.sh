@@ -83,7 +83,7 @@ reduce_images() {
         IMAGELIST=${IMAGELIST#/OriginalData/output/} 
         ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGELIST%.*}
         CMD="`system_python` /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}"
-        submit_asynchronous_job "${CMD}" ${IMAGELIST%.*}
+        submit_asynchronous_job "${CMD}" "${IMAGELIST%.*}"
         if [ "$counter" -ne "0" ] ; then JOBNAMES=${JOBNAMES}"," ; fi 
         JOBNAMES=${JOBNAMES}${IMAGELIST%.*}
         counter="1"
