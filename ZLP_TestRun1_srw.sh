@@ -173,15 +173,13 @@ ensure_directory() {
 submit_synchronous_job() {
     CMD="${1}"
     JOBNAME="${2}"
-    echo "${CMD}"
     echo "${CMD}" | qsub -N "${JOBNAME}" -S /bin/bash -sync y
 }
 
 submit_asynchronous_job() {
     CMD="${1}"
     JOBNAME="${2}"
-    echo "${CMD}"
-    echo "${CMD}" | qsub -N "${JOBNAME}"
+    echo "${CMD}" | qsub -N "${JOBNAME}" -S /bin/bash
 }
 
 setup_environment() {
