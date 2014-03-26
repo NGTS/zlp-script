@@ -42,14 +42,14 @@ create_input_lists() {
 create_master_bias() {
     # Create MasterBias
     echo "Create MasterBias"
-    CMD="python /home/ag367/progs/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    CMD="`system_python` /home/ag367/progs/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
     submit_synchronous_job "${CMD}" "${RUNNAME}_BIAS"
 }
 
 create_master_dark() {
     #Create MasterDark
     echo "Create MasterDark"
-    CMD="python /home/ag367/progs/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    CMD="`system_python` /home/ag367/progs/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
     submit_synchronous_job "${CMD}" "${RUNNAME}_DARK"
 }
 
@@ -68,7 +68,7 @@ copy_temporary_shuttermap() {
 create_master_flat() {
     #Create MasterFlat
     echo "Create MasterFlat"
-    CMD="python /home/ag367/progs/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    CMD="`system_python` /home/ag367/progs/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
     submit_synchronous_job "${CMD}" "${RUNNAME}_FLAT"
 }
 
@@ -84,7 +84,7 @@ reduce_images() {
         IMAGELIST=${IMAGELIST#${WORKINGDIR}} 
         IMAGELIST=${IMAGELIST#/OriginalData/output/} 
         ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGELIST%.*}
-        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}"
+        CMD="`system_python` /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}"
         submit_asynchronous_job "${CMD}" ${IMAGELIST%.*}
         if [ "$counter" -ne "0" ] ; then JOBNAMES=${JOBNAMES}"," ; fi 
         JOBNAMES=${JOBNAMES}${IMAGELIST%.*}
@@ -176,7 +176,7 @@ submit_synchronous_job() {
     CMD="${1}"
     JOBNAME="${2}"
     echo "${CMD}"
-    echo "${CMD}" | qsub -N "${JOBNAME}" -sync y
+    echo "${CMD}" | qsub -N "${JOBNAME}" -S /bin/bash -sync y
 }
 
 submit_asynchronous_job() {
@@ -186,9 +186,23 @@ submit_asynchronous_job() {
     echo "${CMD}" | qsub -N "${JOBNAME}"
 }
 
+setup_environment() {
+    echo "Environment set up"
+    # BASEPATH=/ngts/pipedev/InputCatalogue
+    # source ${BASEPATH}/venv/bin/activate
+    # export PATH=/usr/local/casutools/bin:${PATH}
+    # export LD_LIBRARY_PATH=/usr/local/wcslib/lib:/usr/local/cfitsio/lib:${LD_LIBRARY_PATH}
+}
+
+system_python() {
+    echo "/usr/local/python/bin/python"
+}
+
 # Do photometry on subtracted Images
 
 main() {
+    setup_environment
+
     cd ${WORKINGDIR}/OriginalData 
     [ "$T1" = "1" ] && create_input_lists
 
