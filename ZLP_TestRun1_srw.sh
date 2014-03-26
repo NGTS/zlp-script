@@ -79,7 +79,7 @@ reduce_dithered_images() {
     do 
         DITHERFILE=${DITHERFILE#${WORKINGDIR}} 
         DITHERFILE=${DITHERFILE#/OriginalData/output/} 
-        mkdir /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE%.*}
+        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE%.*}
         CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$DITHERFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${DITHERFILE%.*}"
         submit_asynchronous_job "${CMD}" ${DITHERFILE%.*}
         if [ "$counter" -ne "0" ] ; then DITHJOBS=${DITHJOBS}"," ; fi 
@@ -97,7 +97,7 @@ reduce_science_images() {
     do 
         IMAGEFILE=${IMAGEFILE#${WORKINGDIR}} 
         IMAGEFILE=${IMAGEFILE#/OriginalData/output/} 
-        mkdir /ngts/pipedev/Reduction/${RUNNAME}/${IMAGEFILE%.*}
+        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGEFILE%.*}
         CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGEFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE%.*}"
         submit_asynchronous_job "${CMD}" "${IMAGEFILE%.*}"
         if [ "$counter" -ne "0" ] ; then IMGJOBS=${IMGJOBS}"," ; fi 
@@ -126,8 +126,7 @@ create_input_catalogue() {
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
         DITHERFILE=${DITHERFILE%.*}
         echo $DITHERFILE
-        mkdir /ngts/pipedev/InputCatalogue/output/${RUNNAME}
-        mkdir /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERFILE}
+        ensure_directory /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERFILE}
         find /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE} -name '*.fits' > /ngts/pipedev/InputCatalogue/${DITHERFILE}.txt
         echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}"
         /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
