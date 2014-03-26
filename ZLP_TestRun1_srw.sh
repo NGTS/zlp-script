@@ -40,15 +40,15 @@ create_input_lists() {
 create_master_bias() {
     # Create MasterBias
     echo "Create MasterBias"
-    echo "python /home/ag367/progs/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
-    echo "python /home/ag367/progs/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/${RUNNAME}" | qsub -N ${RUNNAME}_BIAS -sync y
+    CMD="python /home/ag367/progs/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    submit_synchronous_job "${CMD}" "${RUNNAME}_BIAS"
 }
 
 create_master_dark() {
     #Create MasterDark
     echo "Create MasterDark"
-    echo "python /home/ag367/progs/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
-    echo "python /home/ag367/progs/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/${RUNNAME}" | qsub -N ${RUNNAME}_DARK -sync y
+    CMD="python /home/ag367/progs/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    submit_synchronous_job "${CMD}" "${RUNNAME}_DARK"
 }
 
 copy_temporary_shuttermap() {
@@ -66,8 +66,8 @@ copy_temporary_shuttermap() {
 create_master_flat() {
     #Create MasterFlat
     echo "Create MasterFlat"
-    echo "python /home/ag367/progs/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
-    echo "python /home/ag367/progs/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME}" | qsub -N ${RUNNAME}_FLAT -sync y
+    CMD="python /home/ag367/progs/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME}"
+    submit_synchronous_job "${CMD}" "${RUNNAME}_FLAT"
 }
 
 reduce_dithered_images() {
@@ -80,8 +80,8 @@ reduce_dithered_images() {
         DITHERFILE=${DITHERFILE#${WORKINGDIR}} 
         DITHERFILE=${DITHERFILE#/OriginalData/output/} 
         mkdir /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE%.*}
-        echo "python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$DITHERFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${DITHERFILE%.*}"
-        echo "python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$DITHERFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${DITHERFILE%.*}" | qsub -N ${DITHERFILE%.*}
+        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$DITHERFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${DITHERFILE%.*}"
+        submit_asynchronous_job "${CMD}" ${DITHERFILE%.*}
         if [ "$counter" -ne "0" ] ; then DITHJOBS=${DITHJOBS}"," ; fi 
         DITHJOBS=${DITHJOBS}${DITHERFILE%.*}
         echo $DITHJOBS
@@ -98,8 +98,8 @@ reduce_science_images() {
         IMAGEFILE=${IMAGEFILE#${WORKINGDIR}} 
         IMAGEFILE=${IMAGEFILE#/OriginalData/output/} 
         mkdir /ngts/pipedev/Reduction/${RUNNAME}/${IMAGEFILE%.*}
-        echo "python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGEFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE%.*}"
-        echo "python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGEFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE%.*}" | qsub -N ${IMAGEFILE%.*}
+        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGEFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE%.*}"
+        submit_asynchronous_job "${CMD}" "${IMAGEFILE%.*}"
         if [ "$counter" -ne "0" ] ; then IMGJOBS=${IMGJOBS}"," ; fi 
         IMGJOBS=${IMGJOBS}${IMAGEFILE%.*}
         echo $IMGJOBS
@@ -170,6 +170,19 @@ ensure_directory() {
     test -d ${DIR} || mkdir -p ${DIR}
 }
 
+submit_synchronous_job() {
+    CMD="${1}"
+    JOBNAME="${2}"
+    echo "${CMD}"
+    echo "${CMD}" | qsub -N "${JOBNAME}" -sync y
+}
+
+submit_asynchronous_job() {
+    CMD="${1}"
+    JOBNAME="${2}"
+    echo "${CMD}"
+    echo "${CMD}" | qsub -N "${JOBNAME}"
+}
 
 # Do photometry on subtracted Images
 
