@@ -173,22 +173,22 @@ main() {
     cd ${WORKINGDIR}/OriginalData 
     [ "$T1" = "1" ] && create_input_lists
 
-    # ( cd ${WORKINGDIR}/Reduction
-    # [ "$T2" = "1" ] && create_master_bias 
+    cd ${WORKINGDIR}/Reduction
+    [ "$T2" = "1" ] && create_master_bias 
 
-    # [ "$T3" = "1" ] && create_master_dark 
+    [ "$T3" = "1" ] && create_master_dark 
 
     [ "$T4" = "1" ] && copy_temporary_shuttermap
 
-    # [ "$T5" = "1" ] && create_master_flat 
+    [ "$T5" = "1" ] && create_master_flat 
 
-    # [ "$T6" = "1" ]&&  reduce_dithered_images 
+    [ "$T6" = "1" ]&&  reduce_dithered_images 
 
-    # [ "$T7" = "1" ] && reduce_science_images 
+    [ "$T7" = "1" ] && reduce_science_images 
 
-    # [ "$T8" = "1" ] && wait_for_jobs )
+    [ "$T8" = "1" ] && wait_for_jobs
 
-    # [ "$T9" = "1" ] && create_input_catalogue 
+    [ "$T9" = "1" ] && create_input_catalogue 
 }
 
 main
