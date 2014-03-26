@@ -10,6 +10,7 @@ BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 SHUTTERMAP=${WORKINGDIR}/Reduction/${RUNNAME}/shuttermap.fits
+CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
 CORES=8
 
 
@@ -128,9 +129,9 @@ create_input_catalogue() {
         mkdir /ngts/pipedev/InputCatalogue/output/${RUNNAME}
         mkdir /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERFILE}
         find /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE} -name '*.fits' > /ngts/pipedev/InputCatalogue/${DITHERFILE}.txt
-        echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ./srw_confidence.fits ./output/${RUNNAME}"
-        /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ./srw_confidence.fits ./output/${RUNNAME}/${DITHERFILE}
-        # qsub /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ./srw_confidence.fits ./output/${RUNNAME}/${DITHERFILE}
+        echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}"
+        /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
+        # qsub /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt .${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
     done
     cd /ngts/pipedev
 }
