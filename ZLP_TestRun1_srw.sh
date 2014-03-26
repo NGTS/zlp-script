@@ -9,7 +9,7 @@ WORKINGDIR=/ngts/pipedev
 BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
-SHUTTERMAP=${WORKINGDIR}/Reduction/${RUNNAME}/shuttermap.fits
+SHUTTERMAP=shuttermap.fits
 CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
 CORES=8
 
@@ -57,11 +57,9 @@ copy_temporary_shuttermap() {
     echo "Copying temporary shutter map"
     # # !!!! be carefull, shuttermap not yet automatically created. will be copied manualy
     # #
-    DEST=`dirname ${SHUTTERMAP}`
+    DEST=${WORKINGDIR}/Reduction/${RUNNAME}
     ensure_directory "${DEST}"
-    cp /home/ag367/test/shuttermap.fits ${SHUTTERMAP}
-    # #
-    # # needs to be updated
+    cp /home/ag367/test/shuttermap.fits "${DEST}/${SHUTTERMAP}"
 }
 
 
