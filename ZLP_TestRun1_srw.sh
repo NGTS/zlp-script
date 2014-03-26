@@ -26,6 +26,7 @@ T9="0" # create input catalogues
 T10="0" # perform photometry
 
 T12="0" # run image subtraction
+T13="0" # detrend
 
 
 # Zero Level Pipeline
@@ -135,6 +136,10 @@ perform_photometry() {
     echo "Running aperture photometry"
 }
 
+run_detrending() {
+    echo "Detrending with SYSREM"
+}
+
 
 # if [ "$T11" = "1" ] ; then
 #  # Subtract Images
@@ -205,6 +210,8 @@ main() {
     [ "$T9" = "1" ] && create_input_catalogue 
 
     [ "$T10" = "1" ] && perform_photometry 
+
+    [ "$T13" = "1" ] && run_detrending 
 }
 
 main
