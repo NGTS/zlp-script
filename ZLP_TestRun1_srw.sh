@@ -70,41 +70,37 @@ create_master_flat() {
     submit_synchronous_job "${CMD}" "${RUNNAME}_FLAT"
 }
 
-reduce_dithered_images() {
-    #Reduce Dithered Images
-    echo "Reduce Dithered Images"
-    DITHJOBS=""
+reduce_images() {
+    # Helper function to reduce a list of lists of images
+    # Function submits jobs asynchronously and returns the list of job names
+    #   used to run the analysis so the wait step can halt other processing.
+    IMAGELISTS="${1}"
+    JOBNAMES=""
     counter="0"
-    for DITHERFILE in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
+    for IMAGELIST in ${IMAGELISTS}
     do 
-        DITHERFILE=${DITHERFILE#${WORKINGDIR}} 
-        DITHERFILE=${DITHERFILE#/OriginalData/output/} 
-        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE%.*}
-        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$DITHERFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${DITHERFILE%.*}"
-        submit_asynchronous_job "${CMD}" ${DITHERFILE%.*}
-        if [ "$counter" -ne "0" ] ; then DITHJOBS=${DITHJOBS}"," ; fi 
-        DITHJOBS=${DITHJOBS}${DITHERFILE%.*}
-        echo $DITHJOBS
+        IMAGELIST=${IMAGELIST#${WORKINGDIR}} 
+        IMAGELIST=${IMAGELIST#/OriginalData/output/} 
+        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGELIST%.*}
+        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}"
+        submit_asynchronous_job "${CMD}" ${IMAGELIST%.*}
+        if [ "$counter" -ne "0" ] ; then JOBNAMES=${JOBNAMES}"," ; fi 
+        JOBNAMES=${JOBNAMES}${IMAGELIST%.*}
         counter="1"
     done
+    echo $JOBNAMES
+}
+
+reduce_dithered_images() {
+    echo "Reduce Dithered Images"
+    IMAGELISTS=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
+    DITHJOBS=`reduce_images "${IMAGELISTS}"`
 }
 
 reduce_science_images() {
-    # Reduce Science Images
     echo "Reduce Science Images"
-    IMGJOBS=""
-    for IMAGEFILE in $WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
-    do 
-        IMAGEFILE=${IMAGEFILE#${WORKINGDIR}} 
-        IMAGEFILE=${IMAGEFILE#/OriginalData/output/} 
-        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGEFILE%.*}
-        CMD="python /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGEFILE ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE%.*}"
-        submit_asynchronous_job "${CMD}" "${IMAGEFILE%.*}"
-        if [ "$counter" -ne "0" ] ; then IMGJOBS=${IMGJOBS}"," ; fi 
-        IMGJOBS=${IMGJOBS}${IMAGEFILE%.*}
-        echo $IMGJOBS
-        counter="1"
-    done
+    IMAGELISTS=$WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
+    IMGJOBS=`reduce_images "${IMAGELISTS}"`
 }
 
 wait_for_jobs() {
