@@ -2,10 +2,10 @@
 
 set -e
 
-IMGDIRS=/ngts/pipedev/OriginalData/images/201307[0-1][1,4,5]/*
+WORKINGDIR=/ngts/pipedev
+IMGDIRS=${WORKINGDIR}/OriginalData/images/201307[0-1][1,4,5]/*
 RUNNAME="SimonTest1"
 
-WORKINGDIR=/ngts/pipedev
 BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
