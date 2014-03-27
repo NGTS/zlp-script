@@ -36,7 +36,7 @@ T13="0" # detrend
 
 create_input_lists() {
     echo "Create lists with Images"
-    /ngts/pipedev/OriginalData/scripts/createlists.py "$IMGDIRS" IMAGE fits $RUNNAME 
+    ${WORKINGDIR}/OriginalData/scripts/createlists.py "$IMGDIRS" IMAGE fits $RUNNAME 
 }
 
 create_master_bias() {
@@ -81,7 +81,7 @@ reduce_images() {
     do 
         IMAGELIST=${IMAGELIST#${WORKINGDIR}} 
         IMAGELIST=${IMAGELIST#/OriginalData/output/} 
-        ensure_directory /ngts/pipedev/Reduction/${RUNNAME}/${IMAGELIST%.*}
+        ensure_directory ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}
         CMD="`system_python` /home/ag367/progs/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/${RUNNAME} ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGELIST%.*}"
         submit_asynchronous_job "${CMD}" "${IMAGELIST%.*}"
         if [ "$counter" -ne "0" ] ; then JOBNAMES=${JOBNAMES}"," ; fi 
@@ -121,7 +121,7 @@ create_input_catalogue() {
     # Frame Selection / Quality and Integrity Check
 
     # Create Input Catalogue if not already exists for imagelists
-    cd /ngts/pipedev/InputCatalogue
+    cd ${WORKINGDIR}/InputCatalogue
     local JOBLIST=""
     for DITHERFILE in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
     do 
@@ -129,32 +129,32 @@ create_input_catalogue() {
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
         JOBNAME=${DITHERFILE%.*}
 
-        OUTPUTDIR=/ngts/pipedev/InputCatalogue/output/${RUNNAME}/${JOBNAME}
+        OUTPUTDIR=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${JOBNAME}
         ensure_directory "${OUTPUTDIR}"
-        find /ngts/pipedev/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > /ngts/pipedev/InputCatalogue/${JOBNAME}.txt
-        echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}"
-        qsub -N ${JOBNAME} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ${OUTPUTDIR}
+        find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${WORKINGDIR}/InputCatalogue/${JOBNAME}.txt
+        echo "${WORKINGDIR}/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}"
+        qsub -N ${JOBNAME} ${WORKINGDIR}/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ${OUTPUTDIR}
         JOBLIST="${JOBLIST} ${JOBNAME}"
     done
     JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
-    cd /ngts/pipedev
+    cd ${WORKINGDIR}
 
     wait_for_jobs "${JOBLIST}"
 }
 
 perform_aperture_photometry() {
     echo "Running aperture photometry"
-    cd /ngts/pipedev/AperturePhot
+    cd ${WORKINGDIR}/AperturePhot
     local JOBLIST=""
     for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list
     do
         FILELIST=${FILELIST#${WORKINGDIR}}
         FILELIST=${FILELIST#/OriginalData/output/}
         JOBNAME=${FILELIST%.*}
-        OUTPUTDIR=/ngts/pipedev/AperturePhot/output/${RUNNAME}/${JOBNAME}
+        OUTPUTDIR=${WORKINGDIR}/AperturePhot/output/${RUNNAME}/${JOBNAME}
         IMAGEFILELIST=${OUTPUTDIR}/filelist.txt
         DITHERJOB=`echo $JOBNAME | sed 's/image/dither/'`
-        CATFILE=/ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERJOB}/catfile.fits
+        CATFILE=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${DITHERJOB}/catfile.fits
         if [ -f ${CATFILE} ]
         then
             echo "Found catalogue ${CATFILE}"
@@ -168,7 +168,7 @@ perform_aperture_photometry() {
 
     done
     JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
-    cd /ngts/pipedev
+    cd ${WORKINGDIR}
     wait_for_jobs "${JOBLIST}"
 }
 
