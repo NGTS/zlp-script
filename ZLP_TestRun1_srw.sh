@@ -127,12 +127,12 @@ create_input_catalogue() {
     do 
         DITHERFILE=${DITHERFILE#${WORKINGDIR}}
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
-        DITHERFILE=${DITHERFILE%.*}
-        ensure_directory /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERFILE}
-        find /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE} -name '*.fits' > /ngts/pipedev/InputCatalogue/${DITHERFILE}.txt
-        echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}"
-        qsub -N ${DITHERFILE} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
-        JOBLIST="${JOBLIST} ${DITHERFILE}"
+        JOBNAME=${DITHERFILE%.*}
+        ensure_directory /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${JOBNAME}
+        find /ngts/pipedev/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > /ngts/pipedev/InputCatalogue/${JOBNAME}.txt
+        echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}"
+        qsub -N ${JOBNAME} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}/${JOBNAME}
+        JOBLIST="${JOBLIST} ${JOBNAME}"
     done
     JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
     cd /ngts/pipedev
