@@ -122,19 +122,22 @@ create_input_catalogue() {
 
     # Create Input Catalogue if not already exists for imagelists
     cd /ngts/pipedev/InputCatalogue
+    local JOBLIST=""
     for DITHERFILE in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
     do 
         DITHERFILE=${DITHERFILE#${WORKINGDIR}}
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
         DITHERFILE=${DITHERFILE%.*}
-        echo $DITHERFILE
         ensure_directory /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERFILE}
         find /ngts/pipedev/Reduction/${RUNNAME}/${DITHERFILE} -name '*.fits' > /ngts/pipedev/InputCatalogue/${DITHERFILE}.txt
         echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}"
-        /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
-        # qsub /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt .${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
+        qsub -N ${DITHERFILE} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${DITHERFILE}.txt ${CONFMAP} ./output/${RUNNAME}/${DITHERFILE}
+        JOBLIST="${JOBLIST} ${DITHERFILE}"
     done
+    JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
     cd /ngts/pipedev
+
+    wait_for_jobs "${JOBLIST}"
 }
 
 perform_photometry() {
