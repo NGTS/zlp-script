@@ -113,8 +113,7 @@ wait_for_jobs() {
     JOBIDS="${1}"
 
     echo "Wait until reduction is finished"
-    echo "qsub -hold_jid ${DITHJOBS}${IMGJOBS} -cwd ${WORKINGDIR}/wait.sh"
-    qsub -hold_jid ${DITHJOBS}${IMGJOBS} -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh 
+    qsub -hold_jid "${JOBIDS}" -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh 
 }
 
 
