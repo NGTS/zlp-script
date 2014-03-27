@@ -128,10 +128,12 @@ create_input_catalogue() {
         DITHERFILE=${DITHERFILE#${WORKINGDIR}}
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
         JOBNAME=${DITHERFILE%.*}
-        ensure_directory /ngts/pipedev/InputCatalogue/output/${RUNNAME}/${JOBNAME}
+
+        OUTPUTDIR=/ngts/pipedev/InputCatalogue/output/${RUNNAME}/${JOBNAME}
+        ensure_directory "${OUTPUTDIR}"
         find /ngts/pipedev/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > /ngts/pipedev/InputCatalogue/${JOBNAME}.txt
         echo "/ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}"
-        qsub -N ${JOBNAME} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}/${JOBNAME}
+        qsub -N ${JOBNAME} /ngts/pipedev/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ${OUTPUTDIR}
         JOBLIST="${JOBLIST} ${JOBNAME}"
     done
     JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
