@@ -104,6 +104,14 @@ reduce_science_images() {
 }
 
 wait_for_jobs() {
+    if [ -z "$1" ]
+    then
+        echo "Error in invokation; wait_for_jobs <jobids>" >&2
+        exit 1
+    fi
+
+    JOBIDS="${1}"
+
     echo "Wait until reduction is finished"
     echo "qsub -hold_jid ${DITHJOBS}${IMGJOBS} -cwd ${WORKINGDIR}/wait.sh"
     qsub -hold_jid ${DITHJOBS}${IMGJOBS} -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh 
