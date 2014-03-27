@@ -144,6 +144,32 @@ create_input_catalogue() {
 
 perform_aperture_photometry() {
     echo "Running aperture photometry"
+    cd /ngts/pipedev/AperturePhot
+    local JOBLIST=""
+    for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list
+    do
+        FILELIST=${FILELIST#${WORKINGDIR}}
+        FILELIST=${FILELIST#/OriginalData/output/}
+        JOBNAME=${FILELIST%.*}
+        OUTPUTDIR=/ngts/pipedev/AperturePhot/output/${RUNNAME}/${JOBNAME}
+        IMAGEFILELIST=${OUTPUTDIR}/filelist.txt
+        DITHERJOB=`echo $JOBNAME | sed 's/image/dither/'`
+        CATFILE=/ngts/pipedev/InputCatalogue/output/${RUNNAME}/${DITHERJOB}/catfile.fits
+        if [ -f ${CATFILE} ]
+        then
+            echo "Found catalogue ${CATFILE}"
+            ensure_directory "${OUTPUTDIR}"
+            find /ngts/pipedev/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${IMAGEFILELIST}
+            echo "/ngts/pipedev/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}"
+            qsub -N ${JOBNAME} /ngts/pipedev/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
+
+            JOBLIST="${JOBLIST} ${JOBNAME}"
+        fi
+
+    done
+    JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
+    cd /ngts/pipedev
+    wait_for_jobs "${JOBLIST}"
 }
 
 run_detrending() {
