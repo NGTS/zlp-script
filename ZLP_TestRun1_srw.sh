@@ -223,7 +223,7 @@ main() {
 
     [ "$T7" = "1" ] && reduce_science_images 
 
-    [ "$T8" = "1" ] && wait_for_jobs
+    [ "$T8" = "1" ] && wait_for_jobs "${DITHJOBS}${IMGJOBS}"
 
     [ "$T9" = "1" ] && create_input_catalogue 
 
