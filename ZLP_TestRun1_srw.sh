@@ -255,6 +255,7 @@ main() {
 
     [ "$T8" = "1" ] && wait_for_jobs "${DITHJOBS}${IMGJOBS}"
 
+    cd ${WORKINGDIR}
     [ "$T9" = "1" ] && create_input_catalogue 
 
     [ "$T10" = "1" ] && perform_aperture_photometry 
