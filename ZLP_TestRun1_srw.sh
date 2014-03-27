@@ -142,7 +142,7 @@ create_input_catalogue() {
     wait_for_jobs "${JOBLIST}"
 }
 
-perform_photometry() {
+perform_aperture_photometry() {
     echo "Running aperture photometry"
 }
 
@@ -231,7 +231,7 @@ main() {
 
     [ "$T9" = "1" ] && create_input_catalogue 
 
-    [ "$T10" = "1" ] && perform_photometry 
+    [ "$T10" = "1" ] && perform_aperture_photometry 
 
     [ "$T13" = "1" ] && run_detrending 
 }
