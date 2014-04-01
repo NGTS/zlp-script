@@ -159,9 +159,13 @@ perform_aperture_photometry() {
         then
             echo "Found catalogue ${CATFILE}"
             ensure_directory "${OUTPUTDIR}"
-            find /ngts/pipedev/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${IMAGEFILELIST}
-            echo "/ngts/pipedev/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}"
-            qsub -N ${JOBNAME} /ngts/pipedev/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
+
+            # XXX Temporary measure to speed up analysis, only run on the first 100 images
+            # find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' | head -n 100 > ${IMAGEFILELIST}
+
+            find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${IMAGEFILELIST}
+            echo "${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}"
+            qsub -N ${JOBNAME} ${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
 
             JOBLIST="${JOBLIST} ${JOBNAME}"
         fi
