@@ -179,7 +179,10 @@ perform_aperture_photometry() {
 run_detrending() {
     echo "Detrending with SYSREM"
     OUTPUTDIR="${WORKINGDIR}/Detrending/output/${RUNNAME}"
-    SYSREM=${WORKINGDIR}/Detrending/tamuz_src/sysrem
+    # Old incorrect version of sysrem
+    # SYSREM=${WORKINGDIR}/Detrending/tamuz_src/sysrem
+
+    SYSREM=/wasp/home/sw/SelectionEffects/bin/Sysrem.srw
 
     PHOTOMOUT_FILES=`find ${WORKINGDIR}/AperturePhot/output/${RUNNAME} -name 'output.fits'`
     for PHOTOMOUT in $PHOTOMOUT_FILES
@@ -189,9 +192,9 @@ run_detrending() {
         OUTSUBDIR=${OUTPUTDIR}/${JOBNAME}
         ensure_directory ${OUTSUBDIR}
         OUTFILE=${OUTSUBDIR}/tamout.fits
-        CMD="${SYSREM} ${PHOTOMOUT} ${OUTFILE}"
+        CMD="${SYSREM} ${PHOTOMOUT} -o ${OUTFILE}"
         echo ${CMD}
-        qsub -b y -pe parallel 24 ${SYSREM} ${PHOTOMOUT} ${OUTFILE}
+        qsub -b y -pe parallel 24 ${SYSREM} ${PHOTOMOUT} -o ${OUTFILE}
     done
 }
 
