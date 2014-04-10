@@ -166,7 +166,7 @@ perform_aperture_photometry() {
 
             find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${IMAGEFILELIST}
             echo "${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}"
-            qsub -N ${JOBNAME} ${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
+            qsub -N ${JOBNAME} -S /bin/bash -cwd ${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
 
             JOBLIST="${JOBLIST} ${JOBNAME}"
         fi
