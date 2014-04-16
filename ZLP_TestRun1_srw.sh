@@ -3,6 +3,9 @@
 set -o nounset
 set -o errexit
 
+# Echo commands when they're run
+set -x
+
 WORKINGDIR=/ngts/pipedev
 IMGDIRS=${WORKINGDIR}/OriginalData/images/201307[0-1][1,4,5]/*
 RUNNAME="SimonTest1"
