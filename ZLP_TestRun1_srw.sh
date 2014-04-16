@@ -2,6 +2,7 @@
 
 set -o nounset
 set -o errexit
+set -o pipefail
 
 # Echo commands when they're run
 set -x
