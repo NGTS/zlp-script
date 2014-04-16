@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -o errexit
 
 WORKINGDIR=/ngts/pipedev
 IMGDIRS=${WORKINGDIR}/OriginalData/images/201307[0-1][1,4,5]/*
