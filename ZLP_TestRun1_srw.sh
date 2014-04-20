@@ -13,7 +13,7 @@ DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 SHUTTERMAP=shuttermap.fits
 CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
-CORES=8
+CORES=12
 
 
 T1="0" # create input lists
