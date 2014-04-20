@@ -236,7 +236,7 @@ ensure_directory() {
 submit_synchronous_job() {
     CMD="${1}"
     JOBNAME="${2}"
-    echo "${CMD}" | qsub -N "${JOBNAME}" -S /bin/bash -sync y -q parallel >/dev/null
+    echo "${CMD}" | qsub -cwd -N "${JOBNAME}" -S /bin/bash -sync y -q parallel >/dev/null
 }
 
 submit_asynchronous_job() {
