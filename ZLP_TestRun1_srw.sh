@@ -38,7 +38,8 @@ T13="0" # detrend
 
 create_input_lists() {
     echo "Create lists with Images"
-    CMD="$(system_python) ${WORKINGDIR}/OriginalData/scripts/createlists.py "$IMGDIRS" IMAGE fits $RUNNAME"
+    CMD="${WORKINGDIR}/OriginalData/scripts/createlists.py \"$IMGDIRS\" IMAGE fits $RUNNAME"
+    echo $CMD
     submit_synchronous_job "${CMD}" "${RUNNAME}_IMAGE_LIST"
 }
 
