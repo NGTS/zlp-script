@@ -4,31 +4,31 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-WORKINGDIR=/ngts/pipedev
-IMGDIRS=${WORKINGDIR}/OriginalData/images/201307[0-1][1,4,5]/*
-RUNNAME="SimonTest1"
+readonly WORKINGDIR=/ngts/pipedev
+readonly IMGDIRS=${WORKINGDIR}/OriginalData/images/201307[0-1][1,4,5]/*
+readonly RUNNAME="SimonTest1"
 
-BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
-DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
-FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
-SHUTTERMAP=shuttermap.fits
-CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
-CORES=12
+readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
+readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
+readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
+readonly SHUTTERMAP=shuttermap.fits
+readonly CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
+readonly CORES=12
 
 
-T1="0" # create input lists
-T2="0" # create masterbias
-T3="0" # create masterdark
-T4="0" # copy temporary shutter map
-T5="0" # create masterflat
-T6="0" # reduce dithered images
-T7="0" # reduce science images
-T8="0" # wait for jobs to finish
-T9="0" # create input catalogues
-T10="0" # perform photometry
+readonly T1="0" # create input lists
+readonly T2="0" # create masterbias
+readonly T3="0" # create masterdark
+readonly T4="0" # copy temporary shutter map
+readonly T5="0" # create masterflat
+readonly T6="0" # reduce dithered images
+readonly T7="0" # reduce science images
+readonly T8="0" # wait for jobs to finish
+readonly T9="0" # create input catalogues
+readonly T10="0" # perform photometry
 
-T12="0" # run image subtraction
-T13="0" # detrend
+readonly T12="0" # run image subtraction
+readonly T13="0" # detrend
 
 
 # Zero Level Pipeline
