@@ -1,8 +1,11 @@
 import subprocess as sp
 
 class JobQueue(object):
+    def __init__(self, qsub_command='qsub'):
+        self.qsub_command = qsub_command
+
     def qsub(self, jobname, queue='parallel', synchronous=False):
-        cmd = ['qsub', '-cwd', '-N', jobname,
+        cmd = [self.qsub_command, '-cwd', '-N', jobname,
                 '-S', '/bin/bash',
                 '-q', queue]
         if synchronous:
