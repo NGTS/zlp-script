@@ -6,6 +6,14 @@ import pytest
 def job_queue():
     return JobQueue()
 
+@pytest.yield_fixture
+def mock_qsub(job_queue):
+    with mock.patch.object(job_queue, 'qsub') as m_qsub:
+        m_qsub.return_value = ['qsub_stub', '-cwd', '-N', 'mock_job',
+                '-S', '/bin/bash',
+                '-q', 'parallel']
+        yield m_qsub
+
 def test_qsub(job_queue):
     job_name = 'test_job_name'
     assert job_queue.qsub(job_name) == [
@@ -13,28 +21,11 @@ def test_qsub(job_queue):
                 '-S', '/bin/bash',
                 '-q', 'parallel']
 
-def test_add_job_calls_qsub(job_queue):
-    test_job = ['ls', ]
-    job_name = 'testing-ls'
+def test_add_job_calls_qsub(mock_qsub, job_queue):
+    job_queue.add_job(['ls', ], 'mock_job')
+    assert mock_qsub.called_once()
 
-    with mock.patch.object(job_queue, 'qsub') as mock_qsub:
-        mock_qsub.return_value = ['qsub_stub', '-cwd', '-N', job_name,
-                '-S', '/bin/bash',
-                '-q', 'parallel']
-
-        job_queue.add_job(test_job, job_name)
-
-        assert mock_qsub.called_once()
-
-def test_submit_ls_passes_ls(job_queue):
-    test_job = ['ls', ]
-    job_name = 'testing-ls'
-
-    with mock.patch.object(job_queue, 'qsub') as mock_qsub:
-        mock_qsub.return_value = ['qsub_stub', '-cwd', '-N', job_name,
-                '-S', '/bin/bash',
-                '-q', 'parallel']
-
-        value = job_queue.add_job(test_job, job_name)
-        assert value == 'ls\n'
+def test_submit_ls_passes_ls(mock_qsub, job_queue):
+    value = job_queue.add_job(['ls', ], 'mock_job')
+    assert value == 'ls\n'
 
