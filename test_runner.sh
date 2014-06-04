@@ -2,7 +2,7 @@
 
 run_tests() {
     export PATH=testing/bin:${PATH}
-    py.test $*
+    py.test -x $*
 }
 
 run_tests $*
