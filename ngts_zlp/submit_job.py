@@ -13,7 +13,8 @@ class JobQueue(object):
 
         return cmd
 
-    def add_job(self, cmd, jobname):
-        p = sp.Popen(self.qsub(jobname), stdout=sp.PIPE, stdin=sp.PIPE)
+    def add_job(self, cmd, jobname, synchronous=False):
+        p = sp.Popen(self.qsub(jobname, synchronous=synchronous),
+                stdout=sp.PIPE, stdin=sp.PIPE)
         return p.communicate(input=' '.join(cmd))[0].strip('\n')
 
