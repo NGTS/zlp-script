@@ -3,7 +3,7 @@ from glob import glob
 import re
 
 package_name = 'ngts_zlp'
-version_str = re.search(r'^__version__\s+=\s+[\'"]([\d.]+)[\'"]',
+version_str = re.search(r'^__version__\s+=\s+[\'"]([\d.]+.*?)[\'"]',
         open('%s/version.py' % (package_name, )).read(),
         re.M).group(1)
 
