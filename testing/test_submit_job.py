@@ -4,10 +4,18 @@ import pytest
 
 @pytest.fixture
 def job_queue():
+    '''
+    Constructs a default job_queue argument
+    '''
     return JobQueue()
 
 @pytest.yield_fixture
 def mock_qsub(job_queue):
+    '''
+    Mock out the qsub function with one that calls `qsub_stub` instead.
+
+    This stub script just echoes any stdin commands
+    '''
     with mock.patch.object(job_queue, 'qsub') as m_qsub:
         m_qsub.return_value = ['qsub_stub', '-cwd', '-N', 'mock_job',
                 '-S', '/bin/bash',
