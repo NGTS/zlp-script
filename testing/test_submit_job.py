@@ -27,5 +27,5 @@ def test_add_job_calls_qsub(mock_qsub, job_queue):
 
 def test_submit_ls_passes_ls(mock_qsub, job_queue):
     value = job_queue.add_job(['ls', ], 'mock_job')
-    assert value == 'ls\n'
+    assert value == 'ls'
 

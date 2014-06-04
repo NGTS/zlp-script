@@ -8,5 +8,5 @@ class JobQueue(object):
 
     def add_job(self, cmd, jobname):
         p = sp.Popen(self.qsub(jobname), stdout=sp.PIPE, stdin=sp.PIPE)
-        return p.communicate(input=' '.join(cmd))[0]
+        return p.communicate(input=' '.join(cmd))[0].strip('\n')
 
