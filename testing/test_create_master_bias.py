@@ -13,13 +13,12 @@ def test_build_master_bias_command():
             'pipebias.py', bias_list, 'test_job_MasterBias.fits',
             output_dir]
 
-def test_submit_master_bias_job():
-    job_runner = JobQueue(qsub_command='qsub_stub')
+def test_submit_master_bias_job(job_queue):
     jobname = 'test_job'
     output_dir = '/output'
     bias_list = 'biaslist.txt'
 
-    t = CreateMasterBiasTask(job_runner, jobname)
+    t = CreateMasterBiasTask(job_queue, jobname)
 
     result = t.submit(bias_list, output_dir)
     assert result == 'pipebias.py biaslist.txt test_job_MasterBias.fits /output'
