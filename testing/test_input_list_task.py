@@ -7,6 +7,6 @@ def test_build_input_list_command():
 
     t = CreateInputListTask(job_runner, jobname=jobname)
 
-    assert t.job_command(image_dirs) == ['create_lists.py',
+    assert t.job_command(image_dirs) == ['createlists.py',
             image_dirs, 'IMAGE', 'fits', jobname]
 

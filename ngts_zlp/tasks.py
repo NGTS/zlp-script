@@ -10,7 +10,7 @@ class Task(object):
 
 
 class CreateInputListTask(Task):
-    script_name = 'create_lists.py'
+    script_name = 'createlists.py'
     synchronous = True
 
     def job_command(self, image_dirs):
