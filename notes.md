@@ -1,10 +1,12 @@
 Scripts or files external to the root directory that need moving
 
-* /home/ag367/progs/pipebias.py
-* /home/ag367/progs/pipedark.py
-* /home/ag367/test/shuttermap.fits
-* /home/ag367/progs/pipeflat.py
-* /home/ag367/progs/pipered.py
+* `/home/ag367/progs/pipebias.py`
+* `/home/ag367/progs/pipedark.py`
+* `/home/ag367/test/shuttermap.fits`
+* `/home/ag367/progs/pipeflat.py`
+* `/home/ag367/progs/pipered.py`
+* `/home/toml/Python/NGTS_workpackage/bin/ZLP_app_photom.py`
+* My code
 
 
 External programs:
