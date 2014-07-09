@@ -3,3 +3,4 @@ source/*
 !source/.gitkeep
 testdata/*
 !testdata/.gitkeep
+source*

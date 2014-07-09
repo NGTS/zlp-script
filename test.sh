@@ -2,6 +2,11 @@
 
 set -e
 
+if [[ $# -ne 1 ]]; then
+    echo "Program usage: $0 <dir>" >&2
+    exit 1
+fi
+
 BASEDIR=${PWD}
 OUTPUTDIR=${BASEDIR}/testdata
 
@@ -9,12 +14,13 @@ setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
     mkdir -p ${OUTPUTDIR}/OriginalData
-    cp -r ${BASEDIR}/source/images ${OUTPUTDIR}/OriginalData/
+    cp -r ${BASEDIR}/$1/images ${OUTPUTDIR}/OriginalData/
     echo "Setup complete"
 }
 
 perform_test() {
-    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/source/input-catalogue.fits ${BASEDIR}/source/initial_wcs_solution.pickle
+    local readonly sourcedir=$1
+    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/$sourcedir/input-catalogue.fits ${BASEDIR}/$sourcedir/initial_wcs_solution.pickle
 }
 
 test_photom_script() {
@@ -23,8 +29,8 @@ test_photom_script() {
 }
 
 main() {
-    setup
-    perform_test
+    setup $1
+    perform_test $1
 }
 
-main
+main $@
