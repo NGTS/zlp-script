@@ -292,4 +292,4 @@ main() {
     [ "$T13" = "1" ] && run_detrending 
 }
 
-main 2>&1 | tee zlp.log
+main 2>&1 | tee ${RUNNAME}.log
