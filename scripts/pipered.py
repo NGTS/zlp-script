@@ -15,7 +15,7 @@ caldir = str(sys.argv[6])+'/'
 outdir = str(sys.argv[7])+'/'
 biasname = caldir+biasname
 darkname = caldir+darkname
-smname = caldir+smname
+smname = caldir+os.path.basename(smname)
 flatname = caldir+flatname
 
 os.system('rm -f '+outdir+'processed.dat')

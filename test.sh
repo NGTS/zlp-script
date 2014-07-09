@@ -10,6 +10,11 @@ fi
 BASEDIR=${PWD}
 OUTPUTDIR=${BASEDIR}/testdata
 
+abspath() {
+    python -c "import os; print os.path.realpath('${1}')"
+}
+
+
 setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
@@ -19,8 +24,8 @@ setup() {
 }
 
 perform_test() {
-    local readonly sourcedir=$1
-    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/$sourcedir/input-catalogue.fits ${BASEDIR}/$sourcedir/initial_wcs_solution.pickle ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/catcache
+    local readonly sourcedir=$(abspath $1)
+    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} $sourcedir/input-catalogue.fits $sourcedir/initial_wcs_solution.pickle ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/catcache
 }
 
 test_photom_script() {

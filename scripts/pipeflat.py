@@ -14,7 +14,7 @@ outdir = str(sys.argv[6])+'/'
 
 biasname = outdir+biasname
 darkname= outdir+darkname
-smname = outdir+smname
+smname = outdir+os.path.basename(smname)
 def reducer():
     os.system('mkdir '+outdir+'flats')
     hdulist = pyfits.open(biasname)

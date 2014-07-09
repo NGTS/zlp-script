@@ -112,7 +112,7 @@ copy_temporary_shuttermap() {
     # #
     DEST=${WORKINGDIR}/Reduction/output/${RUNNAME}
     ensure_directory "${DEST}"
-    cp ${SHUTTERMAP} "${DEST}/${SHUTTERMAP}"
+    cp ${SHUTTERMAP} "${DEST}/$(basename ${SHUTTERMAP})"
 }
 
 
