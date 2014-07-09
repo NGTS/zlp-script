@@ -24,7 +24,7 @@ readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 readonly SHUTTERMAP=shuttermap.fits
 readonly CONFMAP=${BASEDIR}/source/srw_confidence.fits
-readonly CORES=12
+readonly CORES=2
 readonly WCSREFCATALOGUE=${BASEDIR}/source/refcat.fits
 
 
@@ -168,6 +168,7 @@ perform_aperture_photometry() {
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
             --confmap ${CONFMAP} \
             --catfile ${GIVEN_INPUTCATALOGUE} \
+            --nproc ${CORES} \
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
             --dist ${BASEDIR}/source/initial_wcs_solution.pickle \
@@ -176,6 +177,7 @@ perform_aperture_photometry() {
         # Condense the photometry
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
             --outdir ${output_directory} \
+            --nproc ${CORES} \
             ${image_filelist}
 
     done
