@@ -23,8 +23,9 @@ readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 readonly SHUTTERMAP=shuttermap.fits
-readonly CONFMAP=${WORKINGDIR}/InputCatalogue/srw_confidence.fits
+readonly CONFMAP=${BASEDIR}/source/srw_confidence.fits
 readonly CORES=12
+readonly WCSREFCATALOGUE=${BASEDIR}/source/refcat.fits
 
 
 readonly T1="1" # create input lists
