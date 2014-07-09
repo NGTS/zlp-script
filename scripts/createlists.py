@@ -44,11 +44,10 @@ def sort_liste(liste, logroot, runnumber):
         string = "%20s %10s %30s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), imtype, image)
         result = write_log(logroot, runnumber, string, 2)
         if imtype == 'IMAGE':
-            if action == 'observeFieldContinuous':
-                if dither == 'ENABLED':
-                    dithered.append(image)
-                else:
-                    science.append(image)
+            if dither == 'ENABLED':
+                dithered.append(image)
+            else:
+                science.append(image)
         elif imtype == 'DARK':
             darklist.append(image)
         elif imtype == 'BIAS':
