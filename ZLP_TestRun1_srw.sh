@@ -156,36 +156,29 @@ create_input_catalogue() {
 perform_aperture_photometry() {
     echo "Running aperture photometry"
     cd ${WORKINGDIR}/AperturePhot
-    local JOBLIST=""
-    for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list
-    do
-        FILELIST=${FILELIST#${WORKINGDIR}}
-        FILELIST=${FILELIST#/OriginalData/output/}
-        JOBNAME=${FILELIST%.*}
-        OUTPUTDIR=${WORKINGDIR}/AperturePhot/output/${RUNNAME}/${JOBNAME}
-        IMAGEFILELIST=${OUTPUTDIR}/filelist.txt
-        DITHERJOB=`echo $JOBNAME | sed 's/image/dither/'`
-        CATFILE=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${DITHERJOB}/catfile.fits
-        if [ -f ${CATFILE} ]
-        then
-            echo "Found catalogue ${CATFILE}"
-            ensure_directory "${OUTPUTDIR}"
 
-            # XXX Temporary measure to speed up analysis, only run on the first 100 images
-            # find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' | head -n 100 > ${IMAGEFILELIST}
+    for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list; do
+        local readonly basename=${FILELIST#${WORKINGDIR}/OriginalData/output/}
+        local readonly jobname=${basename%.*}
+        local readonly output_directory=${WORKINGDIR}/AperturePhot/output/${RUNNAME}/${jobname}
+        local readonly image_filelist=${output_directory}/filelist.txt
 
-            find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${IMAGEFILELIST}
-            # TODO: Needs CATPATH
-            echo "${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}"
-            qsub -N ${JOBNAME} -S /bin/bash -cwd ${WORKINGDIR}/AperturePhot/run_app_photom.sh ${IMAGEFILELIST} ${CONFMAP} ${CATFILE} ${OUTPUTDIR}
+        ensure_directory "$output_directory"
+        find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
+        python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
+            --confmap ${CONFMAP} \
+            --catfile ${GIVEN_INPUTCATALOGUE} \
+            --filelist ${image_filelist} \
+            --outdir ${output_directory} \
+            --dist ${BASEDIR}/source/initial_wcs_solution.pickle \
+            --catpath ${BASEDIR}/source/catcache
 
-            JOBLIST="${JOBLIST} ${JOBNAME}"
-        fi
+        # Condense the photometry
+        python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
+            --outdir ${output_directory} \
+            ${image_filelist}
 
     done
-    JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
-    cd ${WORKINGDIR}
-    wait_for_jobs "${JOBLIST}"
 }
 
 run_detrending() {
