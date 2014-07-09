@@ -4,15 +4,19 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <root_directory>" >&2
+if [[ $# -ne 4 ]]; then
+    echo "Usage: $0 <runname> <root_directory> <input-catalogue> <initial-wcs-solution>" >&2
     exit 1
 fi
 
+# command line arguments
 readonly BASEDIR=$(readlink -f $(dirname $0))
-readonly WORKINGDIR=$(readlink -f ${1})
+readonly RUNNAME=${1}
+readonly WORKINGDIR=$(readlink -f ${2})
+readonly GIVEN_INPUTCATALOGUE=$3
+readonly WCSSOLUTION=$4
+
 readonly IMGDIRS=${WORKINGDIR}/OriginalData/images/**/*
-readonly RUNNAME="SimonTest1"
 readonly SCRIPTDIR=${BASEDIR}/scripts
 
 readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
