@@ -122,9 +122,9 @@ reduce_images() {
     IMAGELISTS="${1}"
     counter="0"
     for IMAGELIST in ${IMAGELISTS}
-    do 
-        IMAGELIST=${IMAGELIST#${WORKINGDIR}} 
-        IMAGELIST=${IMAGELIST#/OriginalData/output/} 
+    do
+        IMAGELIST=${IMAGELIST#${WORKINGDIR}}
+        IMAGELIST=${IMAGELIST#/OriginalData/output/}
         ensure_directory ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}
         CMD="python ${SCRIPTDIR}/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME} ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}"
         ${CMD}
@@ -153,7 +153,7 @@ wait_for_jobs() {
     JOBIDS="${1}"
 
     echo "Wait until jobs '${JOBIDS}' finish"
-    qsub -hold_jid "${JOBIDS}" -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh 
+    qsub -hold_jid "${JOBIDS}" -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh
 }
 
 
@@ -164,7 +164,7 @@ create_input_catalogue() {
     cd ${WORKINGDIR}/InputCatalogue
     local JOBLIST=""
     for DITHERFILE in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    do 
+    do
         DITHERFILE=${DITHERFILE#${WORKINGDIR}}
         DITHERFILE=${DITHERFILE#/OriginalData/output/}
         JOBNAME=${DITHERFILE%.*}
@@ -286,30 +286,30 @@ main() {
     setup_environment
     setup_directory_structure
 
-    cd ${WORKINGDIR}/OriginalData 
+    cd ${WORKINGDIR}/OriginalData
     [ "$T1" = "1" ] && create_input_lists
 
     cd ${WORKINGDIR}/Reduction
-    [ "$T2" = "1" ] && create_master_bias 
+    [ "$T2" = "1" ] && create_master_bias
 
-    [ "$T3" = "1" ] && create_master_dark 
+    [ "$T3" = "1" ] && create_master_dark
 
     [ "$T4" = "1" ] && copy_temporary_shuttermap
 
-    [ "$T5" = "1" ] && create_master_flat 
+    [ "$T5" = "1" ] && create_master_flat
 
-    [ "$T6" = "1" ]&&  reduce_dithered_images 
+    [ "$T6" = "1" ]&&  reduce_dithered_images
 
-    [ "$T7" = "1" ] && reduce_science_images 
+    [ "$T7" = "1" ] && reduce_science_images
 
     [ "$T8" = "1" ] && wait_for_jobs "${DITHJOBS}${IMGJOBS}"
 
     cd ${WORKINGDIR}
-    [ "$T9" = "1" ] && create_input_catalogue 
+    [ "$T9" = "1" ] && create_input_catalogue
 
-    [ "$T10" = "1" ] && perform_aperture_photometry 
+    [ "$T10" = "1" ] && perform_aperture_photometry
 
-    [ "$T13" = "1" ] && run_detrending 
+    [ "$T13" = "1" ] && run_detrending
 }
 
 main 2>&1 | tee ${RUNNAME}.log
