@@ -2,18 +2,24 @@
 
 set -e
 
-OUTPUTDIR=testdata
+BASEDIR=${PWD}
+OUTPUTDIR=${BASEDIR}/testdata
 
 setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
     mkdir -p ${OUTPUTDIR}/OriginalData
-    cp -r source/images ${OUTPUTDIR}/OriginalData/
+    cp -r ${BASEDIR}/source/images ${OUTPUTDIR}/OriginalData/
     echo "Setup complete"
 }
 
 perform_test() {
-    sh ./ZLP_TestRun1_srw.sh ${OUTPUTDIR}
+    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/source/input-catalogue.fits ""
+}
+
+test_photom_script() {
+    PYTHONPATH=${BASEDIR}/scripts:$BASEDIR/scripts/NGTS_workpackage:$PYTHONPATH python \
+        scripts/NGTS_workpackage/bin/ZLP_app_photom.py -h
 }
 
 main() {
