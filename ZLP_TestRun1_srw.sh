@@ -243,12 +243,10 @@ ensure_directory() {
 }
 
 setup_environment() {
+    set +o nounset
+    export PYTHONPATH=${BASEDIR}/scripts/NGTS_workpackage:${BASEDIR}/scripts:$PYTHONPATH
     echo "Environment set up"
-    # BASEPATH=/ngts/pipedev/InputCatalogue
-    # source ${BASEPATH}/venv/bin/activate
-    # export PATH=/usr/local/casutools/bin:${PATH}
-    # export LD_LIBRARY_PATH=/usr/local/wcslib/lib:/usr/local/cfitsio/lib:${LD_LIBRARY_PATH}
-
+    set -o nounset
 }
 
 system_python() {
