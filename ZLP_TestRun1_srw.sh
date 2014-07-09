@@ -4,6 +4,16 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
+abspath() {
+    if type greadlink >&1 >/dev/null; then
+        local readonly readlink_bin=greadlink
+    else
+        local readonly readlink_bin=readlink
+    fi
+    ${readlink_bin} -f $1
+}
+
+
 if [[ $# -ne 4 ]]; then
     cat >&2 <<-EOF
   Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution>
@@ -39,9 +49,9 @@ EOF
 fi
 
 # command line arguments
-readonly BASEDIR=$(readlink -f $(dirname $0))
+readonly BASEDIR=$(abspath $(dirname $0))
 readonly RUNNAME=${1}
-readonly WORKINGDIR=$(readlink -f ${2})
+readonly WORKINGDIR=$(abspath ${2})
 readonly GIVEN_INPUTCATALOGUE=$3
 readonly WCSSOLUTION=$4
 
