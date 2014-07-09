@@ -1,4 +1,4 @@
-#!/usr/local/python/bin/python
+#!/usr/bin/env python
 
 # Small python sxocript to create list of images for NGTS Zero-Level-Pipeline
 # Output goes to Reduction Module

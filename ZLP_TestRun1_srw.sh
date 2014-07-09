@@ -50,7 +50,7 @@ readonly T13="0" # detrend
 
 create_input_lists() {
     echo "Create lists with Images"
-    CMD="${SCRIPTDIR}/createlists.py \"$IMGDIRS\" IMAGE fits $RUNNAME"
+    CMD="python ${SCRIPTDIR}/createlists.py \"$IMGDIRS\" IMAGE fits $RUNNAME"
     echo $CMD
     ${CMD}
 }
