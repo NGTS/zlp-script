@@ -71,7 +71,7 @@ def casu_solve(casuin,dist_map={},thresh=20, verbose=False,catsrc='viz2mass',cat
 #  dist_map['DEC_s'] = (old_world[0][1] - TEL_DEC) 
 
   for key in dist_map:
-	print dist_map[key], hdulist[key]
+	print dist_map[key], hdulist.get(key)
 
   apply_correct(dist_map,casuin,TEL_RA,TEL_DEC) 
 
