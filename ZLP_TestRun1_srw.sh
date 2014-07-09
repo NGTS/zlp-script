@@ -5,7 +5,36 @@ set -o errexit
 set -o pipefail
 
 if [[ $# -ne 4 ]]; then
-    echo "Usage: $0 <runname> <root_directory> <input-catalogue> <initial-wcs-solution>" >&2
+    cat >&2 <<-EOF
+  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution>
+
+  Argument descriptions:
+
+  * runname
+
+  The name of the run to use. This is so multiple runs can be performed on different
+  data, and the outputs can be unique.
+
+  * root-directory
+
+  This is the location of the input files. The directory structure must be as follows:
+
+  root-directory
+      OriginalData
+          images
+              <one directory per date>
+                  action<number>_<optional description>
+                      IMAGE*.fits
+
+  * input-catalogue
+
+  The list of coordinates to place apertures at
+
+  * initial_wcs_solution
+
+  The initial wcs solution computed by Tom's MCMC code to compute distortion
+  parameters
+EOF
     exit 1
 fi
 
