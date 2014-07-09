@@ -37,7 +37,7 @@ readonly T6="0" # reduce dithered images
 readonly T7="1" # reduce science images
 readonly T8="0" # wait for jobs to finish
 readonly T9="0" # create input catalogues
-readonly T10="0" # perform photometry
+readonly T10="1" # perform photometry
 
 readonly T12="0" # run image subtraction
 readonly T13="0" # detrend
