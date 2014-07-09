@@ -1,1 +1,5 @@
 *.log
+source/*
+!source/.gitkeep
+testdata/*
+!testdata/.gitkeep
