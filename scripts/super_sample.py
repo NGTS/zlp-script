@@ -1,14 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """
- 
-Produces diagnostic plot of the PSF by super-sampling and stacking the star images
-on the chip. Relies on good astrometry to function correctly.
-
-Currently requires a list of files and a casutools imcore output file. (note, not a imcore_list file)
-Searches for a 'catcache' directory in the same path as the image files, this is used for the comparison.
-Should modify so a direct path to the catanp.log file is given.
-
 Usage:
   super_sample.py [options] (<FILE_LIST>) (<OUT_NAME>)
 
@@ -21,6 +13,7 @@ Options:
 
 """
 
+import argparse
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -473,6 +466,31 @@ def recenter(oversampled,xshift,yshift):
 
 if __name__ == '__main__':
 
-  args = docopt(__doc__)
+  description='''
+  Produces diagnostic plot of the PSF by super-sampling and stacking the star images
+  on the chip. Relies on good astrometry to function correctly.
 
-  super_sample(args['<FILE_LIST>'],int(args['--factor']),int(args['--size']),int(args['--stars']),int(args['--binning']),args['<OUT_NAME>'])
+  Currently requires a list of files and a casutools imcore output file. (note, not a imcore_list
+  file)
+  Searches for a 'catcache' directory in the same path as the image files, this is used for the
+  comparison.
+  Should modify so a direct path to the catanp.log file is given.
+  '''
+
+  parser = argparse.ArgumentParser(description=description)
+  parser.add_argument('filelist')
+  parser.add_argument('outname')
+  parser.add_argument('--factor', type=int, required=False, default=5,
+                      help='What oversampling factor to use [default: 5]')
+  parser.add_argument('--size', type=int, required=False, default=11,
+                      help='how large a region around each star to stack [default: 11]')
+  parser.add_argument('--stars', type=int, required=False, default=100,
+                      help='How many stars to stack in each quadrant [default: 100]')
+  parser.add_argument('--binning', type=int, required=False, default=1,
+                      help='use a binning factor for long time series? [default: 1]')
+
+  args = parser.parse_args()
+
+  super_sample(args.filelist,args.factor,args.size,args.stars,args.binning,args.outname)
+
+# vim: sw=2
