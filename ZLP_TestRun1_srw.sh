@@ -111,7 +111,7 @@ reduce_dithered_images() {
 reduce_science_images() {
     echo "Reduce Science Images"
     IMAGELISTS=$WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
-    IMGJOBS=`reduce_images "${IMAGELISTS}"`
+    reduce_images "${IMAGELISTS}"
 }
 
 wait_for_jobs() {
