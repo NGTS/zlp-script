@@ -9,9 +9,9 @@ abspath() {
 }
 
 
-if [[ $# -ne 4 ]]; then
+if [[ $# -ne 7 ]]; then
     cat >&2 <<-EOF
-  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution>
+  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <catpath>
 
   Argument descriptions:
 
@@ -39,6 +39,10 @@ if [[ $# -ne 4 ]]; then
 
   The initial wcs solution computed by Tom's MCMC code to compute distortion
   parameters
+
+  * confidence-map
+  * shuttermap
+  * catpath
 EOF
     exit 1
 fi
@@ -49,6 +53,9 @@ readonly RUNNAME=${1}
 readonly WORKINGDIR=$(abspath ${2})
 readonly GIVEN_INPUTCATALOGUE=$3
 readonly WCSSOLUTION=$4
+readonly CONFMAP=$5
+readonly SHUTTERMAP=$6
+readonly CATPATH=$7
 
 readonly IMGDIRS=${WORKINGDIR}/OriginalData/images/**/*
 readonly SCRIPTDIR=${BASEDIR}/scripts
@@ -56,11 +63,7 @@ readonly SCRIPTDIR=${BASEDIR}/scripts
 readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
-readonly SHUTTERMAP=shuttermap.fits
-readonly CONFMAP=${BASEDIR}/source/srw_confidence.fits
 readonly CORES=2
-readonly WCSREFCATALOGUE=${BASEDIR}/source/refcat.fits
-
 
 readonly T1="1" # create input lists
 readonly T2="1" # create masterbias
@@ -109,7 +112,7 @@ copy_temporary_shuttermap() {
     # #
     DEST=${WORKINGDIR}/Reduction/output/${RUNNAME}
     ensure_directory "${DEST}"
-    cp ${BASEDIR}/source/shuttermap.fits "${DEST}/${SHUTTERMAP}"
+    cp ${SHUTTERMAP} "${DEST}/${SHUTTERMAP}"
 }
 
 
@@ -206,7 +209,7 @@ perform_aperture_photometry() {
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
             --dist ${WCSSOLUTION} \
-            --catpath ${BASEDIR}/source/catcache
+            --catpath ${CATPATH}
 
         # Condense the photometry
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \

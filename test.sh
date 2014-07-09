@@ -20,7 +20,7 @@ setup() {
 
 perform_test() {
     local readonly sourcedir=$1
-    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/$sourcedir/input-catalogue.fits ${BASEDIR}/$sourcedir/initial_wcs_solution.pickle
+    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/$sourcedir/input-catalogue.fits ${BASEDIR}/$sourcedir/initial_wcs_solution.pickle ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/catcache
 }
 
 test_photom_script() {
