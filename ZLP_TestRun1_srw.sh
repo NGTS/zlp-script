@@ -75,7 +75,7 @@ copy_temporary_shuttermap() {
     # #
     DEST=${WORKINGDIR}/Reduction/output/${RUNNAME}
     ensure_directory "${DEST}"
-    cp /home/ag367/test/shuttermap.fits "${DEST}/${SHUTTERMAP}"
+    cp ${BASEDIR}/source/shuttermap.fits "${DEST}/${SHUTTERMAP}"
 }
 
 
