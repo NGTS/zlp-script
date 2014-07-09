@@ -14,7 +14,7 @@ setup() {
 }
 
 perform_test() {
-    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/source/input-catalogue.fits ""
+    sh ./ZLP_TestRun1_srw.sh ZLPTest ${OUTPUTDIR} ${BASEDIR}/source/input-catalogue.fits ${BASEDIR}/source/initial_wcs_solution.pickle
 }
 
 test_photom_script() {

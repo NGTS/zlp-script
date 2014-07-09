@@ -200,7 +200,7 @@ perform_aperture_photometry() {
             --nproc ${CORES} \
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
-            --dist ${BASEDIR}/source/initial_wcs_solution.pickle \
+            --dist ${WCSSOLUTION} \
             --catpath ${BASEDIR}/source/catcache
 
         # Condense the photometry
