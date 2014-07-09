@@ -5,12 +5,7 @@ set -o errexit
 set -o pipefail
 
 abspath() {
-    if type greadlink >&1 >/dev/null; then
-        local readonly readlink_bin=greadlink
-    else
-        local readonly readlink_bin=readlink
-    fi
-    ${readlink_bin} -f $1
+    python -c "import os; print os.path.realpath('${1}')"
 }
 
 
