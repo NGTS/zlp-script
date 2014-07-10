@@ -102,7 +102,7 @@ testdata
                 `-- IMAGE80420140625211354.fits         |
 ```
 
-running with `ZLP_pipeline.sh <runname> testdata ...`
+running with `ZLP_pipeline.sh <runname> testdata ...`. The images and/or directories can be soft links to prevent duplicating data. No raw data is overwritten so no data will be lost.
 
 At least one file, probably two must be present in each subdirectory for the pipeline to work. *If no data of a particular type e.g. bias, dark etc. was taken then copy some previous data in.* All of the input images should have the same size i.e. 2088x2048 pixels with 20 extra pixels on the left and right for pre/overscan. These are the same format as raw images from the instrument.
 
