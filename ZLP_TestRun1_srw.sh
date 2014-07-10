@@ -194,6 +194,8 @@ perform_aperture_photometry() {
     echo "Running aperture photometry"
     cd ${WORKINGDIR}/AperturePhot
 
+    cp -r ${CATPATH} .
+
     for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list; do
         local readonly basename=${FILELIST#${WORKINGDIR}/OriginalData/output/}
         local readonly jobname=${basename%.*}
@@ -209,7 +211,7 @@ perform_aperture_photometry() {
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
             --dist ${WCSSOLUTION} \
-            --catpath ${CATPATH}
+            --catpath $(abspath $(basename ${CATPATH}))
 
         # Condense the photometry
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
