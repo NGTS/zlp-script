@@ -1,7 +1,9 @@
 SOURCES=$(wildcard *.md)
 OUTPUTS=$(SOURCES:.md=.html)
+PDFOUTPUTS=$(SOURCES:.md=.pdf)
 
 all: $(OUTPUTS)
+pdf: $(PDFOUTPUTS)
 
 %.pdf: %.md
 	pandoc -s $< -o $@
@@ -12,4 +14,4 @@ all: $(OUTPUTS)
 .PHONY: clean
 
 clean:
-	@rm -f *.html
+	@rm -f *.html *.pdf
