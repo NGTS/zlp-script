@@ -26,7 +26,6 @@ def main(args):
 
     with open(args.file) as infile:
         with fitsio.FITS(args.output, 'rw', clobber=True) as outfile:
-            outfile.write(None)
             ra_vector, dec_vector, jmag_vector = [], [], []
             for i, line in enumerate(infile):
                 if i == 0:
