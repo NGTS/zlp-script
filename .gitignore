@@ -4,3 +4,4 @@ source/*
 testdata/*
 !testdata/.gitkeep
 source*
+*.tar.gz
