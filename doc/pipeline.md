@@ -161,6 +161,16 @@ With an internet connection, this can be created by using wcsfit to solve a sing
 
 This also has the bonus of only including stars within the J magnitude range 8 - 14 speeding up solving time.
 
+Possible errors
+---------------
+
+The script may output lots of `RuntimeError`s which is normal. Not ideal but not harmful to the analysis, it most likely means some non-detections or apertures outside the chip are causing divide by zero errors, or nan arithmetic.
+
+Some possibly likely errors are:
+
+* error with `cir_getstds`
+
+This call is from `wcsfit` and means that no standard reference stars were found to match the frame to. This may mean that the script is trying to connect to the internet and failing, or that the reference catalogue does not match the frame.
 
 Installation
 ------------
