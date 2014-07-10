@@ -190,11 +190,21 @@ create_input_catalogue() {
     wait_for_jobs "${JOBLIST}"
 }
 
+shrink_catalogue_directory() {
+    local readonly catcachedir=$1
+    ls ${catcachedir} | grep cch_ | while read fname; do
+        local readonly filepath=${catcachedir}/${fname}
+        python ${BASEDIR}/scripts/shrink_wcs_reference.py ${filepath} -o ${filepath}
+    done
+}
+
 perform_aperture_photometry() {
     echo "Running aperture photometry"
     cd ${WORKINGDIR}/AperturePhot
 
     cp -r ${CATPATH} .
+    local readonly new_catpath=$(basename ${CATPATH})
+    shrink_catalogue_directory ${new_catpath}
 
     for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list; do
         local readonly basename=${FILELIST#${WORKINGDIR}/OriginalData/output/}
@@ -211,7 +221,7 @@ perform_aperture_photometry() {
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
             --dist ${WCSSOLUTION} \
-            --catpath $(abspath $(basename ${CATPATH}))
+            --catpath $(abspath ${new_catpath})
 
         # Condense the photometry
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \

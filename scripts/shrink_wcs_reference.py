@@ -10,9 +10,10 @@ Options:
     -o, --output <output>   Output filename [default: shrunk.fits]
 '''
 
-import fitsio
 import sys
 import argparse
+import numpy as np
+import fitsio
 
 def main(args):
     bright_limit = args.bright
@@ -23,29 +24,26 @@ def main(args):
 
     print "Filtering with limiting magnitude range {} to {}".format(bright_limit, faint_limit)
 
-    with fitsio.FITS(args.file) as infile:
+    with open(args.file) as infile:
         with fitsio.FITS(args.output, 'rw', clobber=True) as outfile:
-            for hdu in infile:
-                print '---'
-                print "HDU '{}'".format(hdu.get_extname())
-                if hdu.get_exttype() == 'ASCII_TBL' or hdu.get_exttype() == 'BINARY_TBL':
-                    print "Ascii table found"
-                    data = hdu.read()
+            outfile.write(None)
+            ra_vector, dec_vector, jmag_vector = [], [], []
+            for i, line in enumerate(infile):
+                if i == 0:
+                    continue
 
-                    n_before = len(data)
-                    print "Found {} objects".format(n_before)
+                words = line.strip('\n').split()
+                ra = float(words[0])
+                dec = float(words[1])
+                jmag = float(words[5])
 
-                    ind = (data['Jmag'] >= float(bright_limit)) & (data['Jmag'] < float(faint_limit)) 
-                    if not ind.any():
-                        raise RuntimeError("No objects included")
+                if (jmag > bright_limit) & (jmag < faint_limit):
+                    ra_vector.append(ra)
+                    dec_vector.append(dec)
+                    jmag_vector.append(jmag)
 
-                    new_data = data[ind]
-                    n_after = len(new_data)
-                    print "Accepting {} objects".format(n_after)
-                    outfile.write(new_data)
-                else:
-                    print "Other table type found"
-                    outfile.write(hdu.read())
+            outfile.write({'ra': np.array(ra_vector), 'dec': np.array(dec_vector), 'jmag':
+                           np.array(jmag_vector)})
 
 
 
