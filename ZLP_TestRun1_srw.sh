@@ -11,7 +11,7 @@ abspath() {
 
 if [[ $# -ne 7 ]]; then
     cat >&2 <<-EOF
-  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <catpath>
+  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <wcsfit-reference-frame>
 
   Argument descriptions:
 
@@ -42,7 +42,7 @@ if [[ $# -ne 7 ]]; then
 
   * confidence-map
   * shuttermap
-  * catpath
+  * wcsfit-reference-frame
 EOF
     exit 1
 fi
@@ -55,7 +55,7 @@ readonly GIVEN_INPUTCATALOGUE=$3
 readonly WCSSOLUTION=$4
 readonly CONFMAP=$5
 readonly SHUTTERMAP=$6
-readonly CATPATH=$7
+readonly WCSFIT_REFERENCE_FRAME=$7
 
 readonly IMGDIRS=${WORKINGDIR}/OriginalData/images/**/*
 readonly SCRIPTDIR=${BASEDIR}/scripts
@@ -202,10 +202,6 @@ perform_aperture_photometry() {
     echo "Running aperture photometry"
     cd ${WORKINGDIR}/AperturePhot
 
-    cp -r ${CATPATH} .
-    local readonly new_catpath=$(basename ${CATPATH})
-    shrink_catalogue_directory ${new_catpath}
-
     for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list; do
         local readonly basename=${FILELIST#${WORKINGDIR}/OriginalData/output/}
         local readonly jobname=${basename%.*}
@@ -221,7 +217,7 @@ perform_aperture_photometry() {
             --filelist ${image_filelist} \
             --outdir ${output_directory} \
             --dist ${WCSSOLUTION} \
-            --catpath $(abspath ${new_catpath})
+            --wcsref ${WCSFIT_REFERENCE_FRAME}
 
         # Condense the photometry
         python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
