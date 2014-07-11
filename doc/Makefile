@@ -18,4 +18,4 @@ pdf: $(PDFOUTPUTS)
 .PHONY: clean
 
 clean:
-	@rm -f *.html *.pdf
+	@rm -f *.html *.pdf *.md
