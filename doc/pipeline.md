@@ -7,13 +7,13 @@ Zero Level Pipeline
   * [Required initial data structure](#required-initial-data-structure)
     * [Root directory](#root-directory)
     * [Required input files](#required-input-files)
-  * [Creating input files](#creating-input-files)
+  * [Creating input files](#creating-the-input-files-if-required)
 * [Possible errors](#possible-errors)
 * [Installation](#installation)
   * [Dependencies](#dependencies)
 * [Testing](#testing)
 
-<a name='quickstart'></a>Quickstart
+Quickstart
 ----------
 
 1. Initialise the output directory to the correct structure
@@ -21,7 +21,7 @@ Zero Level Pipeline
 3. Run `ZLP_pipeline.sh` with the output directory and extra reference files
 4. Get some coffee...
 
-<a name='running'></a>Running
+Running
 -------
 
 To run the code, the main `ZLP_pipeline.sh` script is used. It requires the following arguments (in order):
@@ -55,11 +55,11 @@ readonly T10="1" # perform photometry
 
 The above are the defaults and will produce a single lightcurve file out of a directory of raw images and calibration frames. The reduction tasks cannot be disabled as the pipeline will break.
 
-### <a name='required-initial-data-structure'></a>Required initial data structure
+### Required initial data structure
 
 The data structure must be set up manually before a run. 
 
-#### <a name='root-directory'></a>Root directory
+#### Root directory
 
 Whatever is used for the `<root-directory>` argument must look like:
 
@@ -118,7 +118,7 @@ running with `ZLP_pipeline.sh <runname> testdata ...`. The images and/or directo
 At least one file, probably two must be present in each subdirectory for the pipeline to work. *If no data of a particular type e.g. bias, dark etc. was taken then copy some previous data in.* All of the input images should have the same size i.e. 2088x2048 pixels with 20 extra pixels on the left and right for pre/overscan. These are the same format as raw images from the instrument.
 
 
-#### <a name='required-input-files'></a>Required input files
+#### Required input files
 
 Some extra files are required for the pipeline to function. These are (in order of arguments to `ZLP_pipeline.sh:
 
@@ -144,7 +144,7 @@ This is not currently computed by the pipeline. The code to generate one has not
 
 The wcsfit reference frame must contain external catalogue information, and is a fits file where hdu 1 (0-indexed) is a binary table containing `RA`, `DEC` and `Jmag` therefore a 2MASS catalogue is prefered. It is used during the astrometric solution step to determine where each of our detected objects *should* be on the sky.
 
-### <a name='creating-input-files'></a>Creating the input files (if required)
+### Creating the input files (if required)
 
     * input-catalogue
 
@@ -172,7 +172,7 @@ With an internet connection, this can be created by using wcsfit to solve a sing
 
 This also has the bonus of only including stars within the J magnitude range 8 - 14 speeding up solving time.
 
-<a name='possible-errors'></a>Possible errors
+Possible errors
 ---------------
 
 The script may output lots of `RuntimeError`s which is normal. Not ideal but not harmful to the analysis, it most likely means some non-detections or apertures outside the chip are causing divide by zero errors, or nan arithmetic.
@@ -183,7 +183,7 @@ Some possibly likely errors are:
 
 This call is from `wcsfit` and means that no standard reference stars were found to match the frame to. This may mean that the script is trying to connect to the internet and failing, or that the reference catalogue does not match the frame.
 
-<a name='installation'></a>Installation
+Installation
 ------------
 
 To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed `chroot`).
@@ -192,7 +192,7 @@ All scripts used are in the `scripts` subdirectory and consist of python files o
 
 The code has dependencies on external tools:
 
-### <a name='dependencies'></a>Dependencies
+### Dependencies
 
 * python
 * cfitsio
@@ -207,7 +207,7 @@ Python packages:
 * fitsio
 * astropy
 
-<a name='testing'></a>Testing
+Testing
 -------
 
 The example test data should be unpacked into a directory at the same level as the `ZLP_pipeline.sh` script.  An example directory structure is shown below.
