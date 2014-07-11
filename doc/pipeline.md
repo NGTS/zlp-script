@@ -2,16 +2,16 @@
 Zero Level Pipeline
 ===================
 
-* [Quickstart](#user-content-quickstart)
-* [Running](#user-content-running)
-  * [Required initial data structure](#user-content-required-initial-data-structure)
-    * [Root directory](#user-content-root-directory)
-    * [Required input files](#user-content-required-input-files)
-  * [Creating input files](#user-content-creating-input-files)
-* [Possible errors](#user-content-possible-errors)
-* [Installation](#user-content-installation)
-  * [Dependencies](#user-content-dependencies)
-* [Testing](#user-content-testing)
+* [Quickstart](#quickstart)
+* [Running](#running)
+  * [Required initial data structure](#required-initial-data-structure)
+    * [Root directory](#root-directory)
+    * [Required input files](#required-input-files)
+  * [Creating input files](#creating-input-files)
+* [Possible errors](#possible-errors)
+* [Installation](#installation)
+  * [Dependencies](#dependencies)
+* [Testing](#testing)
 
 <a name='quickstart'></a>Quickstart
 ----------

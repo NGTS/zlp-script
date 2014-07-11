@@ -9,7 +9,7 @@ pdf: $(PDFOUTPUTS)
 	pandoc -s $< -o $@
 
 %.html: %.md
-	grip --gfm --export $<
+	pandoc -s $< -o $@
 
 .PHONY: clean
 
