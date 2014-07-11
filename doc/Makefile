@@ -10,6 +10,7 @@ pdf: $(PDFOUTPUTS)
 
 %.html: %.md
 	pandoc $< -o $@
+	pandoc $@ -o $@
 
 .PHONY: clean
 
