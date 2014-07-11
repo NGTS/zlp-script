@@ -1,6 +1,7 @@
-SOURCES=$(wildcard *.md)
-OUTPUTS=$(SOURCES:.md=.html)
-PDFOUTPUTS=$(SOURCES:.md=.pdf)
+SOURCES=$(wildcard *.twiki)
+MARKDOWN=$(SOURCES:.twiki=.md)
+OUTPUTS=$(MARKDOWN:.md=.html)
+PDFOUTPUTS=$(MARKDOWN:.md=.pdf)
 
 all: $(OUTPUTS)
 pdf: $(PDFOUTPUTS)
@@ -8,9 +9,11 @@ pdf: $(PDFOUTPUTS)
 %.pdf: %.md
 	pandoc -s $< -o $@
 
+%.md: %.twiki
+	perl twiki2md.pl $< > $@
+
 %.html: %.md
 	pandoc $< -o $@
-	pandoc $@ -o $@
 
 .PHONY: clean
 
