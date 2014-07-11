@@ -1,0 +1,62 @@
+---+ Sysrem-compatible file format
+
+Note: [[%USERSWEB%.ExampleInterfaceFiles][Richard has a previous description located here]]
+
+The sysrem-compatible file is a fits file sumarising a single field. The file is used in the WASP project to store a field-season's worth of data, but the file format is equally good at storing any collection of lightcurves and their associated metadata.
+
+%TOC%
+
+---++ Binary table HDUs
+
+The file contains two binary table HDUs containing metadata about the objects and images contained in the file. The HDUs are:
+
+   * imagelist
+   * catalogue
+
+
+---+++ Imagelist HDU
+
+This HDU contains one entry per image taken, with columns describing time series. Some examples are:
+
+   * airmass
+   * ccd temperature
+
+Any parameters which vary over time are good candidates for storage in this HDU.
+
+---+++ Catalogue HDU
+
+This HDU contains one entry per object in the input catalogue, with columns describing per-object information. Some examples are:
+
+   * aperture size
+   * mean flux
+   * ra
+   * dec
+
+---+++ Code examples
+
+_Python_
+<script src="https://gist.github.com/mindriot101/174c7908b5115afb1e67.js?file=catalogue_hdu_example.py"></script>
+
+---++ Image HDUs
+
+The file contains one image hdu for each extracted parameter about the lightcurve, per image. This makes an image of =n_apertures= x =n_images= pixels. The pixel data type for the hdus is still under discussion. For example the WASP files' aperture coordinates are multiplied by 16 and stored as short integers (values -32767 to  32767) to decrease file size.
+
+The hdus are:
+
+   * hjd
+   * flux
+   * fluxerr
+   * ccdx
+   * ccdy
+   * quality
+   * skybkg
+
+---+++ Examples of extracting data
+
+_Python_
+
+<script src="https://gist.github.com/mindriot101/174c7908b5115afb1e67.js?file=image_hdu_example.py"></script>
+
+_C/C++_
+<script src="https://gist.github.com/mindriot101/174c7908b5115afb1e67.js?file=image_hdu_example.c"></script>
+
