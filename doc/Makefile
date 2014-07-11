@@ -9,7 +9,7 @@ pdf: $(PDFOUTPUTS)
 	pandoc -s $< -o $@
 
 %.html: %.md
-	pandoc -s $< -o $@
+	pandoc $< -o $@
 
 .PHONY: clean
 
