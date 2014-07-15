@@ -1,0 +1,69 @@
+---+ Distortion mapping code
+
+%TOC%
+
+---++ The problem
+
+The instruments suffer from barrel distortion that severely limits astrometric accuracy, and since our catalog and aperture photometry are Co-ordinate driven this may have a serious impact on our photometry. The distortion is different between telescope/cameras and is sensitive to changes in hardware, e.g. removing and re-attaching the camera.
+The best astrometric solution I have found is to use a 7th order polynomial distortion term which is offset from the centre of the chip. This ends up being an 11 parameter fit, with some serious degeneracies between parameters, and an extremely sharply peaked likelihood space, which has many local minima that linear solvers fall into, if starting blind.
+To find the Global best fit the first time for a camera/telescope setup, the most robust solution I have found is to use an MCMC. It can take a long time to run, but it will reliably find the global best fit for the astrometry, with median residuals of under a tenth of a pixel.
+
+---++ Workflow
+
+   * Pick a good quality image
+   * run the mcmc using =dist_solve.sh=
+   * leave the solution running for at least a couple of hours
+   * monitor the solution with =plot_mcmc_out=
+   * When you have a solution you are happy with (sub pixel median residuals) run =pick_best=.py to save this solution to somewhere the ZLP can see it.
+   * The chosen solution will then be given as a command line argument to the ZLP, and used as the initial wcs guess for each frame.
+
+---++ Running the mcmc
+
+To call the mcmc solver, run =dist_solve.sh=
+
+<verbatim>
+Usage:
+dist_solve.sh <image_name> <catname> <chain_name> <catsrc>
+</verbatim>
+
+   * =image_name=: The name of the image you want to attempt to solve.
+   * =catname=: The name of the output file of the imcore source extraction (This is used later when assessing the solution)
+   * =chain_name=: The name of the file storing the steps of the mcmc chain (This is used later when assessing the solution)
+   * =catsrc=: The path to the Casu compatible 'catcache' directory. This will be the reference catalog that the source extract is compared to.
+
+After running =imcore=, the only output of the MCMC is the chain file. it will not attempt to modify the header of the image you are solving. You will need to run the monitoring and pickling scripts to interpret and make use of this output.
+If the MCMC is taking an unusually long time, this usually means you have started a very long way from the correct solution. The usual culprit is the =TEL_RA= =TEL_DEC= header keys (which the solver takes as the first guess of where the centre of the frame is located.
+It may be necessary on the paranal computers to run the solver for about a day to be sure of a good fit. Sub pixel RMS (5") is an absolute minimum. The best solutions I have found for single frames typically have RMS's of ~0.4".
+If left for long enough the MCMC should always eventually find the best solution, and this step should not need to be repeated often unless drastic changes to the setup are made.
+
+---++ Monitoring the mcmc
+
+To monitor the progress of the solution, run plot_mcmc_out:
+<verbatim>
+Usage:
+python plot_mcmc_out <mycatname> <chain_name> <catsrc> <image_name>
+</verbatim>
+
+   * =mycatname=: The name of the output file of the imcore source extraction (This is defined when setting up the mcmc)
+   * =chain_name=: The name of the file storing the steps of the mcmc chain (This is defined when setting up the mcmc)
+   * =catsrc=: The path to the Casu compatible 'catcache' directory. This should be the same one you give to the mcmc
+   * =image_name=: A test image that will have the test solution stamped in the header so you can inspect. It's a good idea to use a copy of the file that you're running the mcmc on.
+
+The code will print the best current solution and the value of the residual RMS. It will also produce a vector plot as a .png, which will also display the RMS and give an indication of the quality of the solution.
+You are looking to get a solution that is at the very least on average better than a pixel (5"). If left long enough, the solution should eventually settle out at about the 10th of a pixel level (~0.5") the best solution I have achieved had a residual RMS of 0.3". When you are happy that the solution is satisfactory, run the pickle_best code.
+
+---++ Recovering the result
+
+The =pick_best= code will take the best astrometric solution and put it in a format that the main pipeline can read. This will then be stamped in the header of every file the pipeline analyses as the initial best guess solution.
+
+<verbatim>
+Usage:
+pick_best.py <chain_name> <image> <outname>
+</verbatim>
+
+   * =chain_name=: The name of the file storing the steps of the mcmc chain (This is defined when setting up the mcmc)
+   * =image_name=: The name of the image you are solving with the mcmc (the code needs to read some of the header keycards)
+   * =outname=: The name of the output pickle which contains the best distortion map. This must be a full path to somewhere the ZLP will be able to see, as it will be stamped into every header. This path must be given as one of the inputs when running the MCMC, as the solution will be different between telescopes, and potentially between different nights if the setup is being changed. As such, it's important that the pickle name is something obvious, I.E, including the date and telescope/camera the reference image was taken with. In the future this will be handled by a database.
+
+If you have any questions, please contact me
+Tom (t.m.louden@warwick.ac.uk)
