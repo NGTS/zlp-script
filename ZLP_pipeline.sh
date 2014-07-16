@@ -173,6 +173,16 @@ wait_for_jobs() {
     qsub -hold_jid "${JOBIDS}" -N WAIT  -sync y -cwd ${WORKINGDIR}/wait.sh
 }
 
+iterate_and_act_on_lists() {
+    local readonly lists="$1"
+    local readonly action="$2"
+
+    if $(any_filelists ${lists}); then
+        for fname in ${lists}; do
+            eval "${action} ${fname}"
+        done
+    fi
+}
 
 create_input_catalogue() {
     # Frame Selection / Quality and Integrity Check
