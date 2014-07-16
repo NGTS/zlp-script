@@ -117,7 +117,7 @@ The positions in ra/dec where apertures are to be placed. This file is a fits fi
 
 The initial wcs solution is stamped into the fits images before the refinement step to both conform the keywords standard into one understood by casutools, and to ensure the true solution is not far away from the assumed initial solution. This is computed through MCMC analysis to determine the distortion parameters and a scaling from stamped keywords =TEL_RA= and =TEL_DEC= to true central coordinates. The astrometry step then takes over and refines the solution.
 
-The file passed is a pickled python dictionary. A tool to construct this file from the final MCMC result is given as TBD.
+The file passed is a pickled python dictionary. A tool to construct this file from the final MCMC result is described in the [[ZLPDocAstrometrySolver][Astrometry solver documentation]]
 
    * confidence-map
 
@@ -139,7 +139,7 @@ This can be constructed by running =imcore= on a frame. Ideally a stacked image 
 
    * initial-wcs-solution
 
-This must be constructed from a python dictionary to the pickle file format using TBD.
+This must be constructed from a python dictionary to the pickle file format. See the [[ZLPDocAstrometrySolver][astrometry solver documentation]]
 
    * confidence-map
 
