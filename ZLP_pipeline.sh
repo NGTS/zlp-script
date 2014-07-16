@@ -195,6 +195,17 @@ single_create_input_catalogue() {
 
     ensure_directory "$output_directory"
     find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
+    # Solve the frames
+    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
+        --confmap ${CONFMAP} \
+        --catfile ${GIVEN_INPUTCATALOGUE} \
+        --nproc ${CORES} \
+        --filelist ${image_filelist} \
+        --outdir ${output_directory} \
+        --dist ${WCSSOLUTION} \
+        --wcsref ${WCSFIT_REFERENCE_FRAME}
+
+    # Stack the frames
     (cd ${output_directory} &&
         python ${SCRIPTDIR}/zlp-input-catalogue/bin/ZLP_create_cat.py \
         --confmap ${CONFMAP} \
