@@ -70,7 +70,7 @@ readonly T2="1" # create masterbias
 readonly T3="1" # create masterdark
 readonly T4="1" # copy temporary shutter map
 readonly T5="1" # create masterflat
-readonly T6="0" # reduce dithered images
+readonly T6="1" # reduce dithered images
 readonly T7="1" # reduce science images
 readonly T8="0" # wait for jobs to finish
 readonly T9="0" # create input catalogues
@@ -142,13 +142,17 @@ reduce_images() {
 reduce_dithered_images() {
     echo "Reduce Dithered Images"
     IMAGELISTS=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    DITHJOBS=`reduce_images "${IMAGELISTS}"`
+    if ls ${IMAGELISTS} 2>/dev/null >/dev/null; then
+        reduce_images "${IMAGELISTS}"
+    fi
 }
 
 reduce_science_images() {
     echo "Reduce Science Images"
     IMAGELISTS=$WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
-    reduce_images "${IMAGELISTS}"
+    if ls ${IMAGELISTS} 2>/dev/null >/dev/null; then
+        reduce_images "${IMAGELISTS}"
+    fi
 }
 
 wait_for_jobs() {
