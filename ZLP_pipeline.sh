@@ -184,29 +184,29 @@ iterate_and_act_on_lists() {
     fi
 }
 
+single_create_input_catalogue() {
+    echo "Creating input catalogue"
+
+    local filelist=$1
+    local readonly basename=${filelist#${WORKINGDIR}/OriginalData/output/}
+    local readonly jobname=${basename%.*}
+    local readonly output_directory=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${jobname}
+    local readonly image_filelist=${output_directory}/filelist.txt
+
+    ensure_directory "$output_directory"
+    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
+    (cd ${output_directory} &&
+        python ${SCRIPTDIR}/zlp-input-catalogue/bin/ZLP_create_cat.py \
+        --confmap ${CONFMAP} \
+        --filelist ${image_filelist} \
+        --verbose \
+        --nproc ${CORES}
+    )
+}
+
 create_input_catalogue() {
-    # Frame Selection / Quality and Integrity Check
-
-    # Create Input Catalogue if not already exists for imagelists
-    cd ${WORKINGDIR}/InputCatalogue
-    local JOBLIST=""
-    for DITHERFILE in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    do
-        DITHERFILE=${DITHERFILE#${WORKINGDIR}}
-        DITHERFILE=${DITHERFILE#/OriginalData/output/}
-        JOBNAME=${DITHERFILE%.*}
-
-        OUTPUTDIR=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${JOBNAME}
-        ensure_directory "${OUTPUTDIR}"
-        find ${WORKINGDIR}/Reduction/${RUNNAME}/${JOBNAME} -name '*.fits' > ${WORKINGDIR}/InputCatalogue/${JOBNAME}.txt
-        echo "${WORKINGDIR}/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ./output/${RUNNAME}"
-        qsub -N ${JOBNAME} ${WORKINGDIR}/InputCatalogue/run_on_directory.sh ./${JOBNAME}.txt ${CONFMAP} ${OUTPUTDIR}
-        JOBLIST="${JOBLIST} ${JOBNAME}"
-    done
-    JOBLIST=`echo ${JOBLIST} | sed 's/ /,/g'`
-    cd ${WORKINGDIR}
-
-    wait_for_jobs "${JOBLIST}"
+    local readonly filelists=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
+    iterate_and_act_on_lists ${filelists} single_create_input_catalogue
 }
 
 shrink_catalogue_directory() {
@@ -217,34 +217,37 @@ shrink_catalogue_directory() {
     done
 }
 
+single_perform_aperture_photometry() {
+    local filelist=$1
+    local readonly basename=${filelist#${WORKINGDIR}/OriginalData/output/}
+    local readonly jobname=${basename%.*}
+    local readonly output_directory=${WORKINGDIR}/AperturePhot/output/${RUNNAME}/${jobname}
+    local readonly image_filelist=${output_directory}/filelist.txt
+
+    ensure_directory "$output_directory"
+    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
+    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
+        --confmap ${CONFMAP} \
+        --catfile ${GIVEN_INPUTCATALOGUE} \
+        --nproc ${CORES} \
+        --filelist ${image_filelist} \
+        --outdir ${output_directory} \
+        --dist ${WCSSOLUTION} \
+        --wcsref ${WCSFIT_REFERENCE_FRAME}
+
+    # Condense the photometry
+    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
+        --outdir ${output_directory} \
+        --nproc ${CORES} \
+        ${image_filelist}
+}
+
 perform_aperture_photometry() {
     echo "Running aperture photometry"
     cd ${WORKINGDIR}/AperturePhot
 
-    for FILELIST in ${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list; do
-        local readonly basename=${FILELIST#${WORKINGDIR}/OriginalData/output/}
-        local readonly jobname=${basename%.*}
-        local readonly output_directory=${WORKINGDIR}/AperturePhot/output/${RUNNAME}/${jobname}
-        local readonly image_filelist=${output_directory}/filelist.txt
-
-        ensure_directory "$output_directory"
-        find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
-        python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
-            --confmap ${CONFMAP} \
-            --catfile ${GIVEN_INPUTCATALOGUE} \
-            --nproc ${CORES} \
-            --filelist ${image_filelist} \
-            --outdir ${output_directory} \
-            --dist ${WCSSOLUTION} \
-            --wcsref ${WCSFIT_REFERENCE_FRAME}
-
-        # Condense the photometry
-        python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
-            --outdir ${output_directory} \
-            --nproc ${CORES} \
-            ${image_filelist}
-
-    done
+    local readonly filelists=${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list
+    iterate_and_act_on_lists ${filelists} single_perform_aperture_photometry
 }
 
 run_detrending() {
