@@ -139,10 +139,15 @@ reduce_images() {
     done
 }
 
+any_filelists() {
+    local readonly IMAGELISTS=$1
+    ls ${IMAGELISTS} 2>/dev/null >/dev/null
+}
+
 reduce_dithered_images() {
     echo "Reduce Dithered Images"
     IMAGELISTS=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    if ls ${IMAGELISTS} 2>/dev/null >/dev/null; then
+    if $(any_filelists ${IMAGELISTS}); then
         reduce_images "${IMAGELISTS}"
     fi
 }
@@ -150,7 +155,7 @@ reduce_dithered_images() {
 reduce_science_images() {
     echo "Reduce Science Images"
     IMAGELISTS=$WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
-    if ls ${IMAGELISTS} 2>/dev/null >/dev/null; then
+    if $(any_filelists ${IMAGELISTS}); then
         reduce_images "${IMAGELISTS}"
     fi
 }
