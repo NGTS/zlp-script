@@ -73,7 +73,7 @@ readonly T5="1" # create masterflat
 readonly T6="1" # reduce dithered images
 readonly T7="1" # reduce science images
 readonly T8="0" # wait for jobs to finish
-readonly T9="0" # create input catalogues
+readonly T9="1" # create input catalogues
 readonly T10="1" # perform photometry
 
 readonly T12="0" # run image subtraction
