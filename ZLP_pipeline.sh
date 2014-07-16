@@ -293,7 +293,7 @@ ensure_directory() {
 
 setup_environment() {
     set +o nounset
-    export PYTHONPATH=${BASEDIR}/scripts/NGTS_workpackage:${BASEDIR}/scripts:$PYTHONPATH
+    export PYTHONPATH=${BASEDIR}/scripts/NGTS_workpackage:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
     echo "Environment set up"
     set -o nounset
 }
