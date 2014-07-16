@@ -1,0 +1,3 @@
+[submodule "scripts/NGTS_workpackage"]
+	path = scripts/NGTS_workpackage
+	url = git@github.com:tomlouden/NGTS_ZLP.git
