@@ -196,7 +196,7 @@ single_create_input_catalogue() {
     ensure_directory "$output_directory"
     find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
     # Solve the frames
-    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
+    python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_app_photom.py \
         --confmap ${CONFMAP} \
         --catfile ${GIVEN_INPUTCATALOGUE} \
         --nproc ${CORES} \
@@ -237,7 +237,7 @@ single_perform_aperture_photometry() {
 
     ensure_directory "$output_directory"
     find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
-    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_app_photom.py \
+    python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_app_photom.py \
         --confmap ${CONFMAP} \
         --catfile ${GIVEN_INPUTCATALOGUE} \
         --nproc ${CORES} \
@@ -247,7 +247,7 @@ single_perform_aperture_photometry() {
         --wcsref ${WCSFIT_REFERENCE_FRAME}
 
     # Condense the photometry
-    python ${SCRIPTDIR}/NGTS_workpackage/bin/ZLP_create_outfile.py \
+    python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_create_outfile.py \
         --outdir ${output_directory} \
         --nproc ${CORES} \
         ${image_filelist}
@@ -317,7 +317,7 @@ ensure_directory() {
 
 setup_environment() {
     set +o nounset
-    export PYTHONPATH=${BASEDIR}/scripts/NGTS_workpackage:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
+    export PYTHONPATH=${BASEDIR}/scripts/zlp-photometry:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
     echo "Environment set up"
     set -o nounset
 }
