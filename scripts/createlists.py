@@ -6,7 +6,7 @@
 
  
 import glob
-import pyfits
+from astropy.io import fits as pyfits
 import os
 import time
 import sys
