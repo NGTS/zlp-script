@@ -29,8 +29,8 @@ perform_test() {
 }
 
 test_photom_script() {
-    PYTHONPATH=${BASEDIR}/scripts:$BASEDIR/scripts/NGTS_workpackage:$PYTHONPATH python \
-        scripts/NGTS_workpackage/bin/ZLP_app_photom.py -h
+    PYTHONPATH=${BASEDIR}/scripts:$BASEDIR/scripts/zlp-photometry:$PYTHONPATH python \
+        scripts/zlp-photometry/bin/ZLP_app_photom.py -h
 }
 
 main() {
