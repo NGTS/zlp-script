@@ -2,7 +2,7 @@ import math
 import sys
 import os
 import numpy as np
-import pyfits
+from astropy.io import fits as pyfits
 
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
