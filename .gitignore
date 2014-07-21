@@ -6,3 +6,6 @@ testdata/*
 source*
 *.tar.gz
 venv
+*.pyc
+.direnv
+*.egg-info
