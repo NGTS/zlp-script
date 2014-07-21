@@ -316,6 +316,13 @@ ensure_directory() {
 }
 
 setup_environment() {
+    # If anaconda is available, use it
+    if [[ -d ${HOME}/anaconda ]]; then
+        export PATH=${HOME}/anaconda/bin:${PATH}
+    fi
+
+    echo "Using python: $(which python)"
+
     set +o nounset
     export PYTHONPATH=${BASEDIR}/scripts/zlp-photometry:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
     echo "Environment set up"
