@@ -53,7 +53,7 @@ class QueryResults(object):
         outfile.write(out, header=header_info)
 
 def main(args):
-    box_width = 3.              # Box width in degrees
+    box_width = 4              # Box width in degrees
     cmd = map(str, ['find2mass', args.ra, args.dec, '-bd', box_width, '-m', args.nobj,
                     '-lmJ', '{},{}'.format(args.bright, args.faint)])
     results = QueryResults(sp.check_output(cmd))
