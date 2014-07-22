@@ -23,9 +23,10 @@ def main():
   catsrc = str(sys.argv[3])
   dummy_name = str(sys.argv[4])
  
-  if len(sys.argv) != 4:
+  if len(sys.argv) != 5:
     print 'Usage:'
     print 'python plot_mcmc_out <mycatname> <chain_name> <catsrc> <image_name>' 
+    sys.exit(1)
 
   if sys.argv[-1] == 'jun26':
     mycatname = 'jun26_cat.fits'
