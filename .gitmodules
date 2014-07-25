@@ -1,0 +1,3 @@
+[submodule "scripts/zlp-input-catalogue"]
+	path = scripts/zlp-input-catalogue
+	url = git@github.com:NGTS/zlp-input-catalogue.git
