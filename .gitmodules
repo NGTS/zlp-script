@@ -6,4 +6,4 @@
 	url = git@github.com:NGTS/NGTS_ZLP
 [submodule "scripts/zlp-qa"]
 	path = scripts/zlp-qa
-	url = chain.astro:gitprojects/zlp-quality-assessment
+	url = git@github.com:NGTS/zlp-qa.git
