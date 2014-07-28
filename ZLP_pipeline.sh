@@ -78,6 +78,7 @@ readonly T10="1" # perform photometry
 
 readonly T12="0" # run image subtraction
 readonly T13="0" # detrend
+readonly T14="1" # Make qa plots
 
 
 # Zero Level Pipeline
@@ -336,6 +337,12 @@ setup_directory_structure() {
     done
 }
 
+generate_qa_plots() {
+    bash ${BASEDIR}/scripts/zlp-qa/run.sh \
+        ${WORKINGDIR} \
+        ${WORKINGDIR}/QualityAssessment
+}
+
 # Do photometry on subtracted Images
 
 main() {
@@ -366,6 +373,8 @@ main() {
     [ "$T10" = "1" ] && perform_aperture_photometry
 
     [ "$T13" = "1" ] && run_detrending
+
+    [ "$T14" = "1" ] && generate_qa_plots
 }
 
 main 2>&1 | tee ${RUNNAME}.log
