@@ -4,3 +4,6 @@
 [submodule "scripts/zlp-photometry"]
 	path = scripts/zlp-photometry
 	url = git@github.com:NGTS/NGTS_ZLP
+[submodule "scripts/zlp-qa"]
+	path = scripts/zlp-qa
+	url = chain.astro:gitprojects/zlp-quality-assessment
