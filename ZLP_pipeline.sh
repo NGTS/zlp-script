@@ -63,7 +63,7 @@ readonly SCRIPTDIR=${BASEDIR}/scripts
 readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
-readonly CORES=2
+readonly CORES=$(python -c "import multiprocessing; print multiprocessing.cpu_count()")
 
 readonly T1="1" # create input lists
 readonly T2="1" # create masterbias
