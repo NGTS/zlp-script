@@ -64,6 +64,7 @@ readonly BIASLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_bias.list
 readonly DARKLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dark.list
 readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 readonly CORES=$(python -c "import multiprocessing; print multiprocessing.cpu_count()")
+readonly APSIZE=3
 
 readonly T1="1" # create input lists
 readonly T2="1" # create masterbias
@@ -204,6 +205,7 @@ single_create_input_catalogue() {
         --filelist ${image_filelist} \
         --outdir ${output_directory} \
         --dist ${WCSSOLUTION} \
+        --apsize ${APSIZE} \
         --wcsref ${WCSFIT_REFERENCE_FRAME}
 
     # Stack the frames
@@ -245,12 +247,14 @@ single_perform_aperture_photometry() {
         --filelist ${image_filelist} \
         --outdir ${output_directory} \
         --dist ${WCSSOLUTION} \
+        --apsize ${APSIZE} \
         --wcsref ${WCSFIT_REFERENCE_FRAME}
 
     # Condense the photometry
     python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_create_outfile.py \
         --outdir ${output_directory} \
         --nproc ${CORES} \
+        --apsize ${APSIZE} \
         ${image_filelist}
 }
 
