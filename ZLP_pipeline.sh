@@ -255,7 +255,7 @@ single_perform_aperture_photometry() {
     # Condense the photometry
     python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_create_outfile.py \
         --outdir ${output_directory} \
-        --nproc ${CORES} \
+        --nproc 1 \
         --apsize ${APSIZE} \
         ${image_filelist}
 }
