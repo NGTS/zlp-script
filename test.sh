@@ -33,9 +33,24 @@ test_photom_script() {
         scripts/zlp-photometry/bin/ZLP_app_photom.py -h
 }
 
+verify() {
+    echo Verifying
+    verify_in_mjd_order
+}
+
+verify_in_mjd_order() {
+    echo Verifying MJD order
+    python ${BASEDIR}/testing/ensure_in_mjd_order.py $(find ${OUTPUTDIR} -name 'output.fits')
+    if [ "$?" != "0" ]; then
+        echo "ERROR: failure in validation 'mjd order'" >&2
+        exit "$?"
+    fi
+}
+
 main() {
     setup $1
     perform_test $1
+    verify
 }
 
 main $@
