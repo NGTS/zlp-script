@@ -7,7 +7,7 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-BASEDIR=${PWD}
+BASEDIR=$(readlink -f $(dirname $0))
 OUTPUTDIR=${BASEDIR}/testdata
 
 abspath() {
