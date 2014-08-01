@@ -329,6 +329,7 @@ setup_environment() {
     echo "Using python: $(which python)"
 
     set +o nounset
+    export PATH=/usr/local/pipeline/bin:${PATH}
     export PYTHONPATH=${BASEDIR}/scripts/zlp-photometry:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
     echo "Environment set up"
     set -o nounset
