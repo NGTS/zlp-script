@@ -66,6 +66,8 @@ readonly FLATLIST=${WORKINGDIR}/OriginalData/output/${RUNNAME}_flat.list
 readonly CORES=$(python -c "import multiprocessing; print multiprocessing.cpu_count()")
 readonly APSIZE=3
 
+echo "Using ${CORES} cores"
+
 readonly T1="1" # create input lists
 readonly T2="1" # create masterbias
 readonly T3="1" # create masterdark
