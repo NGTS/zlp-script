@@ -51,6 +51,7 @@ main() {
     setup $1
     perform_test $1
     verify
+    echo "Finished"
 }
 
 main $@
