@@ -3,6 +3,7 @@ import sys
 import os
 import numpy as np
 from astropy.io import fits as pyfits
+from extract_overscan import extract_overscan
 
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
@@ -37,7 +38,7 @@ def biasmaker():
         for line in file(call):
             
             hdulist = pyfits.open(line)
-            overscan = hdulist[0].data[0:2048,-20:]
+            overscan = extract_overscan(hdulist)
             data = hdulist[0].data[0:2048,20:2068]
             corrected = data-np.median(overscan)
             datamatrix.append(corrected)

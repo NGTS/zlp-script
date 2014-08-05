@@ -4,6 +4,7 @@ import os
 import numpy as np
 from astropy.io import fits as pyfits
 import matplotlib.pyplot as plt
+from extract_overscan import extract_overscan
 
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
@@ -35,7 +36,7 @@ def reducer():
     for line in file(inlist):
         stripped = line.strip('\n')
         hdulist = pyfits.open(stripped)
-        overscan = hdulist[0].data[0:2048,0:19]
+        overscan = extract_overscan(hdulist)
         data = hdulist[0].data[0:2048,20:2068]
         exposure = hdulist[0].header['exposure']
         
