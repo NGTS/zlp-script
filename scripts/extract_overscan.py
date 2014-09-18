@@ -13,8 +13,9 @@ def extract_region(data, section_definition):
 def extract_overscan(hdulist):
     header = hdulist[0].header
     image = hdulist[0].data
-    biassec = header['biassec']
+    return image[4:, -15:]
+    # biassec = header['biassec']
 
-    return extract_region(image, biassec)
+    # return extract_region(image, biassec)
 
 
