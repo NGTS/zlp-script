@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import math
 import sys
 import os
@@ -47,8 +49,9 @@ def reducer():
 
         to_include = (exposure >= 3) & (median_data < 40000)
         if not to_include:
-            print "Skipping file {fname}, exptime={exptime}, med_data={med}".format(
-                fname=stripped, exptime=exposure, med=median_data)
+            print("Skipping file {fname}, exptime={exptime}, med_data={med}"
+                  .format(fname=stripped, exptime=exposure, med=median_data),
+                  file=sys.stderr)
         else:
 
             corrected1 = (data-np.median(overscan)-bias-(dark*exposure))
@@ -97,24 +100,24 @@ def reducer():
 
     wholestd = np.std(datamatrix, axis=0)
 
-    print np.size(wholestd)
+    print(np.size(wholestd))
     
     hdulist[0].data = wholestd
     outname = outdir+'std.fits'
     hdulist.writeto(outname)
-    print 'std done'
+    print('std done')
     variance = 1/(wholestd*wholestd)
 
     hdulist[0].data = variance
     outname = outdir+'variance.fits'
     hdulist.writeto(outname)
-    print 'var done'
+    print('var done')
     flat = np.median(datamatrix, axis = 0)
 
     hdulist[0].data = flat
 
     outname = outdir+flatname
     hdulist.writeto(outname)
-    print 'flat done'
+    print('flat done')
 
 reducer()
