@@ -39,11 +39,17 @@ def reducer():
         overscan = extract_overscan(hdulist)
         data = hdulist[0].data[0:2048,20:2068]
         exposure = hdulist[0].header['exposure']
+        median_data = np.median(data[:, 20:-20])
         
         f = open(expfile, 'a')
         f.write(str(exposure)+'\n')
         f.close()
-        if (exposure >= 1):
+
+        to_include = (exposure >= 3) & (median_data < 40000)
+        if not to_include:
+            print "Skipping file {fname}, exptime={exptime}, med_data={med}".format(
+                fname=stripped, exptime=exposure, med=median_data)
+        else:
 
             corrected1 = (data-np.median(overscan)-bias-(dark*exposure))
     
