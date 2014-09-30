@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+abspath() {
+    python -c "import os; print os.path.realpath('${1}')"
+}
+
 set -e
 
 if [[ $# -ne 1 ]]; then
@@ -7,12 +11,8 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-BASEDIR=$(readlink -f $(dirname $0))
+BASEDIR=$(abspath $(dirname $0))
 OUTPUTDIR=${BASEDIR}/testdata
-
-abspath() {
-    python -c "import os; print os.path.realpath('${1}')"
-}
 
 
 setup() {
