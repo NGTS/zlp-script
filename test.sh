@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
 abspath() {
     python -c "import os; print os.path.realpath('${1}')"
 }
-
-set -e
 
 if [[ $# -ne 1 ]]; then
     echo "Program usage: $0 <dir>" >&2
