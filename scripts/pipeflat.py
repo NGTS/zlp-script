@@ -88,7 +88,12 @@ def reducer():
 
             frameno += 1
 
-    frame, means, stds = np.loadtxt(dfile, usecols = (0,1,2), unpack = True)
+    try:
+        frame, means, stds = np.loadtxt(dfile, usecols = (0,1,2), unpack = True)
+    except UnboundLocalError as err:
+        if 'dfile' in str(err):
+            raise RuntimeError("All flats invalid. Pipeline cannot continue")
+
 
 #    plt.hist(means)
 #    plt.xlabel('Mean Counts')
