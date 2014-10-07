@@ -10,3 +10,4 @@ venv
 .direnv
 *.egg-info
 *.fits
+*.swp
