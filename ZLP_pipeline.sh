@@ -241,7 +241,7 @@ single_perform_aperture_photometry() {
     local readonly image_filelist=${output_directory}/filelist.txt
 
     ensure_directory "$output_directory"
-    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits.phot' | sed 's/.phot$//' > ${image_filelist}
+    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
     python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_app_photom.py \
         --confmap ${CONFMAP} \
         --catfile ${GIVEN_INPUTCATALOGUE} \
