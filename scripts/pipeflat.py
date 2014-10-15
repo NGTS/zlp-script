@@ -8,8 +8,9 @@ from astropy.io import fits as pyfits
 import matplotlib.pyplot as plt
 from extract_overscan import extract_overscan
 
-def render_total_file(data, fname):
+def render_total_file(data, fname, nfiles):
     hdu = pyfits.PrimaryHDU(data)
+    hdu.header.set('nfiles', nfiles)
     hdu.writeto(fname)
 
 
@@ -39,6 +40,7 @@ def reducer():
     os.system('rm -f '+outdir+'expdata.dat')
     frameno = 1
 
+    nflat_files = 0
     flat_total = np.zeros(dark.shape)
     datamatrix = []
     expfile = outdir+'expdata.dat'
@@ -63,6 +65,7 @@ def reducer():
 
             corrected1 = (data-np.median(overscan)-bias-(dark*exposure))
             flat_total += corrected1
+            nflat_files += 1
     
 #        corrected2 = corrected1/(1-(sm/exposure))
             
@@ -133,7 +136,7 @@ def reducer():
     hdulist.writeto(outname)
     print('flat done')
 
-    render_total_file(flat_total, totalname)
+    render_total_file(flat_total, totalname, nflat_files)
 
 if __name__ == '__main__':
     reducer()
