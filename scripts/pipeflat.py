@@ -8,6 +8,11 @@ from astropy.io import fits as pyfits
 import matplotlib.pyplot as plt
 from extract_overscan import extract_overscan
 
+def render_total_file(data, fname):
+    hdu = pyfits.PrimaryHDU(data)
+    hdu.writeto(fname)
+
+
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
 darkname = str(sys.argv[3])
@@ -18,6 +23,7 @@ outdir = str(sys.argv[6])+'/'
 biasname = outdir+biasname
 darkname= outdir+darkname
 smname = outdir+os.path.basename(smname)
+totalname = outdir+'flat_total.fits'
 def reducer():
     os.system('mkdir '+outdir+'flats')
     hdulist = pyfits.open(biasname)
@@ -33,6 +39,7 @@ def reducer():
     os.system('rm -f '+outdir+'expdata.dat')
     frameno = 1
 
+    flat_total = np.zeros(dark.shape)
     datamatrix = []
     expfile = outdir+'expdata.dat'
     for line in file(inlist):
@@ -55,6 +62,7 @@ def reducer():
         else:
 
             corrected1 = (data-np.median(overscan)-bias-(dark*exposure))
+            flat_total += corrected1
     
 #        corrected2 = corrected1/(1-(sm/exposure))
             
@@ -125,4 +133,7 @@ def reducer():
     hdulist.writeto(outname)
     print('flat done')
 
-reducer()
+    render_total_file(flat_total, totalname)
+
+if __name__ == '__main__':
+    reducer()
