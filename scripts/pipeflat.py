@@ -103,7 +103,8 @@ def reducer():
         frame, means, stds = np.loadtxt(dfile, usecols = (0,1,2), unpack = True)
     except UnboundLocalError as err:
         if 'dfile' in str(err):
-            raise RuntimeError("All flats invalid. Pipeline cannot continue")
+            raise RuntimeError("All flats invalid. Pipeline cannot continue"
+                               ", original error: {}".format(str(err)))
 
 
 #    plt.hist(means)
