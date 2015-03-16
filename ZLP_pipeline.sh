@@ -68,20 +68,21 @@ readonly APSIZE=3
 
 echo "Using ${CORES} cores"
 
-readonly T1="1" # create input lists
-readonly T2="1" # create masterbias
-readonly T3="1" # create masterdark
-readonly T4="1" # copy temporary shutter map
-readonly T5="1" # create masterflat
-readonly T6="1" # reduce dithered images
-readonly T7="1" # reduce science images
-readonly T8="0" # wait for jobs to finish
-readonly T9="0" # create input catalogues
-readonly T10="1" # perform photometry
+# Which tasks to run. Set to "1" if the task should be run otherwise "0".
+readonly T1="1" # create input lists, default: 1
+readonly T2="1" # create masterbias, default: 1
+readonly T3="1" # create masterdark, default: 1
+readonly T4="1" # copy temporary shutter map, default: 1
+readonly T5="1" # create masterflat, default: 1
+readonly T6="1" # reduce dithered images, default: 1
+readonly T7="1" # reduce science images, default: 1
+readonly T8="0" # wait for jobs to finish, default: 0
+readonly T9="0" # create input catalogues, default: 0
+readonly T10="1" # perform photometry, default: 1
 
-readonly T12="0" # run image subtraction
-readonly T13="0" # detrend
-readonly T14="1" # Make qa plots
+readonly T12="0" # run image subtraction, default: 0
+readonly T13="0" # detrend, default: 0
+readonly T14="1" # Make qa plots, default: 1
 
 
 # Zero Level Pipeline
