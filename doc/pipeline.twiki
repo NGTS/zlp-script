@@ -153,11 +153,7 @@ This can be an image of value 0
 
 This must be a fits file where hdu 1 is a table with RA and DEC columns of units degrees, and a Jmag column.
 
-With an internet connection, this can be created by using wcsfit to solve a single image, and running =scripts/shrink_wcs_reference.py= on the file =catcache/cch_00000001= i.e.:
-
-=python scripts/shrink_wcs_reference.py catcache/cch_00000001 -o wcsfit-reference.fits=.
-
-This also has the bonus of only including stars within the J magnitude range 8 - 14 speeding up solving time.
+To create this frame, run =scripts/generate_wcs_reference.py= (run =generate_wcs_reference.py -h= to get help output of the command line options). The magnitude range of the catalogue stars can be configured to reduce the numerous faint stars and speed up matching time. The defaults cut off at 14th magnitude in J for this purpose.
 
 ---++ Possible errors
 
