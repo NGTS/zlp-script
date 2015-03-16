@@ -19,7 +19,7 @@ To run the code, the main =ZLP_pipeline.sh= script is used. It requires the foll
    * initial wcs solution
    * confidence map
    * shuttermap
-   * wcsfit reference frame
+   * wcsfit reference catalogue
 
 Any paths must be absolute, so start with '/' e.g. '/home/ngts/...'. To get a reminder of any arguments or their order, run =ZLP_pipeline.sh -h= and the usage will be printed out. See the section in input arguments for details of what these mean.
 
@@ -127,9 +127,9 @@ This is not currently computed by the pipeline, but can be constructed by scalin
 
 This is not currently computed by the pipeline. The code to generate one has not been written yet (as of Thu Jul 10 2014), but a sample one is supplied. Alternatively a frame of the correct size (2048x2088) of zeros can be supplied if no shuttermap is available.
 
-   * wcsfit-reference-frame
+   * wcsfit-reference-catalogue
 
-The wcsfit reference frame must contain external catalogue information, and is a fits file where hdu 1 (0-indexed) is a binary table containing =RA=, =DEC= and =Jmag= therefore a 2MASS catalogue is prefered. It is used during the astrometric solution step to determine where each of our detected objects *should* be on the sky.
+The wcsfit reference catalogue must contain external catalogue information, and is a fits file where hdu 1 (0-indexed) is a binary table containing =RA=, =DEC= and =Jmag= therefore a 2MASS catalogue is prefered. It is used during the astrometric solution step to determine where each of our detected objects *should* be on the sky.
 
 ---+++ Creating the input files (if required)
 
@@ -149,11 +149,11 @@ This can be an image of value 100
 
 This can be an image of value 0
 
-   * wcsfit-reference-frame
+   * wcsfit-reference-catalogue
 
 This must be a fits file where hdu 1 is a table with RA and DEC columns of units degrees, and a Jmag column.
 
-To create this frame, run =scripts/generate_wcs_reference.py= (run =generate_wcs_reference.py -h= to get help output of the command line options). The magnitude range of the catalogue stars can be configured to reduce the numerous faint stars and speed up matching time. The defaults cut off at 14th magnitude in J for this purpose.
+To create this catalogue, run =scripts/generate_wcs_reference.py= (run =generate_wcs_reference.py -h= to get help output of the command line options). The magnitude range of the catalogue stars can be configured to reduce the numerous faint stars and speed up matching time. The defaults cut off at 14th magnitude in J for this purpose.
 
 ---++ Possible errors
 
