@@ -187,6 +187,12 @@ Python packages:
    * matplotlib
    * fitsio
    * astropy
+   * jinja2
+
+To run the unit tests:
+
+   * mock
+   * pytest
 
 ---++ Testing
 
