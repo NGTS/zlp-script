@@ -165,44 +165,6 @@ Some possibly likely errors are:
 
 This call is from =wcsfit= and means that no standard reference stars were found to match the frame to. This may mean that the script is trying to connect to the internet and failing, or that the reference catalogue does not match the frame.
 
----++ Installation
-
-To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed =chroot=).
-
-The easiest way to install the Python dependencies is to use the [[http://continuum.io/downloads][Anaconda python distribution]] into the default location (=~/anaconda=). Then install the packages below with:
-
-<verbatim>
-conda install numpy scipy matplotlib astropy jinja2 pytest
-pip install emcee fitsio mock
-</verbatim>
-
-The pipeline looks for the anaconda python distribution in this location, or if not found it uses the system python.
-
-All scripts used are in the =scripts= subdirectory and consist of python files or shell scripts.
-
-The code has dependencies on external tools:
-
----+++ Dependencies
-
-   * python
-   * cfitsio
-   * casutools (customised to our needs)
-
-Python packages:
-
-   * numpy
-   * scipy
-   * emcee (optional, only used for initial wcs solver)
-   * matplotlib
-   * fitsio
-   * astropy
-   * jinja2
-
-To run the unit tests:
-
-   * mock
-   * pytest
-
 ---++ Testing
 
 The example test data should be unpacked into a directory at the same level as the =ZLP_pipeline.sh= script.  An example directory structure is shown below.
@@ -250,3 +212,7 @@ The example test data should be unpacked into a directory at the same level as t
 </verbatim>
 
 Running the script =test.sh <directory of unpacked test data>= should initialise the output directory and run the pipeline passing in any arguments needed such as the extra files required. By using this test script the success or failure of the pipeline can be determined with a small data set.
+
+---++ Installation
+
+See the ZLPDocInstallation page.
