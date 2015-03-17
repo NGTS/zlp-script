@@ -45,7 +45,7 @@ def reducer():
     datamatrix = []
     expfile = outdir+'expdata.dat'
     for line in file(inlist):
-        stripped = line.strip('\n')
+        stripped = line.strip()
         hdulist = pyfits.open(stripped)
         overscan = extract_overscan(hdulist)
         data = hdulist[0].data[0:2048,20:2068]

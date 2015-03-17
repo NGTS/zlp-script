@@ -36,7 +36,7 @@ def biasmaker():
         mastermatrix = []
         call = line.strip('\n')
         for line in file(call):
-            
+            line = line.strip()
             hdulist = pyfits.open(line)
             overscan = extract_overscan(hdulist)
             data = hdulist[0].data[0:2048,20:2068]
