@@ -5,7 +5,6 @@ import sys
 import os
 import numpy as np
 from astropy.io import fits as pyfits
-import matplotlib.pyplot as plt
 from extract_overscan import extract_overscan
 
 def render_total_file(data, fname, nfiles):
@@ -106,14 +105,6 @@ def reducer():
             raise RuntimeError("All flats invalid. Pipeline cannot continue"
                                ", original error: {}".format(str(err)))
 
-
-#    plt.hist(means)
-#    plt.xlabel('Mean Counts')
-#    plt.show()
-    
-#    plt.hist(stds)
-#    plt.xlabel('Stddev')
-#    plt.show()
 
     wholestd = np.std(datamatrix, axis=0)
 
