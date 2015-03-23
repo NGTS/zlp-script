@@ -19,7 +19,7 @@ To run the code, the main =ZLP_pipeline.sh= script is used. It requires the foll
    * initial wcs solution
    * confidence map
    * shuttermap
-   * wcsfit reference frame
+   * wcsfit reference catalogue
 
 Any paths must be absolute, so start with '/' e.g. '/home/ngts/...'. To get a reminder of any arguments or their order, run =ZLP_pipeline.sh -h= and the usage will be printed out. See the section in input arguments for details of what these mean.
 
@@ -127,9 +127,9 @@ This is not currently computed by the pipeline, but can be constructed by scalin
 
 This is not currently computed by the pipeline. The code to generate one has not been written yet (as of Thu Jul 10 2014), but a sample one is supplied. Alternatively a frame of the correct size (2048x2088) of zeros can be supplied if no shuttermap is available.
 
-   * wcsfit-reference-frame
+   * wcsfit-reference-catalogue
 
-The wcsfit reference frame must contain external catalogue information, and is a fits file where hdu 1 (0-indexed) is a binary table containing =RA=, =DEC= and =Jmag= therefore a 2MASS catalogue is prefered. It is used during the astrometric solution step to determine where each of our detected objects *should* be on the sky.
+The wcsfit reference catalogue must contain external catalogue information, and is a fits file where hdu 1 (0-indexed) is a binary table containing =RA=, =DEC= and =Jmag= therefore a 2MASS catalogue is prefered. It is used during the astrometric solution step to determine where each of our detected objects *should* be on the sky.
 
 ---+++ Creating the input files (if required)
 
@@ -149,15 +149,11 @@ This can be an image of value 100
 
 This can be an image of value 0
 
-   * wcsfit-reference-frame
+   * wcsfit-reference-catalogue
 
 This must be a fits file where hdu 1 is a table with RA and DEC columns of units degrees, and a Jmag column.
 
-With an internet connection, this can be created by using wcsfit to solve a single image, and running =scripts/shrink_wcs_reference.py= on the file =catcache/cch_00000001= i.e.:
-
-=python scripts/shrink_wcs_reference.py catcache/cch_00000001 -o wcsfit-reference.fits=.
-
-This also has the bonus of only including stars within the J magnitude range 8 - 14 speeding up solving time.
+To create this catalogue, run =scripts/generate_wcs_reference.py= (run =generate_wcs_reference.py -h= to get help output of the command line options). The magnitude range of the catalogue stars can be configured to reduce the numerous faint stars and speed up matching time. The defaults cut off at 14th magnitude in J for this purpose.
 
 ---++ Possible errors
 
@@ -168,29 +164,6 @@ Some possibly likely errors are:
    * error with =cir_getstds=
 
 This call is from =wcsfit= and means that no standard reference stars were found to match the frame to. This may mean that the script is trying to connect to the internet and failing, or that the reference catalogue does not match the frame.
-
----++ Installation
-
-To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed =chroot=).
-
-All scripts used are in the =scripts= subdirectory and consist of python files or shell scripts.
-
-The code has dependencies on external tools:
-
----+++ Dependencies
-
-   * python
-   * cfitsio
-   * casutools (customised to our needs)
-
-Python packages:
-
-   * numpy
-   * scipy
-   * emcee (optional, only used for initial wcs solver)
-   * matplotlib
-   * fitsio
-   * astropy
 
 ---++ Testing
 
@@ -239,3 +212,7 @@ The example test data should be unpacked into a directory at the same level as t
 </verbatim>
 
 Running the script =test.sh <directory of unpacked test data>= should initialise the output directory and run the pipeline passing in any arguments needed such as the extra files required. By using this test script the success or failure of the pipeline can be determined with a small data set.
+
+---++ Installation
+
+See the ZLPDocInstallation page.

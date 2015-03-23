@@ -27,6 +27,44 @@ git submodule update
 
 If you are denied access to clone the repository or the submodules' repositories, see the [[#DeployKeys][Deploy Keys]] section.
 
+---++ Installation of dependencies
+
+To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed =chroot=).
+
+The easiest way to install the Python dependencies is to use the [[http://continuum.io/downloads][Anaconda python distribution]] into the default location (=~/anaconda=). Then install the packages below with:
+
+<verbatim>
+conda install numpy scipy matplotlib astropy jinja2 pytest
+pip install emcee fitsio mock
+</verbatim>
+
+The pipeline looks for the anaconda python distribution in this location, or if not found it uses the system python.
+
+All scripts used are in the =scripts= subdirectory and consist of python files or shell scripts.
+
+The code has dependencies on external tools:
+
+---+++ Dependencies
+
+   * python
+   * cfitsio
+   * casutools (customised to our needs)
+
+Python packages:
+
+   * numpy
+   * scipy
+   * emcee (optional, only used for initial wcs solver)
+   * matplotlib
+   * fitsio
+   * astropy
+   * jinja2
+
+To run the unit tests:
+
+   * mock
+   * pytest
+
 #DeployKeys
 ---++ Deploy keys
 
