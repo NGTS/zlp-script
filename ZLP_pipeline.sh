@@ -325,8 +325,9 @@ ensure_directory() {
 
 setup_environment() {
     # If anaconda is available, use it
-    if [[ -d ${HOME}/anaconda ]]; then
-        export PATH=${HOME}/anaconda/bin:${PATH}
+    ANACONDA_PATH=/home/sw/anaconda
+    if [[ -d ${ANACONDA_PATH} ]]; then
+        export PATH=${ANACONDA_PATH}/bin:${PATH}
     fi
 
     echo "Using python: $(which python)"
