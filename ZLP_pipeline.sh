@@ -324,8 +324,19 @@ ensure_directory() {
 }
 
 setup_environment() {
-    # If anaconda is available, use it
-    ANACONDA_PATH=/home/sw/anaconda
+    # Allow the user to override the anaconda path variable
+    if [ -z ${ANACONDA_PATH:-} ]; then
+      # If anaconda is available, use it
+      case `hostname` in
+        ngtshead*)
+          ANACONDA_PATH=/home/sw/anaconda
+          ;;
+        *)
+          ANACONDA_PATH=${HOME}/anaconda
+          ;;
+      esac
+    fi
+
     if [[ -d ${ANACONDA_PATH} ]]; then
         export PATH=${ANACONDA_PATH}/bin:${PATH}
     fi
