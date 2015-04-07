@@ -337,8 +337,10 @@ setup_environment() {
       esac
     fi
 
+    PARANAL_ANACONDA_PATH=/usr/local/anaconda
+
     if [[ -d ${ANACONDA_PATH} ]]; then
-        export PATH=${ANACONDA_PATH}/bin:${PATH}
+        export PATH=${PARANAL_ANACONDA_PATH}/bin:${ANACONDA_PATH}/bin:${PATH}
     fi
 
     echo "Using python: $(which python)"
