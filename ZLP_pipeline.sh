@@ -92,7 +92,7 @@ readonly T14="1" # Make qa plots, default: 1
 
 create_input_lists() {
     echo "Create lists with Images"
-    CMD="python ${SCRIPTDIR}/createlists.py \"$IMGDIRS\" IMAGE fits $RUNNAME"
+    CMD="python ${SCRIPTDIR}/createlists.py \"$IMGDIRS\" IMAGE bz2 $RUNNAME"
     echo $CMD
     ${CMD}
 }

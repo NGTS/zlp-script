@@ -10,9 +10,23 @@ from astropy.io import fits as pyfits
 import os
 import time
 import sys
+from contextlib import contextmanager
+import bz2
 
 DIRECTORY = os.getcwd()
 DEBUG = 0
+
+
+@contextmanager
+def open_fits_file(filename):
+    if filename.endswith('.bz2'):
+        with bz2.BZ2File(filename) as uncompressed:
+            with pyfits.open(uncompressed) as infile:
+                yield infile
+    else:
+        with pyfits.open(filename) as infile:
+            yield infile
+
 
 def get_liste(directory, root, ext):
     ### search for all image files in the directories """
@@ -33,14 +47,13 @@ def sort_liste(liste, logroot, runnumber):
     science  = []
     dithered = []
     for image in liste:
-        hdulist = pyfits.open(image)
-        imtype = hdulist[0].header['IMGTYPE']
-        action = hdulist[0].header['ACTION']
-        try:
-            dither = hdulist[0].header['DITHER']
-        except:
-            dither = 'DISABLED'
-        hdulist.close()
+        with open_fits_file(image) as hdulist:
+            imtype = hdulist[0].header['IMGTYPE']
+            action = hdulist[0].header['ACTION']
+            try:
+                dither = hdulist[0].header['DITHER']
+            except:
+                dither = 'DISABLED'
         string = "%20s %10s %30s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), imtype, image)
         result = write_log(logroot, runnumber, string, 2)
         if imtype == 'IMAGE':
@@ -71,12 +84,11 @@ def sort_scilist(liste):
     fields = []
     scilists = []
     for item in liste:
-        hdulist = pyfits.open(item)
-        try:
-            field = hdulist[0].header['OBJECT']
-        except:
-            field = hdulist[0].header['FIELD']
-        hdulist.close()
+        with open_fits_file(item) as hdulist:
+            try:
+                field = hdulist[0].header['OBJECT']
+            except:
+                field = hdulist[0].header['FIELD']
         if fields.count(field) == 0:
             fields.append(field)
             scilists.append([])
