@@ -6,26 +6,14 @@
 
  
 import glob
-from astropy.io import fits as pyfits
 import os
 import time
 import sys
-from contextlib import contextmanager
-import bz2
+
+from pipeutils import open_fits_file
 
 DIRECTORY = os.getcwd()
 DEBUG = 0
-
-
-@contextmanager
-def open_fits_file(filename):
-    if filename.endswith('.bz2'):
-        with bz2.BZ2File(filename) as uncompressed:
-            with pyfits.open(uncompressed) as infile:
-                yield infile
-    else:
-        with pyfits.open(filename) as infile:
-            yield infile
 
 
 def get_liste(directory, root, ext):

@@ -2,8 +2,9 @@ import math
 import sys
 import os
 import numpy as np
-from astropy.io import fits as pyfits
 from extract_overscan import extract_overscan
+from pipeutils import open_fits_file
+from astropy.io import fits
 
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
@@ -37,9 +38,9 @@ def biasmaker():
         call = line.strip('\n')
         for line in file(call):
             line = line.strip()
-            hdulist = pyfits.open(line)
-            overscan = extract_overscan(hdulist)
-            data = hdulist[0].data[0:2048,20:2068]
+            with open_fits_file(line) as hdulist:
+                overscan = extract_overscan(hdulist)
+                data = hdulist[0].data[0:2048,20:2068]
             corrected = data-np.median(overscan)
             datamatrix.append(corrected)
         print 'medianing'
@@ -53,11 +54,11 @@ def biasmaker():
     print np.shape(mastermatrix)
     bias = np.mean(mastermatrix, axis=0)
     
-    hdulist[0].data = bias
+    phdu = fits.PrimaryHDU(bias)
     outname = outdir+biasname
     command = 'rm -f '+outname
     os.system(command)
-    hdulist.writeto(outname)
+    phdu.writeto(outname)
 
     os.system('rm -f '+outdir+'bsorted* removeindexlist.dat')
 biasmaker()

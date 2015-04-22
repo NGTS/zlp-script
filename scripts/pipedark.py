@@ -4,6 +4,7 @@ import os
 import numpy as np
 from astropy.io import fits as pyfits
 from extract_overscan import extract_overscan
+from pipeutils import open_fits_file
 
 inlist = str(sys.argv[1])
 biasname = str(sys.argv[2])
@@ -17,8 +18,8 @@ os.system('rm -f '+outdir+'dsorted*')
 def darkmaker():
     
 
-    hdulist = pyfits.open(biasname)
-    bias = hdulist[0].data
+    with open_fits_file(biasname) as hdulist:
+        bias = hdulist[0].data
     position = 0
     i = 1
     for line in file(inlist):
@@ -43,10 +44,10 @@ def darkmaker():
         call = line.strip('\n')
         for line in file(call):
             line = line.strip()
-            hdulist = pyfits.open(line)
-            overscan = extract_overscan(hdulist)
-            data = hdulist[0].data[0:2048,20:2068]
-            exposure = hdulist[0].header['exposure']
+            with open_fits_file(line) as hdulist:
+                overscan = extract_overscan(hdulist)
+                data = hdulist[0].data[0:2048,20:2068]
+                exposure = hdulist[0].header['exposure']
             corrected = (data-np.median(overscan)-bias)/exposure
             datamatrix.append(corrected)
         print np.shape(datamatrix)
@@ -59,12 +60,12 @@ def darkmaker():
     print np.shape(mastermatrix)
     dark = np.mean(mastermatrix, axis=0)
     
-    hdulist[0].data = dark
+    phdu = pyfits.PrimaryHDU(dark)
 
     outname = outdir+darkname
     command = 'rm -f '+outname
     os.system(command)
-    hdulist.writeto(outname)
+    phdu.writeto(outname)
 
     os.system('rm -f removeindexlist.dat '+outdir+'dsorted*')
 
