@@ -21,6 +21,9 @@ setup() {
     mkdir -p ${OUTPUTDIR}/OriginalData
     cp -r ${BASEDIR}/$1/images ${OUTPUTDIR}/OriginalData/
     echo "Setup complete"
+
+    # Use whichever python is available
+    export DISABLE_ANACONDA=1
 }
 
 perform_test() {
