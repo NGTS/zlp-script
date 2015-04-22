@@ -29,7 +29,7 @@ if [[ $# -ne 7 ]]; then
           images
               <one directory per date>
                   action<number>_<optional description>
-                      IMAGE*.fits
+                      IMAGE*.fits.bz2
 
   * input-catalogue
 
