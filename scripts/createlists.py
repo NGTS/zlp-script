@@ -6,13 +6,15 @@
 
  
 import glob
-from astropy.io import fits as pyfits
 import os
 import time
 import sys
 
+from pipeutils import open_fits_file
+
 DIRECTORY = os.getcwd()
 DEBUG = 0
+
 
 def get_liste(directory, root, ext):
     ### search for all image files in the directories """
@@ -33,14 +35,13 @@ def sort_liste(liste, logroot, runnumber):
     science  = []
     dithered = []
     for image in liste:
-        hdulist = pyfits.open(image)
-        imtype = hdulist[0].header['IMGTYPE']
-        action = hdulist[0].header['ACTION']
-        try:
-            dither = hdulist[0].header['DITHER']
-        except:
-            dither = 'DISABLED'
-        hdulist.close()
+        with open_fits_file(image) as hdulist:
+            imtype = hdulist[0].header['IMGTYPE']
+            action = hdulist[0].header['ACTION']
+            try:
+                dither = hdulist[0].header['DITHER']
+            except:
+                dither = 'DISABLED'
         string = "%20s %10s %30s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), imtype, image)
         result = write_log(logroot, runnumber, string, 2)
         if imtype == 'IMAGE':
@@ -71,12 +72,11 @@ def sort_scilist(liste):
     fields = []
     scilists = []
     for item in liste:
-        hdulist = pyfits.open(item)
-        try:
-            field = hdulist[0].header['OBJECT']
-        except:
-            field = hdulist[0].header['FIELD']
-        hdulist.close()
+        with open_fits_file(item) as hdulist:
+            try:
+                field = hdulist[0].header['OBJECT']
+            except:
+                field = hdulist[0].header['FIELD']
         if fields.count(field) == 0:
             fields.append(field)
             scilists.append([])

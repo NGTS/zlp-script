@@ -6,6 +6,7 @@ import os
 import numpy as np
 from astropy.io import fits as pyfits
 from extract_overscan import extract_overscan
+from pipeutils import open_fits_file
 
 def render_total_file(data, fname, nfiles):
     hdu = pyfits.PrimaryHDU(data)
@@ -26,12 +27,12 @@ smname = outdir+os.path.basename(smname)
 totalname = outdir+'flat_total.fits'
 def reducer():
     os.system('mkdir '+outdir+'flats')
-    hdulist = pyfits.open(biasname)
-    bias = hdulist[0].data
-    hdulist = pyfits.open(darkname)
-    dark = hdulist[0].data    
-    hdulist = pyfits.open(smname)
-    sm = hdulist[0].data    
+    with open_fits_file(biasname) as hdulist:
+        bias = hdulist[0].data
+    with open_fits_file(darkname) as hdulist:
+        dark = hdulist[0].data    
+    with open_fits_file(smname) as hdulist:
+        sm = hdulist[0].data    
     os.system('rm -f '+outdir+'datafile.dat')
     os.system('rm -f '+outdir+'variance.fits')
     os.system('rm -f '+outdir+flatname)
@@ -45,10 +46,10 @@ def reducer():
     expfile = outdir+'expdata.dat'
     for line in file(inlist):
         stripped = line.strip()
-        hdulist = pyfits.open(stripped)
-        overscan = extract_overscan(hdulist)
-        data = hdulist[0].data[0:2048,20:2068]
-        exposure = hdulist[0].header['exposure']
+        with open_fits_file(stripped) as hdulist:
+            overscan = extract_overscan(hdulist)
+            data = hdulist[0].data[0:2048,20:2068]
+            exposure = hdulist[0].header['exposure']
         median_data = np.median(data[:, 20:-20])
         
         f = open(expfile, 'a')
@@ -74,7 +75,7 @@ def reducer():
             normalised = corrected1/fmean
 #        normalised = corrected1
             path, fname = os.path.split(stripped)
-            outname = outdir+'flats/'+'proc'+fname
+            outname = outdir+'flats/'+'proc'+fname.replace('.bz2', '')
             dfile = outdir+'datafile.dat'
             f = open(dfile, 'a')
             f.write(str(frameno)+" "+str(fmean)+" "+str(fstd)+" "+str(exposure)+" "+outname)
@@ -87,10 +88,10 @@ def reducer():
         
      
         
-            hdulist[0].data = normalised
+            phdu = pyfits.PrimaryHDU(normalised)
             command = 'rm -f '+outname
             os.system(command)
-            hdulist.writeto(outname)
+            phdu.writeto(outname)
             tfile = outdir+'processed.dat'
             f = open(tfile, 'a')
             f.write(outname)
@@ -110,22 +111,19 @@ def reducer():
 
     print(np.size(wholestd))
     
-    hdulist[0].data = wholestd
     outname = outdir+'std.fits'
-    hdulist.writeto(outname)
+    pyfits.PrimaryHDU(wholestd).writeto(outname)
     print('std done')
     variance = 1/(wholestd*wholestd)
 
-    hdulist[0].data = variance
     outname = outdir+'variance.fits'
-    hdulist.writeto(outname)
+    pyfits.PrimaryHDU(variance).writeto(outname)
     print('var done')
     flat = np.median(datamatrix, axis = 0)
 
-    hdulist[0].data = flat
 
     outname = outdir+flatname
-    hdulist.writeto(outname)
+    pyfits.PrimaryHDU(flat).writeto(outname)
     print('flat done')
 
     render_total_file(flat_total, totalname, nflat_files)
