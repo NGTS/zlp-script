@@ -324,23 +324,25 @@ ensure_directory() {
 }
 
 setup_environment() {
-    # Allow the user to override the anaconda path variable
-    if [ -z ${ANACONDA_PATH:-} ]; then
-      # If anaconda is available, use it
-      case `hostname` in
-        ngtshead*)
-          ANACONDA_PATH=/home/sw/anaconda
-          ;;
-        *)
-          ANACONDA_PATH=${HOME}/anaconda
-          ;;
-      esac
-    fi
+    if [ -z ${DISABLE_ANACONDA} ]; then
+        # Allow the user to override the anaconda path variable
+        if [ -z ${ANACONDA_PATH:-} ]; then
+        # If anaconda is available, use it
+        case `hostname` in
+            ngtshead*)
+            ANACONDA_PATH=/home/sw/anaconda
+            ;;
+            *)
+            ANACONDA_PATH=${HOME}/anaconda
+            ;;
+        esac
+        fi
 
-    PARANAL_ANACONDA_PATH=/usr/local/anaconda
+        PARANAL_ANACONDA_PATH=/usr/local/anaconda
 
-    if [[ -d ${ANACONDA_PATH} ]]; then
-        export PATH=${PARANAL_ANACONDA_PATH}/bin:${ANACONDA_PATH}/bin:${PATH}
+        if [[ -d ${ANACONDA_PATH} ]]; then
+            export PATH=${PARANAL_ANACONDA_PATH}/bin:${ANACONDA_PATH}/bin:${PATH}
+        fi
     fi
 
     echo "Using python: $(which python)"
