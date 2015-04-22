@@ -324,7 +324,7 @@ ensure_directory() {
 }
 
 setup_environment() {
-    if [ -z ${DISABLE_ANACONDA} ]; then
+    if [ -z ${DISABLE_ANACONDA:-} ]; then
         # Allow the user to override the anaconda path variable
         if [ -z ${ANACONDA_PATH:-} ]; then
         # If anaconda is available, use it
