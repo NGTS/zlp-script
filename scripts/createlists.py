@@ -9,11 +9,19 @@ import glob
 import os
 import time
 import sys
+from multiprocessing.dummy import Pool as ThreadPool
+from collections import defaultdict
+from functools import partial
 
 from pipeutils import open_fits_file
 
 DIRECTORY = os.getcwd()
 DEBUG = 0
+
+class NullPool(object):
+    def __init__(self): pass
+    def map(self, fn, l):
+        return map(fn, l)
 
 
 def get_liste(directory, root, ext):
@@ -26,35 +34,50 @@ def get_liste(directory, root, ext):
     liste.sort()
     return(liste)
 
+def classify(files, logroot):
+    pool = ThreadPool()
+    fn = partial(classify_file, logroot=logroot)
+    results = pool.map(fn, files)
+    keys = ['dithered', 'science', 'dark', 'bias', 'flat']
+
+    return { key: sum([entry[key] for entry in results], []) for key in keys }
+
+
+def classify_file(filename, logroot):
+    out = defaultdict(list)
+    with open_fits_file(filename) as hdulist:
+        imtype = hdulist[0].header['IMGTYPE']
+        action = hdulist[0].header['ACTION']
+        try:
+            dither = hdulist[0].header['DITHER']
+        except:
+            dither = 'DISABLED'
+    string = "%20s %10s %30s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), imtype, filename)
+    result = write_log(logroot, runnumber, string, 2)
+    if imtype == 'IMAGE':
+        if dither == 'ENABLED':
+            out['dithered'].append(filename)
+        else:
+            out['science'].append(filename)
+    elif imtype == 'DARK':
+        out['dark'].append(filename)
+    elif imtype == 'BIAS':
+        out['bias'].append(filename)
+    elif imtype == 'FLAT':
+        out['flat'].append(filename)
+
+    return out
+
 
 def sort_liste(liste, logroot, runnumber):
     ### Sort images for bias, darks, flats, and scientific frames"""
-    biaslist = []
-    darklist = []
-    flatlist = []
-    science  = []
-    dithered = []
-    for image in liste:
-        with open_fits_file(image) as hdulist:
-            imtype = hdulist[0].header['IMGTYPE']
-            action = hdulist[0].header['ACTION']
-            try:
-                dither = hdulist[0].header['DITHER']
-            except:
-                dither = 'DISABLED'
-        string = "%20s %10s %30s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), imtype, image)
-        result = write_log(logroot, runnumber, string, 2)
-        if imtype == 'IMAGE':
-            if dither == 'ENABLED':
-                dithered.append(image)
-            else:
-                science.append(image)
-        elif imtype == 'DARK':
-            darklist.append(image)
-        elif imtype == 'BIAS':
-            biaslist.append(image)
-        elif imtype == 'FLAT':
-            flatlist.append(image)
+    classification = classify(liste, logroot)
+    biaslist = classification['bias']
+    darklist = classification['dark']
+    flatlist = classification['flat']
+    science = classification['science']
+    dithered = classification['dithered']
+
     string = "\n"
     string = string + "%20s %8d bias images identified\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), len(biaslist))
     string = string + "%20s %8d dark images identified\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), len(darklist))
