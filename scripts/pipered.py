@@ -64,4 +64,5 @@ def reducer():
 
 
 
-reducer()
+if __name__ == '__main__':
+    reducer()
