@@ -28,7 +28,13 @@ setup() {
 
 perform_test() {
     local readonly sourcedir=$(abspath $1)
-    TESTQA=true sh ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} $sourcedir/input-catalogue.fits $sourcedir/initial_wcs_solution.pickle ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
+    if [ -f ${sourcedir}/initial_wcs_solution.pickle ]; then
+        solution_filename=${sourcedir}/initial_wcs_solution.pickle
+    else
+        solution_filename=${sourcedir}/wcs_solution.json
+    fi
+    echo "Solution file ${solution_filename}"
+    TESTQA=true sh ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} ${sourcedir}/input-catalogue.fits ${solution_filename} ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
 }
 
 test_photom_script() {
