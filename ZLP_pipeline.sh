@@ -82,7 +82,8 @@ readonly T10="1" # perform photometry, default: 1
 
 readonly T12="0" # run image subtraction, default: 0
 readonly T13="0" # detrend, default: 0
-readonly T14="1" # Make qa plots, default: 1
+readonly T14="1" # detrend with lightcurves
+readonly T15="1" # Make qa plots, default: 1
 
 
 # Zero Level Pipeline
@@ -361,6 +362,24 @@ setup_directory_structure() {
     done
 }
 
+run_lightcurves_detrending() {
+    if hash lightcurves-casu 2>/dev/null; then
+        local readonly ref=$GIVEN_INPUTCATALOGUE
+        local readonly photomfile=$(find ${WORKINGDIR}/AperturePhot/output -name 'output.fits' -print)
+        if [ ! -z "${photomfile}" ]; then
+            local readonly output_directory=$(dirname $photomfile)
+            local readonly outfile=${output_directory}/casu-lightcurves-out.fits
+            local readonly number_of_coefficients=2
+            local readonly source_files_dir=${WORKINGDIR}/Reduction/output/${RUNNAME}
+            echo "Running casu lightcurves file to create ${outfile}"
+
+            lightcurves-casu -f ${number_of_coefficients} -o ${outfile} -p -q ${ref} $(find ${source_files_dir} -name 'proc*.phot')
+        fi
+    else
+        echo "Cannot find CASU lightcurves binary" >&2
+    fi
+}
+
 generate_qa_plots() {
     bash ${BASEDIR}/scripts/zlp-qa/run.sh \
         ${WORKINGDIR} \
@@ -398,7 +417,9 @@ main() {
 
     [ "$T13" = "1" ] && run_detrending
 
-    [ "$T14" = "1" ] && generate_qa_plots
+    [ "$T14" = "1" ] && run_lightcurves_detrending
+
+    [ "$T15" = "1" ] && generate_qa_plots
 }
 
 main 2>&1 | tee ${RUNNAME}.log
