@@ -47,9 +47,11 @@ def reducer():
     for line in file(inlist):
         stripped = line.strip()
         with open_fits_file(stripped) as hdulist:
+            header = hdulist[0].header
             overscan = extract_overscan(hdulist)
             data = hdulist[0].data[0:2048,20:2068]
-            exposure = hdulist[0].header['exposure']
+            exposure = header['exposure']
+            mjd = header['mjd']
         median_data = np.median(data[:, 20:-20])
         
         f = open(expfile, 'a')
@@ -89,6 +91,8 @@ def reducer():
      
         
             phdu = pyfits.PrimaryHDU(normalised)
+            phdu.header['exposure'] = exposure
+            phdu.header['mjd'] = mjd
             command = 'rm -f '+outname
             os.system(command)
             phdu.writeto(outname)
