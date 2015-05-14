@@ -12,3 +12,8 @@ def open_fits_file(filename):
     else:
         with fits.open(filename) as infile:
             yield infile
+
+class NullPool(object):
+    def __init__(self): pass
+    def map(self, fn, l):
+        return map(fn, l)

@@ -18,10 +18,6 @@ from pipeutils import open_fits_file
 DIRECTORY = os.getcwd()
 DEBUG = 0
 
-class NullPool(object):
-    def __init__(self): pass
-    def map(self, fn, l):
-        return map(fn, l)
 
 
 def get_liste(directory, root, ext):
