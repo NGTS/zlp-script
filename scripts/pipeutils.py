@@ -14,6 +14,6 @@ def open_fits_file(filename):
             yield infile
 
 class NullPool(object):
-    def __init__(self): pass
+    def __init__(self, *args, **kwargs): pass
     def map(self, fn, l):
         return map(fn, l)
