@@ -255,11 +255,9 @@ single_perform_aperture_photometry() {
         --wcsref ${WCSFIT_REFERENCE_FRAME}
 
     # Condense the photometry
-    python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_create_outfile.py \
-        --outdir ${output_directory} \
-        --nproc 1 \
-        --apsize ${APSIZE} \
-        ${image_filelist}
+    python ${SCRIPTDIR}/zlp-condense/zlp_condense.py \
+        --output "${output_directory}/output.fits" \
+        $(cat ${image_filelist} | sed 's/.fits/.fits.phot/')
 }
 
 perform_aperture_photometry() {
