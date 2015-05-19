@@ -7,3 +7,6 @@
 [submodule "scripts/zlp-qa"]
 	path = scripts/zlp-qa
 	url = git@github.com:NGTS/zlp-qa.git
+[submodule "scripts/zlp-condense"]
+	path = scripts/zlp-condense
+	url = git@github.com:NGTS/zlp-condense.git
