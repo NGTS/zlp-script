@@ -390,7 +390,7 @@ run_lightcurves_detrending() {
             local readonly source_files_dir=${WORKINGDIR}/Reduction/output/${RUNNAME}
             echo "Running casu lightcurves file to create ${outfile}"
 
-            lightcurves-casu -f ${number_of_coefficients} -o ${outfile} -p -q ${ref} $(find ${source_files_dir} -name 'proc*.phot')
+            lightcurves-casu -f ${number_of_coefficients} -o ${outfile} -p ${ref} $(find ${source_files_dir} -name 'proc*.phot')
             python ${BASEDIR}/scripts/combine_with_casu_detrended.py -v -p ${photomfile} -d ${outfile}
         fi
     else
