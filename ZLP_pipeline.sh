@@ -349,6 +349,25 @@ setup_environment() {
     set +o nounset
     export PATH=/usr/local/pipeline/bin:${PATH}
     export PYTHONPATH=${BASEDIR}/scripts/zlp-photometry:${BASEDIR}/scripts:${BASEDIR}/scripts/zlp-input-catalogue:$PYTHONPATH
+    case "$(hostname -s)" in
+        ngts*)
+            export IERS_DATA=/usr/local/pipeline/data
+            export JPLEPH_DATA=${IERS_DATA}/linux_p1550p2650.430t
+            ;;
+        mbp*)
+            export IERS_DATA=${HOME}/.local/data
+            export JPLEPH_DATA=${IERS_DATA}/linux_p1550p2650.430t
+            ;;
+    esac
+
+    if [ ! -z ${IERS_DATA} ]; then
+        echo "IERS data path: ${IERS_DATA}"
+    fi
+
+    if [ ! -z ${JPLEPH_DATA} ]; then
+        echo "JPLEPH data path: ${JPLEPH_DATA}"
+    fi
+
     echo "Environment set up"
     set -o nounset
 }
