@@ -10,3 +10,6 @@
 [submodule "scripts/zlp-condense"]
 	path = scripts/zlp-condense
 	url = git@github.com:NGTS/zlp-condense.git
+[submodule "scripts/zlp-reduction"]
+	path = scripts/zlp-reduction
+	url = git@github.com:NGTS/zlp-reduction.git
