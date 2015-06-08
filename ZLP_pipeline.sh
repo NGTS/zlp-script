@@ -101,14 +101,14 @@ create_input_lists() {
 create_master_bias() {
     # Create MasterBias
     echo "Create MasterBias"
-    CMD="python ${SCRIPTDIR}/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
+    CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipebias.py $BIASLIST ${RUNNAME}_MasterBias.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
     ${CMD}
 }
 
 create_master_dark() {
     #Create MasterDark
     echo "Create MasterDark"
-    CMD="python ${SCRIPTDIR}/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
+    CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipedark.py $DARKLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
     ${CMD}
 }
 
@@ -125,7 +125,7 @@ copy_temporary_shuttermap() {
 create_master_flat() {
     #Create MasterFlat
     echo "Create MasterFlat"
-    CMD="python ${SCRIPTDIR}/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
+    CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
     ${CMD}
 }
 
@@ -140,7 +140,7 @@ reduce_images() {
         IMAGELIST=${IMAGELIST#${WORKINGDIR}}
         IMAGELIST=${IMAGELIST#/OriginalData/output/}
         ensure_directory ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}
-        CMD="python ${SCRIPTDIR}/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME} ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}"
+        CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME} ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}"
         ${CMD}
     done
 }
