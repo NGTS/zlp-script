@@ -45,6 +45,7 @@ test_photom_script() {
 verify() {
     echo Verifying
     verify_in_mjd_order
+    verify_psf_info
 }
 
 verify_in_mjd_order() {
@@ -54,6 +55,12 @@ verify_in_mjd_order() {
         echo "ERROR: failure in validation 'mjd order'" >&2
         exit "$?"
     fi
+}
+
+verify_psf_info() {
+    echo "Verifying psf info"
+    FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
+    python ${BASEDIR}/testing/ensure_psf_info.py ${FNAME}
 }
 
 main() {
