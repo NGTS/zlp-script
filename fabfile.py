@@ -4,7 +4,7 @@ env.use_ssh_config = True
 env.hosts = ['ngtshead.astro']
 
 
-@task
+@task(default=True)
 def update():
     push_local()
     update_remote()
