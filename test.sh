@@ -46,6 +46,7 @@ verify() {
     echo Verifying
     verify_in_mjd_order
     verify_psf_info
+    verify_casu_detrending_zero_point
 }
 
 verify_in_mjd_order() {
@@ -61,6 +62,12 @@ verify_psf_info() {
     echo "Verifying psf info"
     FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
     python ${BASEDIR}/testing/ensure_psf_info.py ${FNAME}
+}
+
+verify_casu_detrending_zero_point() {
+    echo "Verifying CASU zero point"
+    FNAME=$(find ${OUTPUTDIR} -name 'casu-lightcurves-out.fits')
+    python ${BASEDIR}/testing/ensure_casu_zero_point.py ${FNAME}
 }
 
 main() {

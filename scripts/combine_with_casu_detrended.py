@@ -12,6 +12,10 @@ logging.basicConfig(level='INFO', format='%(levelname)7s %(message)s')
 logger = logging.getLogger(__name__)
 
 
+def mag_to_flux(m, zp):
+    return 10 ** ((zp - m) / 2.5)
+
+
 def main(args):
     if args.verbose:
         logger.setLevel('DEBUG')
@@ -19,15 +23,22 @@ def main(args):
 
     hdu_name = 'CASUDET'
 
-    logger.debug('Reading detrended flux')
-    data = fits.getdata(args.detrended, 1)
+    logger.info('Reading detrended magnitudes')
+    with fits.open(args.detrended) as infile:
+        data = infile[1].data
+        header = infile[1].header
+
+    zp = header['zp']
+    logger.info('Converting with zero point %s', zp)
+
     bjd = data['bjd'][0]
     ind = np.argsort(bjd)
-    detrended_flux = data['flux'][:, ind]
+    detrended_magnitudes = data['flux'][:, ind]
+    detrended_flux = mag_to_flux(detrended_magnitudes, zp=zp)
     detrended_hdu = fits.ImageHDU(detrended_flux, name=hdu_name)
 
     if args.output:
-        logger.debug('Rendering to new file %s', args.output)
+        logger.info('Rendering to new file %s', args.output)
         with fits.open(args.photometry) as hdulist:
             if hdu_name in hdulist:
                 logger.warning('Removing old hdu: %s', hdu_name)
@@ -35,7 +46,7 @@ def main(args):
             hdulist.append(detrended_hdu)
             hdulist.writeto(args.output, clobber=True)
     else:
-        logger.debug('Updating file %s', args.photometry)
+        logger.info('Updating file %s', args.photometry)
         with fits.open(args.photometry, mode='update') as hdulist:
             if hdu_name in hdulist:
                 logger.warning('Removing old hdu: %s', hdu_name)
