@@ -47,6 +47,7 @@ verify() {
     verify_in_mjd_order
     verify_psf_info
     verify_casu_detrending_zero_point
+    verify_pipeline_sha_present_in_output_file
 }
 
 verify_in_mjd_order() {
@@ -68,6 +69,12 @@ verify_casu_detrending_zero_point() {
     echo "Verifying CASU zero point"
     FNAME=$(find ${OUTPUTDIR} -name 'casu-lightcurves-out.fits')
     python ${BASEDIR}/testing/ensure_casu_zero_point.py ${FNAME}
+}
+
+verify_pipeline_sha_present_in_output_file() {
+    echo "Verifying pipeline SHA is present in output file"
+    FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
+    python ${BASEDIR}/testing/ensure_pipeline_sha.py ${FNAME}
 }
 
 main() {

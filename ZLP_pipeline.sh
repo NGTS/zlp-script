@@ -254,9 +254,12 @@ single_perform_aperture_photometry() {
         --apsize ${APSIZE} \
         --wcsref ${WCSFIT_REFERENCE_FRAME}
 
+    PIPELINESHA=$(extract_pipeline_sha $(dirname $0))
+
     # Condense the photometry
     python ${SCRIPTDIR}/zlp-condense/zlp_condense.py \
         --output "${output_directory}/output.fits" \
+        --sha "${PIPELINESHA}" \
         $(cat ${image_filelist} | sed 's/.fits/.fits.phot/')
 }
 
@@ -402,6 +405,11 @@ generate_qa_plots() {
     bash ${BASEDIR}/scripts/zlp-qa/run.sh \
         ${WORKINGDIR} \
         ${WORKINGDIR}/QualityAssessment
+}
+
+extract_pipeline_sha() {
+    local readonly dirname="$1"
+    (cd $dirname && git rev-parse HEAD)
 }
 
 # Do photometry on subtracted Images
