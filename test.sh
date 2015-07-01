@@ -48,6 +48,7 @@ verify() {
     verify_psf_info
     verify_casu_detrending_zero_point
     verify_pipeline_sha_present_in_output_file
+    verify_post_tamuz_present
 }
 
 verify_in_mjd_order() {
@@ -75,6 +76,12 @@ verify_pipeline_sha_present_in_output_file() {
     echo "Verifying pipeline SHA is present in output file"
     FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
     python ${BASEDIR}/testing/ensure_pipeline_sha.py ${FNAME}
+}
+
+verify_post_tamuz_present() {
+    echo "Verifying post tamuz flux is present in the output file"
+    FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
+    python ${BASEDIR}/testing/ensure_tamflux.py ${FNAME}
 }
 
 main() {

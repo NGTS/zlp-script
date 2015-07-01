@@ -81,7 +81,7 @@ readonly T9="0" # create input catalogues, default: 0
 readonly T10="1" # perform photometry, default: 1
 
 readonly T12="0" # run image subtraction, default: 0
-readonly T13="0" # detrend, default: 0
+readonly T13="1" # detrend, default: 0
 readonly T14="1" # detrend with lightcurves
 readonly T15="1" # Make qa plots, default: 1
 
@@ -272,25 +272,23 @@ perform_aperture_photometry() {
 }
 
 run_detrending() {
-    echo "Detrending with SYSREM"
-    OUTPUTDIR="${WORKINGDIR}/Detrending/output/${RUNNAME}"
-    # Old incorrect version of sysrem
-    # SYSREM=${WORKINGDIR}/Detrending/tamuz_src/sysrem
+    SYSREM=sysrem
+    if hash ${SYSREM} 2>/dev/null; then
+        echo "Detrending with SYSREM"
 
-    SYSREM=/wasp/home/sw/SelectionEffects/bin/Sysrem.srw
-
-    PHOTOMOUT_FILES=`find ${WORKINGDIR}/AperturePhot/output/${RUNNAME} -name 'output.fits'`
-    for PHOTOMOUT in $PHOTOMOUT_FILES
-    do
-        # Take the last two path elements
-        JOBNAME=`echo $PHOTOMOUT | rev | cut -d '/' -f 2 | rev`
-        OUTSUBDIR=${OUTPUTDIR}/${JOBNAME}
-        ensure_directory ${OUTSUBDIR}
-        OUTFILE=${OUTSUBDIR}/tamout.fits
-        CMD="${SYSREM} ${PHOTOMOUT} -o ${OUTFILE}"
-        echo ${CMD}
-        qsub -b y -pe parallel 24 ${SYSREM} ${PHOTOMOUT} -o ${OUTFILE}
-    done
+        local readonly photomfile=$(find ${WORKINGDIR}/AperturePhot/output -name 'output.fits')
+        if [ ! -z "${photomfile}" ]; then
+            local readonly output_directory=$(dirname $photomfile)
+            local readonly outfile=${output_directory}/tamout.fits
+            echo "Running sysrem to create ${outfile}"
+            ${SYSREM} ${photomfile} ${outfile}
+            python ${BASEDIR}/scripts/combine_with_sysrem.py -v -p ${photomfile} -t ${outfile}
+        else
+            echo "Cannot find photometry output files" >&2
+        fi
+    else
+        echo "Cannot find sysrem binary ${SYSREM}" >&2
+    fi
 }
 
 
