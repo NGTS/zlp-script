@@ -281,8 +281,13 @@ run_detrending() {
             local readonly output_directory=$(dirname $photomfile)
             local readonly outfile=${output_directory}/tamout.fits
             echo "Running sysrem to create ${outfile}"
-            ${SYSREM} ${photomfile} ${outfile}
-            python ${BASEDIR}/scripts/combine_with_sysrem.py -v -p ${photomfile} -t ${outfile}
+
+            if [ -z ${NOSYSREM:-} ]; then
+                ${SYSREM} ${photomfile} ${outfile}
+                python ${BASEDIR}/scripts/combine_with_sysrem.py -v -p ${photomfile} -t ${outfile}
+            else
+                echo '*** sysrem has been disabled with envar: NOSYSREM. unset to run sysrem'
+            fi
         else
             echo "Cannot find photometry output files" >&2
         fi
