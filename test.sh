@@ -14,6 +14,9 @@ fi
 BASEDIR=$(abspath $(dirname $0))
 OUTPUTDIR=${BASEDIR}/testdata
 
+# Remove this to test with sysrem
+export NOSYSREM=true
+
 setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
@@ -33,7 +36,7 @@ perform_test() {
         solution_filename=${sourcedir}/wcs_solution.json
     fi
     echo "Solution file ${solution_filename}"
-    TESTQA=true NOSYSREM=true sh ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} ${sourcedir}/input-catalogue.fits ${solution_filename} ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
+    TESTQA=true sh ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} ${sourcedir}/input-catalogue.fits ${solution_filename} ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
 }
 
 test_photom_script() {
@@ -47,7 +50,9 @@ verify() {
     verify_psf_info
     verify_casu_detrending_zero_point
     verify_pipeline_sha_present_in_output_file
-    verify_post_tamuz_present
+    if [ -z ${NOSYSREM:-} ]; then
+        verify_post_tamuz_present
+    fi
 }
 
 verify_in_mjd_order() {
