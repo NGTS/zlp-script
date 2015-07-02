@@ -36,6 +36,7 @@ def update_remote(remote='origin', branch='master'):
         run('git merge --ff {remote}/{branch}'.format(remote=remote, branch=branch))
         run('git submodule update')
 
+
 @task
 def test_remote(sourcedir='source2015'):
     '''
@@ -44,9 +45,9 @@ def test_remote(sourcedir='source2015'):
     with change_to_pipeline_dir():
         run('./test.sh {sourcedir}'.format(sourcedir=sourcedir))
 
+
 def submodules(fname):
-    root_dir = os.path.realpath(
-            os.path.dirname(fname))
+    root_dir = os.path.realpath(os.path.dirname(fname))
     with open(fname) as infile:
         for line in infile:
             if 'path' in line:
@@ -63,3 +64,14 @@ def update_submodules():
         with lcd(path):
             local('git fetch origin')
             local('git checkout origin/master')
+
+
+@task
+def install_python_packages():
+    '''
+    Install the required python packages.
+    '''
+    has_conda = local('conda 2>/dev/null >/dev/null').return_code == 0
+    if has_conda:
+        local('conda install --file requirements.conda.txt')
+    local('pip install -r requirements.txt')
