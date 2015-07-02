@@ -14,7 +14,6 @@ fi
 BASEDIR=$(abspath $(dirname $0))
 OUTPUTDIR=${BASEDIR}/testdata
 
-
 setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
@@ -34,7 +33,7 @@ perform_test() {
         solution_filename=${sourcedir}/wcs_solution.json
     fi
     echo "Solution file ${solution_filename}"
-    TESTQA=true sh ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} ${sourcedir}/input-catalogue.fits ${solution_filename} ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
+    TESTQA=true sh NOSYSREM=true ./ZLP_pipeline.sh ZLPTest ${OUTPUTDIR} ${sourcedir}/input-catalogue.fits ${solution_filename} ${sourcedir}/srw_confidence.fits ${sourcedir}/shuttermap.fits ${sourcedir}/wcs-reference-frame.fits
 }
 
 test_photom_script() {
