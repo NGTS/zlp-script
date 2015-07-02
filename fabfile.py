@@ -4,7 +4,7 @@ import os
 env.use_ssh_config = True
 env.hosts = ['ngtshead.astro']
 
-PIPELINE_DIR = '~/work/NGTS/pipeline/ZLP/zlp-script'
+PIPELINE_DIR = '/ngts/pipedev/ZLP'
 change_to_pipeline_dir = lambda: cd(PIPELINE_DIR)
 
 
