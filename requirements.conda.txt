@@ -17,7 +17,6 @@ pyparsing=2.0.3=py27_0
 pytest=2.7.1=py27_0
 python=2.7.10=0
 python-dateutil=2.4.2=py27_0
-python.app=1.2=py27_4
 pytz=2015.4=py27_0
 readline=6.2=2
 scipy=0.15.1=np19py27_0
@@ -25,5 +24,4 @@ setuptools=17.1.1=py27_0
 six=1.9.0=py27_0
 sqlite=3.8.4.1=1
 tk=8.5.18=0
-yapf=0.1.9=py27_0
 zlib=1.2.8=0

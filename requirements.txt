@@ -1,7 +1,6 @@
 astropy==1.0.3
 ecdsa==0.13
 emcee==2.1.0
-Fabric==1.10.1
 fitsio==0.9.7
 ipython==3.2.0
 Jinja2==2.7.3
