@@ -1,11 +1,20 @@
 from fabric.api import *
 import os
+import socket
+
+def lrun(*args, **kwargs):
+    func = local if socket.gethostname() == 'ngtshead'  else run
+    return func(*args, **kwargs)
+
+def change_dir(*args, **kwargs):
+    func = lcd if socket.gethostname() == 'ngtshead' else cd
+    return func(*args, **kwargs)
 
 env.use_ssh_config = True
 env.hosts = ['ngtshead.astro']
 
 PIPELINE_DIR = '/ngts/pipedev/ZLP'
-change_to_pipeline_dir = lambda: cd(PIPELINE_DIR)
+change_to_pipeline_dir = lambda: change_dir(PIPELINE_DIR)
 
 
 @task
@@ -31,10 +40,10 @@ def update_remote(remote='origin', branch='master'):
     Checkout <remote>/<branch> on ngtshead and update submodules
     '''
     with change_to_pipeline_dir():
-        run('git fetch {remote}'.format(remote=remote))
-        run('git checkout {branch}'.format(branch=branch))
-        run('git merge --ff {remote}/{branch}'.format(remote=remote, branch=branch))
-        run('git submodule update')
+        lrun('git fetch {remote}'.format(remote=remote))
+        lrun('git checkout {branch}'.format(branch=branch))
+        lrun('git merge --ff {remote}/{branch}'.format(remote=remote, branch=branch))
+        lrun('git submodule update')
 
 
 @task
@@ -43,7 +52,7 @@ def test_remote(sourcedir='source2015'):
     Run test on ngtshead with <sourcedir>
     '''
     with change_to_pipeline_dir():
-        run('./test.sh {sourcedir}'.format(sourcedir=sourcedir))
+        lrun('./test.sh {sourcedir}'.format(sourcedir=sourcedir))
 
 
 def submodules(fname):
