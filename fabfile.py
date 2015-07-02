@@ -75,3 +75,13 @@ def install_python_packages():
     if has_conda:
         local('conda install --file requirements.conda.txt')
     local('pip install -r requirements.txt')
+
+
+@task
+def init():
+    '''
+    Initialises the pipeline repository
+    '''
+    install_python_packages()
+    local('git submodule init')
+    local('git submodule update')
