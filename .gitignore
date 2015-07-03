@@ -10,4 +10,6 @@ venv
 .direnv
 *.egg-info
 *.fits
+!testing/data/test_output.fits
+!testing/data/test_tamout.fits
 *.swp
