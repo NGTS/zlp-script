@@ -34,6 +34,25 @@ def main(args):
                 del hdulist[hdu_name]
             hdulist.append(detflux_hdu)
 
+            imagelist_cols = ['zero_point', 'aj']
+            catalogue_cols = ['ci']
+
+            combined_catalogue_columns = (hdulist['catalogue'].columns +
+                    fits.ColDefs([infile['catalogue'].columns['ci']]))
+            new_imagelist_columns = [infile['imagelist'].columns[key]
+                    for key in imagelist_cols]
+            combined_imagelist_columns = fits.ColDefs(
+                    hdulist['imagelist'].columns +
+                    fits.ColDefs(new_imagelist_columns))
+
+            imagelist = hdulist['IMAGELIST'] = fits.BinTableHDU.from_columns(
+                    combined_imagelist_columns)
+            imagelist.name = 'IMAGELIST'
+
+            catalogue = hdulist['CATALOGUE'] = fits.BinTableHDU.from_columns(
+                    combined_catalogue_columns)
+            catalogue.name = 'CATALOGUE'
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
