@@ -3,7 +3,7 @@
 set -eu
 
 find_file() {
-    find testdata/AperturePhot -name $1
+    find testing/data -name $1
 }
 
 does_file_exist() {
@@ -16,15 +16,25 @@ does_file_exist() {
 }
 
 
+run_test() {
+    readonly outputname=$1
+    readonly tamname=$2
+}
+
+
 main() {
-    if does_file_exist "output.fits"; then
-        if does_file_exist "tamout.fits"; then
-            exit 0
-        fi
+    if ! does_file_exist "test_output.fits"; then
+        echo "Cannot find photometry file" >&2
+        exit 1
     fi
 
-    echo "Cannot find either output.fits or tamout.fits. Please run the pipeline test" >&2
-    exit 1
+    if ! does_file_exist "test_tamout.fits"; then
+        echo "Cannot find tamuz file" >&2
+        exit 1
+    fi
+
+    run_test test_output.fits test_tamout.fits
+
 }
 
 main
