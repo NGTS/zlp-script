@@ -43,8 +43,8 @@ with fits.open("$test_fname") as infile:
 imagelist_names = set([col.name for col in imagelist.columns])
 catalogue_names = set([col.name for col in catalogue.columns])
 
-# assert 'AJ' in imagelist_names, "Cannot find AJ imagelist column"
-# assert 'TAM_ZP' in imagelist_names, "Cannot find tamuz zero point imagelist column"
+assert 'AJ' in imagelist_names, "Cannot find AJ imagelist column"
+assert 'ZERO_POINT' in imagelist_names, "Cannot find tamuz zero point imagelist column"
 assert 'CI' in catalogue_names, 'Cannot find CI catalogue column'
 EOF
 }
