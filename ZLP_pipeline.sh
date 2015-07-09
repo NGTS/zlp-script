@@ -374,6 +374,9 @@ setup_environment() {
         echo "JPLEPH data path: ${JPLEPH_DATA}"
     fi
 
+    # LD_LIBRARY_PATH for sysrem
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}:/opt/intel/composer_xe_2013_sp1.0.080/compiler/lib/intel64
+
     echo "Environment set up"
     set -o nounset
 }
