@@ -44,6 +44,8 @@ def update_remote(remote='origin', branch='master'):
         lrun('git checkout {branch}'.format(branch=branch))
         lrun('git merge --ff {remote}/{branch}'.format(remote=remote, branch=branch))
         lrun('git submodule update')
+        # Update each submodule completely
+        lrun('git submodule foreach git submodule update --init --recursive')
 
 
 @task
