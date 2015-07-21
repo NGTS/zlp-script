@@ -21,7 +21,7 @@ setup() {
     echo "Setting up"
     rm -rf ${OUTPUTDIR}
     mkdir -p ${OUTPUTDIR}/OriginalData
-    cp -r ${BASEDIR}/$1/images ${OUTPUTDIR}/OriginalData/
+    cp -r $1/images ${OUTPUTDIR}/OriginalData/
     echo "Setup complete"
 
     # Use whichever python is available
