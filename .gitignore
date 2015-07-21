@@ -13,3 +13,4 @@ venv
 !testing/data/test_output.fits
 !testing/data/test_tamout.fits
 *.swp
+.vagrant

@@ -1,0 +1,16 @@
+---
+- name: Update the system
+  apt: update_cache=yes cache_valid_time=3600
+  sudo: true
+
+- name: Install packages
+  apt: name={{ item }}
+  with_items:
+    - git
+  sudo: true
+
+- name: Ensure pipeline does not already exist
+  file: path=/home/vagrant/ZLP state=absent
+
+- name: Run the pipeline install script
+  script: install.sh
