@@ -8,6 +8,19 @@ The pipeline itself is fairly self contained. It requires internet access to fet
 
 The pipeline is tracked with git on [[https://github.com/NGTS/zlp-script][Github]]. To have access, the user account that clones the repository must be a member of the [[https://github.com/NGTS][NGTS organisation]] on github - email Simon W to ask for access.
 
+Git itself must be installed through your package manager, e.g.:
+
+<verbatim>
+# OSX
+brew install git
+
+# Ubuntu/Debian
+sudo aptitude install git
+
+# SLES
+sudo zypper install git
+</verbatim>
+
 To deploy, clone the repository in place, or pull from the remote to update changes:
 
 <verbatim>
