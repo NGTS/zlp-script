@@ -29,7 +29,7 @@ git submodule foreach git submodule init
 git submodule foreach git submodule update
 </verbatim>
 
-If you are denied access to clone the repository or the submodules' repositories, see the [[#DeployKeys][Deploy Keys]] section.
+These commands have been tested on SLES, Debian 8 and OSX and should be approximately platform independent.
 
 ---++ Installation of dependencies
 
