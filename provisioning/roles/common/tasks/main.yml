@@ -12,5 +12,8 @@
 - name: Ensure pipeline does not already exist
   file: path=/home/vagrant/ZLP state=absent
 
+- name: Add known hosts entry
+  known_hosts: key="{{ lookup('file', 'pubkeys/github.com') }}" name=github.com
+
 - name: Run the pipeline install script
   script: install.sh
