@@ -46,7 +46,7 @@ These commands have been tested on SLES, Debian 8 and OSX and should be approxim
 
 ---++ Installation of dependencies
 
-To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed =chroot=).
+To install the pipeline, the zipped source code can be uncompressed into a directory. The code is self-contained so only looks within itself (like a self imposed =chroot=), but it does expect some external programs (see [[#ExternalPrograms][External Programs]] for details.)
 
 The easiest way to install the Python dependencies is to use the [[http://continuum.io/downloads][Anaconda python distribution]] into the default location (=~/anaconda=). Then install the packages below with:
 
@@ -81,3 +81,65 @@ To run the unit tests:
 
    * mock
    * pytest
+
+#ExternalPrograms
+---++ External programs
+
+These programs must exist on the pipeline-running-user's PATH:
+
+   * CASUTools binaries:
+      * imcore
+      * imcore_list
+      * wcsfit
+   * CASU detrender
+      * lightcurves-casu
+   * sysrem
+
+---+++ CASUTools binaries
+
+These are customised to our needs. The requirements are:
+
+   * wcslib
+   * cfitsio
+
+To compile this code:
+
+<verbatim>
+git clone git@github.com:NGTS/custom-casutools.git
+cd custom-casutools/casutools-src
+./configure --with-wcs=<wcs prefix> --with-cfitsio=<cfitsio prefix>
+make
+(sudo) make install
+</verbatim>
+
+
+---+++ CASU detrender
+
+You must have ssh access to ngtshead to clone this one. If this is true, run the following commands:
+
+<verbatim>
+git clone <user>@ngtshead.warwick.ac.uk:/home/sw/git/casu-lightcurves.git
+cd casu-lightcurves
+git submodule init
+git submodule update
+
+# <prefix> is the install location. On ngtshead: /usr/local/pipeline
+PKG_CONFIG_PATH=<cfitsio prefix>/lib/pkgconfig make PREFIX=<prefix> PGPLOT_INC= PGPLOT_LIBS= PGPLOT_SRCS=
+make install PREFIX=<prefix>
+</verbatim>
+
+---+++ sysrem
+
+You must have ssh access to ngtshead to clone this one. If this is true, run the following commands:
+
+<verbatim>
+git clone <user>@ngtshead.warwick.ac.uk:/home/sw/git/sysrem.git
+cd sysrem
+
+# If this step fails complaining on a missing makefile, copy Makefile.ngtshead:
+# cp Makefile.ngtshead Makefile.$(hostname -s) and then edit to your needs
+make
+
+# <prefix> is the install location. On ngtshead: /usr/local/pipeline
+make install PREFIX=<prefix>
+</verbatim>
