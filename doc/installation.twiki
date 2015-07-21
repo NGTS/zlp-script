@@ -2,7 +2,7 @@
 
 %TOC%
 
-The pipeline itself is fairly self contained. It requires internet access to fetch as it's stored on github, and some [[ZLPDocMain#Dependencies][dependencies]]. See [[#DeployKeys][Deploy keys]] for deploy keys.
+The pipeline itself is fairly self contained. It requires internet access to fetch as it's stored on github, and some [[ZLPDocMain#Dependencies][dependencies]].
 
 ---++ Cloning the pipeline
 
@@ -66,8 +66,3 @@ To run the unit tests:
 
    * mock
    * pytest
-
-#DeployKeys
----++ Deploy keys
-
-If you are denied access, [[mailto:s.walker.2@warwick.ac.uk][send me an email]] with your ssh _public_ key and I shall give you access to deploy the code.
