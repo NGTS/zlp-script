@@ -32,70 +32,22 @@ SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
 
-class PipelineTask(object):
-    __metaclass__ = abc.ABCMeta
-
-    def __init__(self, **params):
-        self.__dict__.update(**params)
-
-    @abc.abstractproperty
-    def command(self):
-        pass
-
-    def run(self):
-        str_cmd = list(map(str, self.command))
-        print(str_cmd)
-        sp.check_call(str_cmd)
+def setup_directory_structure(root_dir):
+    dirs = ['OriginalData/output', 'AperturePhot', 'Reduction',
+            'Reduction/output']
+    for dirname in dirs:
+        path = os.path.join(root_dir, dirname)
+        try:
+            os.makedirs(path)
+        except OSError:
+            # Directory must exist
+            pass
 
 
-class CreateInputLists(PipelineTask):
-
-    def __init__(self, image_dirs, run_name,
-                 image_key='IMAGE',
-                 extension='bz2'):
-        super(CreateInputLists, self).__init__(image_dirs=image_dirs,
-                                               run_name=run_name,
-                                               image_key=image_key,
-                                               extension=extension)
-        self.script_name = os.path.join(SCRIPTS_DIR, 'createlists.py')
-
-    @classmethod
-    def from_args(cls, args):
-        image_dirs = os.path.join(args.root_directory, 'OriginalData',
-                                  'images', '**', '*')
-        return cls(image_dirs=image_dirs, run_name=args.run_name)
-
-    @property
-    def command(self):
-        return ['python', self.script_name, self.image_dirs, self.image_key,
-                self.extension, self.run_name]
-
-
-class CreateMasterBias(PipelineTask):
-
-    def __init__(self, bias_list, bias_stub, output_dir):
-        super(CreateMasterBias, self).__init__(
-            bias_list=bias_list,
-            bias_stub=bias_stub,
-            output_dir=output_dir)
-
-    @classmethod
-    def from_args(cls, args):
-        bias_list = os.path.join(args.root_directory, 'OriginalData', 'output',
-                                 '{run_name}_bias.list'.format(
-                                     run_name=args.run_name))
-        return cls(bias_list=bias_list,
-                   bias_stub='{run_name}_MasterBias.fits'.format(
-                       run_name=args.run_name),
-                   output_dir=os.path.join(args.root_directory, 'Reduction',
-                                           'output', args.run_name))
-
-    @property
-    def command(self):
-        script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
-                                   'pipebias.py')
-        return ['python', script_name, self.bias_list, self.bias_stub,
-                self.output_dir]
+def run(command):
+    str_cmd = list(map(str, command))
+    print(str_cmd)
+    sp.check_call(str_cmd)
 
 
 def setup_environment():
@@ -124,27 +76,41 @@ def setup_environment():
     ])
 
 
-def setup_directory_structure(root_dir):
-    dirs = ['OriginalData/output', 'AperturePhot', 'Reduction',
-            'Reduction/output']
-    for dirname in dirs:
-        path = os.path.join(root_dir, dirname)
-        try:
-            os.makedirs(path)
-        except OSError:
-            # Directory must exist
-            pass
+def create_input_lists(args, image_key='IMAGE', extension='bz2'):
+    script_name = os.path.join(SCRIPTS_DIR, 'createlists.py')
+
+    image_dirs = os.path.join(args.root_directory, 'OriginalData', 'images',
+                              '**', '*')
+    run_name = args.run_name
+
+    cmd = ['python', script_name, image_dirs, image_key, extension, run_name]
+    run(cmd)
+
+
+def create_master_bias(args):
+    bias_list = os.path.join(args.root_directory, 'OriginalData', 'output',
+                             '{run_name}_bias.list'.format(
+                                 run_name=args.run_name))
+
+    bias_stub = '{run_name}_MasterBias.fits'.format(run_name=args.run_name),
+    output_dir = os.path.join(args.root_directory, 'Reduction', 'output',
+                              args.run_name)
+
+    script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
+                               'pipebias.py')
+    cmd = ['python', script_name, bias_list, bias_stub, output_dir]
+    run(cmd)
 
 
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
 
-    # with change_dir(os.path.join(args.root_directory, 'OriginalData')):
-    #     CreateInputLists.from_args(args).run()
+    with change_dir(os.path.join(args.root_directory, 'OriginalData')):
+        create_input_lists(args)
 
     with change_dir(os.path.join(args.root_directory, 'Reduction')):
-        CreateMasterBias.from_args(args).run()
+        create_master_bias(args)
 
     print('Pipeline finished')
 
