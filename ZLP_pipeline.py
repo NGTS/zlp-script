@@ -10,10 +10,18 @@ import sys
 from contextlib import contextmanager
 from socket import gethostname
 import re
+import glob
 
 
 def abspath(path):
     return os.path.realpath(path)
+
+
+def ensure_directory(path):
+    try:
+        os.makedirs(path)
+    except OSError:
+        pass
 
 
 @contextmanager
@@ -36,11 +44,7 @@ def setup_directory_structure(root_dir):
             'Reduction/output']
     for dirname in dirs:
         path = os.path.join(root_dir, dirname)
-        try:
-            os.makedirs(path)
-        except OSError:
-            # Directory must exist
-            pass
+        ensure_directory(path)
 
 
 def run(command):
@@ -142,12 +146,34 @@ def copy_temporary_shuttermap(args):
     return dest
 
 
+def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
+    reduction_dir = os.path.join(args.root_directory, 'Reduction', 'output',
+                                 args.run_name)
+
+    output_dir = os.path.join(reduction_dir,
+                              os.path.splitext(os.path.basename(imagelist))[0])
+
+    script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
+                               'pipered.py')
+    cmd = ['python', script_name, imagelist, bias, dark, shuttermap, flat,
+           reduction_dir, output_dir]
+    run(cmd)
+
+
+def reduce_images(bias, dark, shuttermap, flat, args):
+    imagelists = glob.glob(
+        os.path.join(args.root_directory, 'OriginalData', 'output',
+                     '{run_name}_image_*.list'.format(run_name=args.run_name)))
+    for imagelist in imagelists:
+        reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args)
+
+
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
 
-    #     with change_dir(os.path.join(args.root_directory, 'OriginalData')):
-    #         create_input_lists(args)
+    with change_dir(os.path.join(args.root_directory, 'OriginalData')):
+        create_input_lists(args)
 
     with change_dir(os.path.join(args.root_directory, 'Reduction')):
         bias_name = create_master_bias(args)
@@ -155,6 +181,7 @@ def main(args):
         shuttermap_path = copy_temporary_shuttermap(args)
         flat_name = create_master_flat(dark_name, bias_name, shuttermap_path,
                                        args)
+        reduce_images(bias_name, dark_name, shuttermap_path, flat_name, args)
 
     print('Pipeline finished')
 
