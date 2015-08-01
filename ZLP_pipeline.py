@@ -80,6 +80,12 @@ def setup_environment():
     ])
 
 
+def extract_sha(path):
+    with change_dir(path):
+        cmd = ['git', 'rev-parse', 'HEAD']
+        return sp.check_output(cmd).strip()
+
+
 def create_input_lists(args, image_key='IMAGE', extension='bz2'):
     script_name = os.path.join(SCRIPTS_DIR, 'createlists.py')
 
@@ -153,6 +159,7 @@ def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
 
     output_dir = os.path.join(reduction_dir,
                               os.path.splitext(os.path.basename(imagelist))[0])
+    ensure_directory(output_dir)
 
     script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
                                'pipered.py')
@@ -160,8 +167,7 @@ def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
            reduction_dir, output_dir]
     run(cmd)
 
-    return glob.glob('{output_dir}/proc*.fits'.format(
-        output_dir=output_dir))
+    return glob.glob('{output_dir}/proc*.fits'.format(output_dir=output_dir))
 
 
 def reduce_images(bias, dark, shuttermap, flat, args):
@@ -171,8 +177,8 @@ def reduce_images(bias, dark, shuttermap, flat, args):
     files = []
     for imagelist in imagelists:
         files.extend(
-                reduce_single_imagelist(
-                    imagelist, bias, dark, shuttermap, flat, args))
+            reduce_single_imagelist(
+                imagelist, bias, dark, shuttermap, flat, args))
     return files
 
 
@@ -182,21 +188,34 @@ def perform_aperture_photometry(files, args):
         tfile.seek(0)
 
         output_dir = os.path.join(args.root_directory, 'AperturePhot',
-                'output', args.run_name)
-        
-        script_name = os.path.join(SCRIPTS_DIR, 'zlp-photometry',
-                'bin', 'ZLP_app_photom.py')
-        cmd = ['python', script_name,
-                '--confmap', args.confidence_map,
-                '--catfile', args.input_catalogue,
-                '--nproc', args.ncores,
-                '--filelist', tfile.name,
-                '--outdir', output_dir,
-                '--dist', args.initial_wcs_solution,
-                '--apsize', args.aperture_size,
-                '--wcsref', args.wcs_reference_frame]
+                                  'output', args.run_name)
+
+        script_name = os.path.join(SCRIPTS_DIR, 'zlp-photometry', 'bin',
+                                   'ZLP_app_photom.py')
+        cmd = ['python', script_name, '--confmap', args.confidence_map,
+               '--catfile', args.input_catalogue, '--nproc', args.ncores,
+               '--filelist', tfile.name, '--outdir', output_dir, '--dist',
+               args.initial_wcs_solution, '--apsize', args.aperture_size,
+               '--wcsref', args.wcs_reference_frame]
         run(cmd)
 
+    pipeline_sha = extract_sha(os.path.dirname(__file__))
+
+    condense_script = os.path.join(SCRIPTS_DIR, 'zlp-condense',
+                                   'zlp_condense.py')
+    condensed_name = os.path.join(output_dir, 'output.fits')
+    photom_extraction = [fname + '.phot' for fname in files]
+
+    ensure_directory(os.path.dirname(condensed_name))
+    cmd = ['python',
+           condense_script,
+           '--output',
+           condensed_name,
+           '--sha',
+           pipeline_sha,]
+    cmd.extend(photom_extraction)
+
+    run(cmd)
 
 
 def main(args):
@@ -213,7 +232,7 @@ def main(args):
         flat_name = create_master_flat(dark_name, bias_name, shuttermap_path,
                                        args)
         reduced_files = reduce_images(bias_name, dark_name, shuttermap_path,
-                flat_name, args)
+                                      flat_name, args)
 
     perform_aperture_photometry(reduced_files, args)
 
@@ -229,10 +248,11 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--confidence-map', required=True)
     parser.add_argument('-s', '--shuttermap', required=True)
     parser.add_argument('-R', '--wcs-reference-frame', required=True)
-    parser.add_argument('--aperture-size', required=False, default=3.,
-            type=float)
-    parser.add_argument('--ncores', required=False, default=12,
-            type=int)
+    parser.add_argument('--aperture-size',
+                        required=False,
+                        default=3.,
+                        type=float)
+    parser.add_argument('--ncores', required=False, default=12, type=int)
     main(parser.parse_args())
 
     # Exit with failure to prevent verification
