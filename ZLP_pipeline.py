@@ -94,9 +94,17 @@ def setup_environment():
     ])
 
 
+def setup_directory_structure(root_dir):
+    dirs = ['OriginalData/output', 'AperturePhot', 'Reduction',
+            'Reduction/output']
+    for dirname in dirs:
+        path = os.path.join(root_dir, dirname)
+        os.makedirs(path)
+
+
 def main(args):
     setup_environment()
-    # setup_directory_structure()
+    setup_directory_structure(args.root_directory)
     # c = CreateInputLists.from_args(args)
     # with change_dir(os.path.join(args.root_directory, 'OriginalData')):
     #     c.run()
