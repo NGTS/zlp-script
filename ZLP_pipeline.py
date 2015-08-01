@@ -5,6 +5,7 @@ import argparse
 import subprocess as sp
 import os
 import shutil
+import sys
 
 
 def abspath(path):
@@ -12,7 +13,7 @@ def abspath(path):
 
 
 def main(args):
-    pass
+    print(args)
 
 
 if __name__ == '__main__':
@@ -25,3 +26,6 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--shuttermap', required=True)
     parser.add_argument('-R', '--wcs-reference-frame', required=True)
     main(parser.parse_args())
+
+    # Exit with failure to prevent verification
+    sys.exit(1)
