@@ -40,6 +40,14 @@ SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
 
+def phot_file(reduced_filename):
+    return reduced_filename + '.phot'
+
+
+def phot_files(reduced_files):
+    return list(map(phot_file, reduced_files))
+
+
 def setup_directory_structure(root_dir):
     dirs = ['OriginalData/output', 'AperturePhot', 'Reduction',
             'Reduction/output']
@@ -204,7 +212,7 @@ def perform_aperture_photometry(files, args):
     condense_script = os.path.join(SCRIPTS_DIR, 'zlp-condense',
                                    'zlp_condense.py')
     condensed_name = os.path.join(output_dir, 'output.fits')
-    photom_extraction = [fname + '.phot' for fname in files]
+    photom_extraction = phot_files(files)
 
     ensure_directory(os.path.dirname(condensed_name))
     cmd = ['python',
@@ -237,6 +245,23 @@ def detrend_with_sysrem(filename, args):
         print('Would combined with command {}'.format(' '.join(join_cmd)))
 
 
+def detrend_with_casu_lightcurves(filename, reduced_files, args):
+    output_filename = os.path.join(os.path.dirname(filename),
+                                   'casu-lightcurves-out.fits')
+    number_of_coefficients = 2
+
+    source_files = phot_files(reduced_files)
+    cmd = ['lightcurves-casu', '-f', number_of_coefficients, '-o',
+           output_filename, '-p', args.input_catalogue]
+    cmd.extend(source_files)
+    run(cmd)
+
+    join_script = os.path.join(SCRIPTS_DIR, 'combine_with_casu_detrended.py')
+    join_cmd = ['python', join_script, '-v', '-p', filename, '-d',
+                output_filename]
+    run(join_cmd)
+
+
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
@@ -253,7 +278,10 @@ def main(args):
         reduced_files = reduce_images(bias_name, dark_name, shuttermap_path,
                                       flat_name, args)
 
+    condensed_filename = perform_aperture_photometry(reduced_files, args)
+
     detrend_with_sysrem(condensed_filename, args)
+    detrend_with_casu_lightcurves(condensed_filename, reduced_files, args)
 
     print('Pipeline finished')
 
