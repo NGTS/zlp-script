@@ -133,8 +133,7 @@ reduce_images() {
     counter="0"
     for IMAGELIST in ${IMAGELISTS}
     do
-        IMAGELIST=${IMAGELIST#${WORKINGDIR}}
-        IMAGELIST=${IMAGELIST#/OriginalData/output/}
+        IMAGELIST=${IMAGELIST#${WORKINGDIR}/OriginalData/output/}
         ensure_directory ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}
         CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipered.py ${WORKINGDIR}/OriginalData/output/$IMAGELIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME} ${WORKINGDIR}/Reduction/output/${RUNNAME}/${IMAGELIST%.*}"
         ${CMD}
