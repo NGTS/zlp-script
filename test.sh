@@ -43,7 +43,8 @@ perform_test() {
         --initial-wcs-solution ${solution_filename} \
         --confidence-map ${sourcedir}/srw_confidence.fits \
         --shuttermap ${sourcedir}/shuttermap.fits \
-        --wcs-reference-frame ${sourcedir}/wcs-reference-frame.fits
+        --wcs-reference-frame ${sourcedir}/wcs-reference-frame.fits \
+        --no-sysrem
 }
 
 test_photom_script() {
