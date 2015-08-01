@@ -11,6 +11,7 @@ from contextlib import contextmanager
 from socket import gethostname
 import re
 import glob
+import tempfile
 
 
 def abspath(path):
@@ -159,13 +160,43 @@ def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
            reduction_dir, output_dir]
     run(cmd)
 
+    return glob.glob('{output_dir}/proc*.fits'.format(
+        output_dir=output_dir))
+
 
 def reduce_images(bias, dark, shuttermap, flat, args):
     imagelists = glob.glob(
         os.path.join(args.root_directory, 'OriginalData', 'output',
                      '{run_name}_image_*.list'.format(run_name=args.run_name)))
+    files = []
     for imagelist in imagelists:
-        reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args)
+        files.extend(
+                reduce_single_imagelist(
+                    imagelist, bias, dark, shuttermap, flat, args))
+    return files
+
+
+def perform_aperture_photometry(files, args):
+    with tempfile.NamedTemporaryFile(suffix='.txt') as tfile:
+        tfile.write('\n'.join(files))
+        tfile.seek(0)
+
+        output_dir = os.path.join(args.root_directory, 'AperturePhot',
+                'output', args.run_name)
+        
+        script_name = os.path.join(SCRIPTS_DIR, 'zlp-photometry',
+                'bin', 'ZLP_app_photom.py')
+        cmd = ['python', script_name,
+                '--confmap', args.confidence_map,
+                '--catfile', args.input_catalogue,
+                '--nproc', args.ncores,
+                '--filelist', tfile.name,
+                '--outdir', output_dir,
+                '--dist', args.initial_wcs_solution,
+                '--apsize', args.aperture_size,
+                '--wcsref', args.wcs_reference_frame]
+        run(cmd)
+
 
 
 def main(args):
@@ -181,7 +212,10 @@ def main(args):
         shuttermap_path = copy_temporary_shuttermap(args)
         flat_name = create_master_flat(dark_name, bias_name, shuttermap_path,
                                        args)
-        reduce_images(bias_name, dark_name, shuttermap_path, flat_name, args)
+        reduced_files = reduce_images(bias_name, dark_name, shuttermap_path,
+                flat_name, args)
+
+    perform_aperture_photometry(reduced_files, args)
 
     print('Pipeline finished')
 
@@ -195,6 +229,10 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--confidence-map', required=True)
     parser.add_argument('-s', '--shuttermap', required=True)
     parser.add_argument('-R', '--wcs-reference-frame', required=True)
+    parser.add_argument('--aperture-size', required=False, default=3.,
+            type=float)
+    parser.add_argument('--ncores', required=False, default=12,
+            type=int)
     main(parser.parse_args())
 
     # Exit with failure to prevent verification
