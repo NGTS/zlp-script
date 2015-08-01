@@ -217,6 +217,25 @@ def perform_aperture_photometry(files, args):
 
     run(cmd)
 
+    return condensed_name
+
+
+def detrend_with_sysrem(filename, args):
+    output_filename = os.path.join(os.path.dirname(filename), 'tamout.fits')
+    cmd = ['sysrem', filename, output_filename]
+
+    join_script = os.path.join(SCRIPTS_DIR, 'combine_with_sysrem.py')
+    join_cmd = ['python', join_script, '-v', '-p', filename, '-t',
+                output_filename]
+
+    if not args.no_sysrem:
+        run(cmd)
+
+        run(cmd)
+    else:
+        print('Would run command {}'.format(' '.join(cmd)))
+        print('Would combined with command {}'.format(' '.join(join_cmd)))
+
 
 def main(args):
     setup_environment()
@@ -234,7 +253,7 @@ def main(args):
         reduced_files = reduce_images(bias_name, dark_name, shuttermap_path,
                                       flat_name, args)
 
-    perform_aperture_photometry(reduced_files, args)
+    detrend_with_sysrem(condensed_filename, args)
 
     print('Pipeline finished')
 
@@ -253,6 +272,7 @@ if __name__ == '__main__':
                         default=3.,
                         type=float)
     parser.add_argument('--ncores', required=False, default=12, type=int)
+    parser.add_argument('--no-sysrem', action='store_true')
     main(parser.parse_args())
 
     # Exit with failure to prevent verification
