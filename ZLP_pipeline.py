@@ -7,7 +7,6 @@ import subprocess as sp
 import os
 import shutil
 import sys
-import abc
 from contextlib import contextmanager
 from socket import gethostname
 import re
@@ -46,7 +45,7 @@ def setup_directory_structure(root_dir):
 
 def run(command):
     str_cmd = list(map(str, command))
-    print(str_cmd)
+    print(' '.join(str_cmd))
     sp.check_call(str_cmd)
 
 
@@ -92,7 +91,7 @@ def create_master_bias(args):
                              '{run_name}_bias.list'.format(
                                  run_name=args.run_name))
 
-    bias_stub = '{run_name}_MasterBias.fits'.format(run_name=args.run_name),
+    bias_stub = '{run_name}_MasterBias.fits'.format(run_name=args.run_name)
     output_dir = os.path.join(args.root_directory, 'Reduction', 'output',
                               args.run_name)
 
@@ -100,17 +99,62 @@ def create_master_bias(args):
                                'pipebias.py')
     cmd = ['python', script_name, bias_list, bias_stub, output_dir]
     run(cmd)
+    return bias_stub
+
+
+def create_master_dark(bias_stub, args):
+    dark_list = os.path.join(args.root_directory, 'OriginalData', 'output',
+                             '{run_name}_dark.list'.format(
+                                 run_name=args.run_name))
+
+    dark_stub = '{run_name}_MasterDark.fits'.format(run_name=args.run_name)
+    output_dir = os.path.join(args.root_directory, 'Reduction', 'output',
+                              args.run_name)
+
+    script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
+                               'pipedark.py')
+    cmd = ['python', script_name, dark_list, bias_stub, dark_stub, output_dir]
+    run(cmd)
+    return dark_stub
+
+
+def create_master_flat(dark_stub, bias_stub, shuttermap_path, args):
+    flat_list = os.path.join(args.root_directory, 'OriginalData', 'output',
+                             '{run_name}_flat.list'.format(
+                                 run_name=args.run_name))
+
+    flat_stub = '{run_name}_MasterFlat.fits'.format(run_name=args.run_name)
+    output_dir = os.path.join(args.root_directory, 'Reduction', 'output',
+                              args.run_name)
+
+    script_name = os.path.join(SCRIPTS_DIR, 'zlp-reduction', 'bin',
+                               'pipeflat.py')
+    cmd = ['python', script_name, flat_list, bias_stub, dark_stub,
+           shuttermap_path, flat_stub, output_dir]
+    run(cmd)
+    return flat_stub
+
+
+def copy_temporary_shuttermap(args):
+    dest = os.path.join(args.root_directory, 'Reduction', 'output',
+                        args.run_name, os.path.basename(args.shuttermap))
+    shutil.copyfile(args.shuttermap, dest)
+    return dest
 
 
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
 
-    with change_dir(os.path.join(args.root_directory, 'OriginalData')):
-        create_input_lists(args)
+    #     with change_dir(os.path.join(args.root_directory, 'OriginalData')):
+    #         create_input_lists(args)
 
     with change_dir(os.path.join(args.root_directory, 'Reduction')):
-        create_master_bias(args)
+        bias_name = create_master_bias(args)
+        dark_name = create_master_dark(bias_name, args)
+        shuttermap_path = copy_temporary_shuttermap(args)
+        flat_name = create_master_flat(dark_name, bias_name, shuttermap_path,
+                                       args)
 
     print('Pipeline finished')
 
