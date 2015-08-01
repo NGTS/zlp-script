@@ -105,9 +105,9 @@ def setup_directory_structure(root_dir):
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
-    # c = CreateInputLists.from_args(args)
-    # with change_dir(os.path.join(args.root_directory, 'OriginalData')):
-    #     c.run()
+    c = CreateInputLists.from_args(args)
+    with change_dir(os.path.join(args.root_directory, 'OriginalData')):
+        c.run()
 
     print('Pipeline finished')
 
