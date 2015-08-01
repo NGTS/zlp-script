@@ -262,6 +262,13 @@ def detrend_with_casu_lightcurves(filename, reduced_files, args):
     run(join_cmd)
 
 
+def generate_qa(args):
+    script_name = os.path.join(SCRIPTS_DIR, 'zlp-qa', 'run.sh')
+    qa_dir = os.path.join(args.root_directory, 'QualityAssessment')
+    cmd = ['bash', script_name, args.root_directory, qa_dir]
+    run(cmd)
+
+
 def main(args):
     setup_environment()
     setup_directory_structure(args.root_directory)
@@ -282,8 +289,7 @@ def main(args):
 
     detrend_with_sysrem(condensed_filename, args)
     detrend_with_casu_lightcurves(condensed_filename, reduced_files, args)
-
-    print('Pipeline finished')
+    generate_qa(args)
 
 
 if __name__ == '__main__':
@@ -302,6 +308,3 @@ if __name__ == '__main__':
     parser.add_argument('--ncores', required=False, default=12, type=int)
     parser.add_argument('--no-sysrem', action='store_true')
     main(parser.parse_args())
-
-    # Exit with failure to prevent verification
-    sys.exit(1)
