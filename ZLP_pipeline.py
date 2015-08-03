@@ -12,6 +12,7 @@ from socket import gethostname
 import re
 import glob
 import tempfile
+from multiprocessing import cpu_count
 
 
 def abspath(path):
@@ -305,6 +306,7 @@ if __name__ == '__main__':
                         required=False,
                         default=3.,
                         type=float)
+    parser.add_argument('--ncores', required=False, default=cpu_count(),
     parser.add_argument('--ncores', required=False, default=12, type=int)
     parser.add_argument('--no-sysrem', action='store_true')
     main(parser.parse_args())
