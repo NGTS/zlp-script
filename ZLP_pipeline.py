@@ -89,11 +89,11 @@ def task(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         task_name = getattr(fn, '__qualname__', fn.__name__)
-        logger.info('Running task %s', task_name)
+        logger.info('Running task `%s`', task_name)
         with Timer() as timer:
             result = fn(*args, **kwargs)
-        logger.info('Time taken for task %s: %s s', task_name,
-                     timer.time_taken)
+        logging.getLogger('timing').info('Time taken for task `%s`: %s s',
+                task_name, timer.time_taken)
 
     return wrapper
 
