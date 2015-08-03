@@ -15,6 +15,7 @@ import tempfile
 from multiprocessing import cpu_count
 import logging
 from functools import wraps
+import time
 
 BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
@@ -57,13 +58,42 @@ def setup_directory_structure(root_dir):
         ensure_directory(path)
 
 
+class Timer(object):
+    '''
+    Timer class. Use as context manager:
+
+    >>> with Timer() as timer:
+    ...     time.sleep(1)
+    ...
+    >>> assert timer.time_taken > 0.5
+    '''
+    def __init__(self):
+        self.start_time = None
+        self.end_time = None
+
+    def __enter__(self):
+        self.start_time = time.time()
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.end_time = time.time()
+
+    @property
+    def time_taken(self):
+        return self.end_time - self.start_time
+
+
 def task(fn):
     '''Decorator for logging each task'''
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        logger.info('Running task %s', fn.__name__)
-        return fn(*args, **kwargs)
+        task_name = fn.__name__
+        logger.info('Running task %s', task_name)
+        with Timer() as timer:
+            result = fn(*args, **kwargs)
+        logger.info('Time taken for task %s: %s s', task_name,
+                     timer.time_taken)
 
     return wrapper
 
