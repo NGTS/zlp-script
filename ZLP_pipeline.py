@@ -15,12 +15,12 @@ import tempfile
 from multiprocessing import cpu_count
 import logging
 
+BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
+SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
+PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
+
 logging.basicConfig(level='INFO', format='[%(levelname)7s] %(message)s')
 logger = logging.getLogger('pipeline')
-
-
-def abspath(path):
-    return os.path.realpath(path)
 
 
 def ensure_directory(path):
@@ -38,11 +38,6 @@ def change_dir(path):
         yield
     finally:
         os.chdir(old_cwd)
-
-
-BASE_DIR = abspath(os.path.join(os.path.dirname(__file__)))
-SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
-PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
 
 def phot_file(reduced_filename):
