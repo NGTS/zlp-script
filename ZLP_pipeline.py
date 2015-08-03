@@ -14,16 +14,21 @@ import glob
 import tempfile
 from multiprocessing import cpu_count
 import logging
+import logging.config
 from functools import wraps
 import time
+import json
 
 BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
-logging.basicConfig(level='INFO',
-                    format='[%(levelname)s:%(name)s] %(message)s')
-logger = logging.getLogger('pipeline')
+with open(os.path.join(BASE_DIR, 'logging.json')) as infile:
+    logging.config.dictConfig(json.load(infile))
+
+
+def logger(name):
+    return logging.getLogger(name)
 
 
 def ensure_directory(path):
@@ -91,11 +96,11 @@ def task(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         task_name = getattr(fn, '__qualname__', fn.__name__)
-        logger.info('Running task `%s`', task_name)
+        logger('pipeline').info('Running task `%s`', task_name)
         with Timer() as timer:
             result = fn(*args, **kwargs)
-        logging.getLogger('timing').info('Time taken for task `%s`: %s s',
-                                         task_name, timer.time_taken)
+        logger('timing').info('Time taken for task `%s`: %s s', task_name,
+                              timer.time_taken)
         return result
 
     return wrapper
@@ -105,14 +110,14 @@ def run(command):
     ''' Run a shell command, and ensure the process output is combined
     for logging '''
     str_cmd = list(map(str, command))
-    logger.debug('CMD: %s', ' '.join(str_cmd))
+    logger('pipeline').debug('CMD: %s', ' '.join(str_cmd))
     p = sp.Popen(str_cmd, stdout=sp.PIPE, stderr=sp.STDOUT)
 
     while True:
         line = p.stdout.readline()
         if not line:
             break
-        logging.getLogger('subprocess').info(line.rstrip())
+        logger('subprocess').info(line.rstrip())
 
 
 def setup_environment():
@@ -334,9 +339,7 @@ def generate_qa(args):
 
 
 def main(args):
-    if args.verbose:
-        logger.setLevel('DEBUG')
-    logger.debug(args)
+    logger('pipeline').debug(args)
 
     setup_environment()
     setup_directory_structure(args.root_directory)

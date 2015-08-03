@@ -1,0 +1,40 @@
+{"version": 1,
+    "formatters": {
+        "global": {
+            "format": "[%(levelname)s:%(name)s] %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "global",
+            "stream": "ext://sys.stdout"
+        },
+        "mainlog": {
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "global",
+            "filename": "ZLPTest.log",
+            "mode": "w"
+        }
+    },
+    "loggers": {
+        "pipeline": {
+            "level": "DEBUG",
+            "handlers": ["console", "mainlog"],
+            "propogate": "no"
+        },
+        "subprocess": {
+            "level": "DEBUG",
+            "handlers": ["console", "mainlog"],
+            "propogate": "no"
+        },
+        "timing": {
+            "level": "DEBUG",
+            "handlers": ["console", "mainlog"],
+            "propogate": "no"
+        }
+    }
+}
+
