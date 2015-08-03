@@ -44,7 +44,8 @@ perform_test() {
         --confidence-map ${sourcedir}/srw_confidence.fits \
         --shuttermap ${sourcedir}/shuttermap.fits \
         --wcs-reference-frame ${sourcedir}/wcs-reference-frame.fits \
-        --no-sysrem
+        --no-sysrem \
+        --verbose
 }
 
 test_photom_script() {
