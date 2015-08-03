@@ -21,7 +21,7 @@ BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
-logging.basicConfig(level='INFO', format='[%(levelname)7s] %(message)s')
+logging.basicConfig(level='INFO', format='[%(levelname)s:%(name)s] %(message)s')
 logger = logging.getLogger('pipeline')
 
 
