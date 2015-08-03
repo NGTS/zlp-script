@@ -14,6 +14,7 @@ import glob
 import tempfile
 from multiprocessing import cpu_count
 import logging
+from functools import wraps
 
 BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
@@ -56,6 +57,17 @@ def setup_directory_structure(root_dir):
         ensure_directory(path)
 
 
+def task(fn):
+    '''Decorator for logging each task'''
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        logger.info('Running task %s', fn.__name__)
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
 def run(command):
     str_cmd = list(map(str, command))
     print(' '.join(str_cmd))
@@ -94,6 +106,7 @@ def extract_sha(path):
         return sp.check_output(cmd).strip()
 
 
+@task
 def create_input_lists(args, image_key='IMAGE', extension='bz2'):
     script_name = os.path.join(SCRIPTS_DIR, 'createlists.py')
 
@@ -105,6 +118,7 @@ def create_input_lists(args, image_key='IMAGE', extension='bz2'):
     run(cmd)
 
 
+@task
 def create_master_bias(args):
     bias_list = os.path.join(args.root_directory, 'OriginalData', 'output',
                              '{run_name}_bias.list'.format(
@@ -121,6 +135,7 @@ def create_master_bias(args):
     return bias_stub
 
 
+@task
 def create_master_dark(bias_stub, args):
     dark_list = os.path.join(args.root_directory, 'OriginalData', 'output',
                              '{run_name}_dark.list'.format(
@@ -137,6 +152,7 @@ def create_master_dark(bias_stub, args):
     return dark_stub
 
 
+@task
 def create_master_flat(dark_stub, bias_stub, shuttermap_path, args):
     flat_list = os.path.join(args.root_directory, 'OriginalData', 'output',
                              '{run_name}_flat.list'.format(
@@ -154,6 +170,7 @@ def create_master_flat(dark_stub, bias_stub, shuttermap_path, args):
     return flat_stub
 
 
+@task
 def copy_temporary_shuttermap(args):
     dest = os.path.join(args.root_directory, 'Reduction', 'output',
                         args.run_name, os.path.basename(args.shuttermap))
@@ -162,6 +179,7 @@ def copy_temporary_shuttermap(args):
 
 
 def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
+    ''' Helper function, to reduce a single imagelist of data '''
     reduction_dir = os.path.join(args.root_directory, 'Reduction', 'output',
                                  args.run_name)
 
@@ -178,6 +196,7 @@ def reduce_single_imagelist(imagelist, bias, dark, shuttermap, flat, args):
     return glob.glob('{output_dir}/proc*.fits'.format(output_dir=output_dir))
 
 
+@task
 def reduce_images(bias, dark, shuttermap, flat, args):
     imagelists = glob.glob(
         os.path.join(args.root_directory, 'OriginalData', 'output',
@@ -190,6 +209,7 @@ def reduce_images(bias, dark, shuttermap, flat, args):
     return files
 
 
+@task
 def perform_aperture_photometry(files, args):
     with tempfile.NamedTemporaryFile(suffix='.txt') as tfile:
         tfile.write('\n'.join(files))
@@ -228,6 +248,7 @@ def perform_aperture_photometry(files, args):
     return condensed_name
 
 
+@task
 def detrend_with_sysrem(filename, args):
     output_filename = os.path.join(os.path.dirname(filename), 'tamout.fits')
     cmd = ['sysrem', filename, output_filename]
@@ -245,6 +266,7 @@ def detrend_with_sysrem(filename, args):
         print('Would combined with command {}'.format(' '.join(join_cmd)))
 
 
+@task
 def detrend_with_casu_lightcurves(filename, reduced_files, args):
     output_filename = os.path.join(os.path.dirname(filename),
                                    'casu-lightcurves-out.fits')
@@ -262,6 +284,7 @@ def detrend_with_casu_lightcurves(filename, reduced_files, args):
     run(join_cmd)
 
 
+@task
 def generate_qa(args):
     script_name = os.path.join(SCRIPTS_DIR, 'zlp-qa', 'run.sh')
     qa_dir = os.path.join(args.root_directory, 'QualityAssessment')
