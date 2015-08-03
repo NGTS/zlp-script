@@ -102,9 +102,17 @@ def task(fn):
 
 
 def run(command):
+    ''' Run a shell command, and ensure the process output is combined
+    for logging '''
     str_cmd = list(map(str, command))
-    print(' '.join(str_cmd))
-    sp.check_call(str_cmd)
+    logger.debug('CMD: %s', ' '.join(str_cmd))
+    p = sp.Popen(str_cmd, stdout=sp.PIPE, stderr=sp.STDOUT)
+
+    while True:
+        line = p.stdout.readline()
+        if not line:
+            break
+        logging.getLogger('subprocess').info(line.rstrip())
 
 
 def setup_environment():
