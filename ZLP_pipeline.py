@@ -88,7 +88,7 @@ def task(fn):
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        task_name = fn.__name__
+        task_name = getattr(fn, '__qualname__', fn.__name__)
         logger.info('Running task %s', task_name)
         with Timer() as timer:
             result = fn(*args, **kwargs)
