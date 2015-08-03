@@ -96,6 +96,7 @@ def task(fn):
             result = fn(*args, **kwargs)
         logging.getLogger('timing').info('Time taken for task `%s`: %s s',
                                          task_name, timer.time_taken)
+        return result
 
     return wrapper
 
