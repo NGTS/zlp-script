@@ -21,7 +21,8 @@ BASE_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 SCRIPTS_DIR = os.path.join(BASE_DIR, 'scripts')
 PIPELINE_BIN = os.path.join('/', 'usr', 'local', 'pipeline')
 
-logging.basicConfig(level='INFO', format='[%(levelname)s:%(name)s] %(message)s')
+logging.basicConfig(level='INFO',
+                    format='[%(levelname)s:%(name)s] %(message)s')
 logger = logging.getLogger('pipeline')
 
 
@@ -67,6 +68,7 @@ class Timer(object):
     ...
     >>> assert timer.time_taken > 0.5
     '''
+
     def __init__(self):
         self.start_time = None
         self.end_time = None
@@ -93,7 +95,7 @@ def task(fn):
         with Timer() as timer:
             result = fn(*args, **kwargs)
         logging.getLogger('timing').info('Time taken for task `%s`: %s s',
-                task_name, timer.time_taken)
+                                         task_name, timer.time_taken)
 
     return wrapper
 
