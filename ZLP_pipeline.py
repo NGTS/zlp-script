@@ -364,22 +364,46 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--run-name', required=True)
-    parser.add_argument('-d', '--root-directory', required=True)
-    parser.add_argument('-i', '--input-catalogue', required=True)
-    parser.add_argument('-w', '--initial-wcs-solution', required=True)
+    description = '''Run the zero level pipeline'''
+
+    epilog = '''Input directory structure:
+--------------------------
+
+root-directory
+`-- OriginalData
+    `-- images
+        `-- <one directory per date>
+            `-- action<number>_<optional description>
+                `-- IMAGE*.fits.bz2
+    '''
+    parser = argparse.ArgumentParser(description=description, epilog=epilog,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-r', '--run-name', required=True,
+            help='''The name of the run to use. This is so multiple runs can be
+            performed on different data, and the outputs can be unique.''')
+    parser.add_argument('-d', '--root-directory', required=True,
+            help='''This is the location of the input files. The directory
+            structure must be as listed below''')
+    parser.add_argument('-i', '--input-catalogue', required=True,
+            help='The list of coordinates to place apertures at')
+    parser.add_argument('-w', '--initial-wcs-solution', required=True,
+            help='''The initial wcs solution computed by Tom's MCMC code to
+            compute distortion parameters''')
     parser.add_argument('-c', '--confidence-map', required=True)
     parser.add_argument('-s', '--shuttermap', required=True)
     parser.add_argument('-R', '--wcs-reference-frame', required=True)
     parser.add_argument('--aperture-size',
                         required=False,
                         default=3.,
-                        type=float)
+                        type=float,
+                        help='Aperture size in pixels')
     parser.add_argument('--ncores',
                         required=False,
                         default=cpu_count(),
-                        type=int)
-    parser.add_argument('--no-sysrem', action='store_true')
-    parser.add_argument('-v', '--verbose', action='store_true')
+                        type=int,
+                        help='Number of cores to use')
+    parser.add_argument('--no-sysrem', action='store_true',
+            help='Do not run sysrem')
+    parser.add_argument('-v', '--verbose', action='store_true',
+            help='Verbose mode')
     main(parser.parse_args())
