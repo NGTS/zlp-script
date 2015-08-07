@@ -74,16 +74,12 @@ readonly T2="1" # create masterbias, default: 1
 readonly T3="1" # create masterdark, default: 1
 readonly T4="1" # copy temporary shutter map, default: 1
 readonly T5="1" # create masterflat, default: 1
-readonly T6="1" # reduce dithered images, default: 1
-readonly T7="1" # reduce science images, default: 1
-readonly T8="0" # wait for jobs to finish, default: 0
-readonly T9="0" # create input catalogues, default: 0
-readonly T10="1" # perform photometry, default: 1
-
-readonly T12="0" # run image subtraction, default: 0
-readonly T13="1" # detrend, default: 0
-readonly T14="1" # detrend with lightcurves
-readonly T15="1" # Make qa plots, default: 1
+readonly T6="1" # reduce science images, default: 1
+readonly T7="1" # perform photometry, default: 1
+readonly T8="0" # run image subtraction, default: 0
+readonly T9="1" # detrend, default: 1
+readonly T10="1" # detrend with lightcurves, default: 1
+readonly T11="1" # Make qa plots, default: 1
 
 
 # Zero Level Pipeline
@@ -150,14 +146,6 @@ any_filelists() {
     ls ${IMAGELISTS} 2>/dev/null >/dev/null
 }
 
-reduce_dithered_images() {
-    echo "Reduce Dithered Images"
-    IMAGELISTS=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    if $(any_filelists ${IMAGELISTS}); then
-        reduce_images "${IMAGELISTS}"
-    fi
-}
-
 reduce_science_images() {
     echo "Reduce Science Images"
     IMAGELISTS=$WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
@@ -188,43 +176,6 @@ iterate_and_act_on_lists() {
             eval "${action} ${fname}"
         done
     fi
-}
-
-single_create_input_catalogue() {
-    echo "Creating input catalogue"
-
-    local filelist=$1
-    local readonly basename=${filelist#${WORKINGDIR}/OriginalData/output/}
-    local readonly jobname=${basename%.*}
-    local readonly output_directory=${WORKINGDIR}/InputCatalogue/output/${RUNNAME}/${jobname}
-    local readonly image_filelist=${output_directory}/filelist.txt
-
-    ensure_directory "$output_directory"
-    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
-    # Solve the frames
-    python ${SCRIPTDIR}/zlp-photometry/bin/ZLP_app_photom.py \
-        --confmap ${CONFMAP} \
-        --catfile ${GIVEN_INPUTCATALOGUE} \
-        --nproc ${CORES} \
-        --filelist ${image_filelist} \
-        --outdir ${output_directory} \
-        --dist ${WCSSOLUTION} \
-        --apsize ${APSIZE} \
-        --wcsref ${WCSFIT_REFERENCE_FRAME}
-
-    # Stack the frames
-    (cd ${output_directory} &&
-        python ${SCRIPTDIR}/zlp-input-catalogue/bin/ZLP_create_cat.py \
-        --confmap ${CONFMAP} \
-        --filelist ${image_filelist} \
-        --verbose \
-        --nproc ${CORES}
-    )
-}
-
-create_input_catalogue() {
-    local readonly filelists=${WORKINGDIR}/OriginalData/output/${RUNNAME}_dither_*.list
-    iterate_and_act_on_lists ${filelists} single_create_input_catalogue
 }
 
 shrink_catalogue_directory() {
@@ -436,22 +387,18 @@ main() {
 
     [ "$T5" = "1" ] && create_master_flat
 
-    [ "$T6" = "1" ]&&  reduce_dithered_images
-
-    [ "$T7" = "1" ] && reduce_science_images
-
-    [ "$T8" = "1" ] && wait_for_jobs "${DITHJOBS}${IMGJOBS}"
+    [ "$T6" = "1" ] && reduce_science_images
 
     cd ${WORKINGDIR}
-    [ "$T9" = "1" ] && create_input_catalogue
+    [ "$T7" = "1" ] && perform_aperture_photometry
+    
+    # [ "$T8" = "1" ] && perform_image_subtraction
 
-    [ "$T10" = "1" ] && perform_aperture_photometry
+    [ "$T9" = "1" ] && run_detrending
 
-    [ "$T13" = "1" ] && run_detrending
+    [ "$T10" = "1" ] && run_lightcurves_detrending
 
-    [ "$T14" = "1" ] && run_lightcurves_detrending
-
-    [ "$T15" = "1" ] && generate_qa_plots
+    [ "$T11" = "1" ] && generate_qa_plots
 }
 
 main 2>&1 | tee ${RUNNAME}.log
