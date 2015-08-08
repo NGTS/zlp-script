@@ -1,12 +1,12 @@
 [submodule "scripts/zlp-photometry"]
 	path = scripts/zlp-photometry
-	url = git@github.com:NGTS/NGTS_ZLP
+	url = https://github.com/NGTS/NGTS_ZLP
 [submodule "scripts/zlp-qa"]
 	path = scripts/zlp-qa
-	url = git@github.com:NGTS/zlp-qa.git
+	url = https://github.com/NGTS/zlp-qa.git
 [submodule "scripts/zlp-condense"]
 	path = scripts/zlp-condense
-	url = git@github.com:NGTS/zlp-condense.git
+	url = https://github.com/NGTS/zlp-condense.git
 [submodule "scripts/zlp-reduction"]
 	path = scripts/zlp-reduction
-	url = git@github.com:NGTS/zlp-reduction.git
+	url = https://github.com/NGTS/zlp-reduction.git
