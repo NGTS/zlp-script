@@ -53,6 +53,7 @@ def test_remote(sourcedir='source2015'):
     '''
     Run test on ngtshead with <sourcedir>
     '''
+    update()
     with change_to_pipeline_dir():
         lrun('./test.sh {sourcedir}'.format(sourcedir=sourcedir))
 
