@@ -50,6 +50,7 @@ verify() {
     verify_psf_info
     verify_casu_detrending_zero_point
     verify_pipeline_sha_present_in_output_file
+    verify_voltages_present_in_imagelist_hdu
     if [ -z ${NOSYSREM:-} ]; then
         verify_post_tamuz_present
     fi
@@ -80,6 +81,12 @@ verify_pipeline_sha_present_in_output_file() {
     echo "Verifying pipeline SHA is present in output file"
     FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
     python ${BASEDIR}/testing/ensure_pipeline_sha.py ${FNAME}
+}
+
+verify_voltages_present_in_imagelist_hdu() {
+    echo "Voltage setting is present in the image list HDU"
+    FNAME=$(find ${OUTPUTDIR} -name 'output.fits')
+    python ${BASEDIR}/testing/ensure_voltages.py ${FNAME}
 }
 
 verify_post_tamuz_present() {
