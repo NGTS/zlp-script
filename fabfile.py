@@ -49,7 +49,7 @@ def update_remote(remote='origin', branch='master'):
 
 
 @task
-def test_remote(sourcedir='source2015'):
+def test_remote(sourcedir='source20150817'):
     '''
     Run test on ngtshead with <sourcedir>
     '''
