@@ -11,7 +11,7 @@ def change_dir(*args, **kwargs):
     return func(*args, **kwargs)
 
 env.use_ssh_config = True
-env.hosts = ['ngtshead']
+env.hosts = ['ngtshead.astro']
 
 PIPELINE_DIR = '/ngts/pipedev/ZLP'
 change_to_pipeline_dir = lambda: change_dir(PIPELINE_DIR)
