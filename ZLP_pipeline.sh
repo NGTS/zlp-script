@@ -9,9 +9,9 @@ abspath() {
 }
 
 
-if [[ $# -ne 7 ]]; then
+if [[ $# -ne 7 ]] && [[ $# -ne 8 ]]; then
     cat >&2 <<-EOF
-  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <wcsfit-reference-frame>
+  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <wcsfit-reference-frame> [master-flat]
 
   Argument descriptions:
 
@@ -43,6 +43,9 @@ if [[ $# -ne 7 ]]; then
   * confidence-map
   * shuttermap
   * wcsfit-reference-frame
+  * master-flat
+
+  Custom master flat to use, overriding the flat computed from the supplied data
 EOF
     exit 1
 fi
