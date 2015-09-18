@@ -59,6 +59,10 @@ readonly WCSSOLUTION=$4
 readonly CONFMAP=$5
 readonly SHUTTERMAP=$6
 readonly WCSFIT_REFERENCE_FRAME=$7
+MASTER_FLAT=${8:-}
+if [[ ! -z "${MASTER_FLAT}" ]]; then
+    MASTER_FLAT="$(abspath "${MASTER_FLAT}")"
+fi
 
 readonly IMGDIRS=${WORKINGDIR}/OriginalData/images/**/*
 readonly SCRIPTDIR=${BASEDIR}/scripts
@@ -129,6 +133,12 @@ create_master_flat() {
     CMD="python ${SCRIPTDIR}/zlp-reduction/bin/pipeflat.py $FLATLIST ${RUNNAME}_MasterBias.fits ${RUNNAME}_MasterDark.fits $SHUTTERMAP ${RUNNAME}_MasterFlat.fits ${WORKINGDIR}/Reduction/output/${RUNNAME}"
     echo ${CMD}
     ${CMD}
+}
+
+copy_custom_master_flat() {
+    local MFLAT_DEST=${WORKINGDIR}/Reduction/output/${RUNNAME}/${RUNNAME}_MasterFlat.fits
+    echo "Copying custom master flat ${MASTER_FLAT} => ${MFLAT_DEST}"
+    cp "${MASTER_FLAT}" "${MFLAT_DEST}"
 }
 
 reduce_images() {
@@ -392,6 +402,10 @@ main() {
     [ "$T4" = "1" ] && copy_temporary_shuttermap
 
     [ "$T5" = "1" ] && create_master_flat
+
+    if [[ ! -z "${MASTER_FLAT}" ]]; then
+        copy_custom_master_flat
+    fi
 
     [ "$T6" = "1" ] && reduce_science_images
 
