@@ -356,6 +356,13 @@ setup_directory_structure() {
 }
 
 run_lightcurves_detrending() {
+    # Aperture index for casu lightcurves:
+    #  0 = auto (bad)
+    #  1 = 1 * rcore
+    #  2 = sqrt(2) * rcore
+    #  3 = 2 * rcore
+    local ap_index=1
+
     if hash lightcurves-casu 2>/dev/null; then
         local readonly ref=$GIVEN_INPUTCATALOGUE
         local readonly photomfile=$(find ${WORKINGDIR}/AperturePhot/output -name 'output.fits' -print)
@@ -366,7 +373,7 @@ run_lightcurves_detrending() {
             local readonly source_files_dir=${WORKINGDIR}/Reduction/output/${RUNNAME}
             echo "Running casu lightcurves file to create ${outfile}"
 
-            lightcurves-casu -f ${number_of_coefficients} -o ${outfile} -p ${ref} $(find ${source_files_dir} -name 'proc*.phot')
+            lightcurves-casu -f ${number_of_coefficients} -a ${ap_index} -o ${outfile} -p ${ref} $(find ${source_files_dir} -name 'proc*.phot')
             python ${BASEDIR}/scripts/combine_with_casu_detrended.py -v -p ${photomfile} -d ${outfile}
         fi
     else
