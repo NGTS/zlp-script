@@ -34,7 +34,7 @@ def main(args):
                 del hdulist[hdu_name]
             hdulist.append(detflux_hdu)
 
-            imagelist_cols = ['zero_point', 'aj']
+            imagelist_cols = ['zero_point', 'aj', 'sigma_xs']
             catalogue_cols = ['ci']
 
             combined_catalogue_columns = (hdulist['catalogue'].columns +
