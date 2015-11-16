@@ -1,0 +1,18 @@
+nstamps_x         10       /*** Number of stamps along X axis ***/
+nstamps_y         10       /*** Number of stamps along Y axis***/
+sub_x             1        /*** Number of sub_division of the image along X axis ***/
+sub_y             1        /*** Number of sub_division of the image along Y axis ***/
+half_mesh_size    16        /*** Half kernel size ***/
+half_stamp_size   20       /*** Half stamp size ***/
+deg_bg            1        /** degree to fit differential bakground variations **/
+saturation        13000.0  /** degree to fit background varaitions **/
+pix_min           100.0    /*** Minimum value of the pixels to fit *****/
+min_stamp_center  1000.    /*** Minimum value for object to enter kernel fit *****/
+ngauss            3        /*** Number of Gaussians ****/
+deg_gauss1        6        /*** Degree associated with 1st Gaussian ****/
+deg_gauss2        4        /*** Degree associated with 2nd Gaussian ****/
+deg_gauss3        3        /*** Degree associated with 3rd Gaussian ****/
+sigma_gauss1      0.7      /*** Sigma of 1st Gaussian ****/
+sigma_gauss2      2.0      /*** Sigma of 2nd Gaussian ****/
+sigma_gauss3      4.0      /*** Sigma of 3rd Gaussian ****/
+deg_spatial       0        /*** Degree of the fit of the spatial variations of the Kernel ****/
