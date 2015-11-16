@@ -9,9 +9,9 @@ abspath() {
 }
 
 
-if [[ $# -ne 7 ]] && [[ $# -ne 8 ]]; then
+if [[ $# -ne 8 ]] && [[ $# -ne 9 ]]; then
     cat >&2 <<-EOF
-  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <wcsfit-reference-frame> [master-flat]
+  Usage: $0 <runname> <root-directory> <input-catalogue> <initial-wcs-solution> <confidence-map> <shuttermap> <wcsfit-reference-frame> <reference-frame> [master-flat]
 
   Argument descriptions:
 
@@ -43,6 +43,7 @@ if [[ $# -ne 7 ]] && [[ $# -ne 8 ]]; then
   * confidence-map
   * shuttermap
   * wcsfit-reference-frame
+  * refrence-frame
   * master-flat
 
   Custom master flat to use, overriding the flat computed from the supplied data
@@ -59,7 +60,9 @@ readonly WCSSOLUTION=$4
 readonly CONFMAP=$5
 readonly SHUTTERMAP=$6
 readonly WCSFIT_REFERENCE_FRAME=$7
-MASTER_FLAT=${8:-}
+readonly REFERENCE_FRAME=$8
+
+MASTER_FLAT=${9:-}
 if [[ ! -z "${MASTER_FLAT}" ]]; then
     MASTER_FLAT="$(abspath "${MASTER_FLAT}")"
 fi
@@ -83,7 +86,7 @@ readonly T4="1" # copy temporary shutter map, default: 1
 readonly T5="1" # create masterflat, default: 1
 readonly T6="1" # reduce science images, default: 1
 readonly T7="1" # perform photometry, default: 1
-readonly T8="0" # run image subtraction, default: 0
+readonly T8="1" # run image subtraction, default: 0
 readonly T9="1" # detrend, default: 1
 readonly T10="1" # detrend with lightcurves, default: 1
 readonly T11="1" # Make qa plots, default: 1
@@ -263,31 +266,34 @@ run_detrending() {
     fi
 }
 
+perform_imagesubtraction_photometry_single(){
+    local filelist=$1
+    local readonly basename=${filelist#${WORKINGDIR}/OriginalData/output/}
+    local readonly jobname=${basename%.*}
+    local readonly output_directory=${WORKINGDIR}/SubtractPhot/output/${RUNNAME}/${jobname}
+    local readonly image_filelist=${output_directory}/filelist.txt
+    ensure_directory ${output_directory}
+    echo ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname}
+    find ${WORKINGDIR}/Reduction/output/${RUNNAME}/${jobname} -name 'proc*.fits' > ${image_filelist}
+    echo "Image Subtraction Main Script"
+    echo "python ${SCRIPTDIR}/zlp-subtraction/bin/image_subtraction_mainq.py ${WORKINGDIR}/SubtractPhot ${REFERENCE_FRAME} ${image_filelist} ${GIVEN_INPUTCATALOGUE} ${RUNNAME} ${CORES} 3 8 ${SCRIPTDIR}/zlp-subtraction"
+    /usr/local/python/bin/python ${SCRIPTDIR}/zlp-subtraction/bin/image_subtraction_main.py ${WORKINGDIR}/SubtractPhot ${REFERENCE_FRAME} ${image_filelist} ${GIVEN_INPUTCATALOGUE} ${RUNNAME} ${CORES} 3 8 ${SCRIPTDIR}/zlp-subtraction
+    /usr/local/python/bin/python ${SCRIPTDIR}/zlp-subtraction/bin/image_subtraction_savefits.py ${WORKINGDIR}/SubtractPhot/output ${GIVEN_INPUTCATALOGUE} ${WORKINGDIR}/SubtractPhot/output/output.fits
+}
 
-# if [ "$T11" = "1" ] ; then
-#  # Subtract Images
-#  echo "Subtract Science Images"
-#   cd /ngts/pipedev/Subtractphot
-#   for IMAGEFILE in $WORKINGDIR/OriginalData/output/${RUNNAME}_image_*.list
-#   do
-#     IMAGEFILE=${IMAGEFILE#${WORKINGDIR}}
-#     IMAGEFILE=${IMAGEFILE#/OriginalData/output/}
-#     IMAGEFILE=${IMAGEFILE%.*}
-#     echo $IMAGEFILE
-#     $IMFILE = ${IMAGEFILE#${RUNNAME}_image_}
-#     numsfiles=($WORKINGDIR/InputCatalogue/output/*/*${IMFILE}/outstack.fits)
-#     numfiles=${#numfiles[@]}
-#     if [ "$numfiles" > "1" ] ; then
-# 	echo "${numfiles} reference Frames found, selecting the first: ${numsfiles[0]}"
-#     fi
-#     $Reference =  ${numsfiles[0]}
-#     $RefCat = ($WORKINGDIR/InputCatalogue/output/*/*${IMFILE}/catfile.fits)
-#     $RefCat = ${RefCat[0]}
-#     find  ${WORKINGDIR}/Reduction/${RUNNAME}/${IMAGEFILE} -name '*.fits' > ${WORKINGDIR}/Subtractphot/${IMAGEFILE}.txt
-#     python /ngts/pipedev/Subtractphot/scripts/image_subtraction_main.py /ngts/pipedev/Subtractphot $Reference ${WORKINGDIR}/Subtractphot/${IMAGEFILE}.txt ${RefCat} 5 20 ${RUNNAME}
-#   done
-#   cd /ngts/pipedev
-# fi
+perform_imagesubtraction_photometry(){
+    echo "Subtract Science Images"
+    ensure_directory ${WORKINGDIR}/SubtractPhot
+    cd ${WORKINGDIR}/SubtractPhot
+    echo "Photometry on Reference Frame"
+    python ${SCRIPTDIR}/zlp-subtraction/bin/image_subtraction_reference.py ${WORKINGDIR}/SubtractPhot ${REFERENCE_FRAME} ${GIVEN_INPUTCATALOGUE} ${RUNNAME}
+    echo "............Done............"
+
+    local readonly filelists=${WORKINGDIR}/OriginalData/output/${RUNNAME}_image_*.list
+    iterate_and_act_on_lists ${filelists} perform_imagesubtraction_photometry_single
+}
+
+
 
 # Some helper functions
 ensure_directory() {
@@ -419,7 +425,7 @@ main() {
     cd ${WORKINGDIR}
     [ "$T7" = "1" ] && perform_aperture_photometry
     
-    # [ "$T8" = "1" ] && perform_image_subtraction
+    [ "$T8" = "1" ] && perform_imagesubtraction_photometry
 
     [ "$T9" = "1" ] && run_detrending
 
