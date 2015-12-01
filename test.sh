@@ -32,6 +32,8 @@ perform_test() {
     local readonly sourcedir=$(abspath $1)
     if [ -f ${sourcedir}/initial_wcs_solution.pickle ]; then
         solution_filename=${sourcedir}/initial_wcs_solution.pickle
+    elif [ -f ${sourcedir}/wcs_solution.fits ]; then
+        solution_filename=${sourcedir}/wcs_solution.fits
     else
         solution_filename=${sourcedir}/wcs_solution.json
     fi
